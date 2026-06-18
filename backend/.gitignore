@@ -20,7 +20,7 @@ src/main/resources/application.properties
 target/
 **/target/
 *.iws
-*.iml
+*.imlw
 *.ipr
 
 # Environment Variables

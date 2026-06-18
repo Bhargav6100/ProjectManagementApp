@@ -1,5 +1,6 @@
 .idea/
 *.iml
 **/.idea/
+backend/src/main/resources/application.properties
 .DS_Store
 Thumbs.db

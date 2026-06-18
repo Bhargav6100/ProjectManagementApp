@@ -1,5 +1,6 @@
 package com.ProjectManagementApp.Controller;
 
+import com.ProjectManagementApp.dto.LoginRequest;
 import com.ProjectManagementApp.dto.RegisterRequest;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.repository.UserRepository;
@@ -40,5 +41,20 @@ public class AuthController {
         userRepository.save(user);
 
         return ResponseEntity.ok("User registered successfully");
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+
+        User user = userRepository.findByEmail(request.getEmail()).orElse(null);
+        if (user == null) {
+            return ResponseEntity.badRequest().body("Invalid email or password");
+        }
+        boolean matches = passwordEncoder.matches(request.getPassword(), user.getPassword());
+        if (!matches) {
+            return ResponseEntity.badRequest().body("Invalid email or password");
+        }
+
+        return ResponseEntity.ok("Login successful");
     }
 }

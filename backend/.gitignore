@@ -16,7 +16,7 @@ target/
 .idea/
 *.iml
 **/.idea/
-
+src/main/resources/application.properties
 target/
 **/target/
 *.iws

@@ -1,9 +1,11 @@
 package com.ProjectManagementApp.Controller;
 
+import com.ProjectManagementApp.dto.AuthResponse;
 import com.ProjectManagementApp.dto.LoginRequest;
 import com.ProjectManagementApp.dto.RegisterRequest;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.repository.UserRepository;
+import com.ProjectManagementApp.security.JwtService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +19,12 @@ public class AuthController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    private final JwtService jwtService;
+
+    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/register")
@@ -54,7 +59,8 @@ public class AuthController {
         if (!matches) {
             return ResponseEntity.badRequest().body("Invalid email or password");
         }
+        String token=jwtService.generateToken(user);
 
-        return ResponseEntity.ok("Login successful");
+        return ResponseEntity.ok(new AuthResponse(token));
     }
 }

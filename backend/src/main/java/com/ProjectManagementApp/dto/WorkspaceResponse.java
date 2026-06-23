@@ -9,7 +9,8 @@ public class WorkspaceResponse {
  private LocalDateTime createdAt;
  private String createdBy;
 
-    public WorkspaceResponse(String name, String description, LocalDateTime createdAt, String createdBy) {
+    public WorkspaceResponse(long id,String name, String description, LocalDateTime createdAt, String createdBy) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.createdAt = createdAt;

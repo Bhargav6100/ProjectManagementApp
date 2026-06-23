@@ -21,18 +21,13 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "assignedBy", nullable = false)
     private User assignedBy;
-private enum TaskStatus{
-    TO_DO,IN_PROGRESS,DONE
-}
     @Enumerated(EnumType.STRING)
     @Column(name = "taskStatus", nullable = false, length = 100)
-    private TaskStatus taskStatus;
-private enum TaskPriority{
-    LOW,MEDIUM,HIGH
-}
+    public TaskStatus taskStatus;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "taskPriority", nullable = false, length = 100)
-    private TaskPriority taskPriority;
+    public TaskPriority taskPriority;
 
 public Task(){
 

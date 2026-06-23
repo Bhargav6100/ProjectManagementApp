@@ -18,7 +18,6 @@ public class Project {
     private LocalDateTime createdAt;
     @Column(name = "description", nullable = false, length = 100)
     private String description;
-    private enum ProjectStatus{ COMPLETE,ACTIVE,ARCHIVED}
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 100)
     private ProjectStatus status;

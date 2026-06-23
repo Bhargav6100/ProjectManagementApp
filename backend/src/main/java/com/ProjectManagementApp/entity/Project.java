@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
     @ManyToOne
     @JoinColumn(name = "workspace", nullable = false)
     private Workspace workSpace;
@@ -24,6 +24,10 @@ public class Project {
     @ManyToOne
     @JoinColumn(name = "createdBy", nullable = false)
     private User createdBy;
+
+    public Project(){
+
+    }
     public Project(Workspace workSpace, String name, LocalDateTime createdAt, String description, ProjectStatus status,User createdBy) {
         this.workSpace = workSpace;
         this.name = name;
@@ -39,6 +43,14 @@ public class Project {
 
     public void setWorkSpace(Workspace workSpace) {
         this.workSpace = workSpace;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getName() {

@@ -6,7 +6,7 @@ import com.ProjectManagementApp.entity.ProjectStatus;
 import java.time.LocalDateTime;
 
 public class ProjectResponse {
-    private Long id;
+    private long id;
     private String name;
     private String description;
     private ProjectStatus status;
@@ -14,7 +14,8 @@ public class ProjectResponse {
     private String createdBy;
     private LocalDateTime createdAt;
 
-    public ProjectResponse(String name, String description,ProjectStatus status, long workspaceId, String createdBy, LocalDateTime createdAt) {
+    public ProjectResponse(long id,String name, String description,ProjectStatus status, long workspaceId, String createdBy, LocalDateTime createdAt) {
+        this.id=id;
         this.name = name;
         this.description = description;
         this.status = status;
@@ -23,7 +24,7 @@ public class ProjectResponse {
         this.createdAt = createdAt;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 

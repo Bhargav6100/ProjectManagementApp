@@ -16,6 +16,11 @@ public class WorkspaceService {
 
     private final WorkSpaceRepository workSpaceRepository;
 
+    public WorkspaceService(WorkSpaceRepository workSpaceRepository){
+        this.workSpaceRepository=workSpaceRepository;
+    }
+
+
     public List<WorkspaceResponse> getAllWorkspace() {
         return workSpaceRepository.findAll()
                 .stream()
@@ -42,10 +47,6 @@ public class WorkspaceService {
                 workspace.getCreatedBy().getEmail()
         );
     }
-
-   public WorkspaceService(WorkSpaceRepository workSpaceRepository){
-       this.workSpaceRepository=workSpaceRepository;
-   }
    public WorkspaceResponse createWorkspace(WorkspaceRequest request, User currentUser){
        Workspace workspace = new Workspace();
        workspace.setName(request.getName());
@@ -61,4 +62,18 @@ public class WorkspaceService {
                saved.getCreatedAt(),
                saved.getCreatedBy().getEmail());
    }
+   public WorkspaceResponse updateWorkspace(WorkspaceRequest request,Long workspaceId){
+       Workspace workspace = workSpaceRepository.findById(workspaceId)
+               .orElseThrow(() -> new RuntimeException("Workspace not found"));
+        workspace.setName(request.getName());
+        workspace.setDescription(request.getDescription());
+        Workspace updated = workSpaceRepository.save(workspace);
+       return new WorkspaceResponse(
+               updated.getId(),
+               updated.getName(),
+               updated.getDescription(),
+               updated.getCreatedAt(),
+               updated.getCreatedBy().getEmail()
+       );
+    }
 }

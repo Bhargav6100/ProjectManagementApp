@@ -48,4 +48,14 @@ public class WorkspaceController {
     public WorkspaceResponse getWorkspaceById(@PathVariable Long id) {
         return workspaceService.getWorkspaceById(id);
     }
+    @PutMapping("/{workspaceId}")
+    public ResponseEntity<WorkspaceResponse> updateWorkspace(@PathVariable Long workspaceId,
+            @RequestBody WorkspaceRequest request,Authentication authentication){
+         String email =authentication.getName();
+         User currentUser = userRepository.findByEmail(email)
+                 .orElseThrow();
+
+         WorkspaceResponse response = workspaceService.updateWorkspace(request,workspaceId);
+       return ResponseEntity.ok(response);
+    }
 }

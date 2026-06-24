@@ -19,9 +19,9 @@ public class ProjectService {
      this.projectRepository=projectRepository;
      this.workSpaceRepository = workSpaceRepository;
  }
- public ProjectResponse createProject(ProjectRequest request, Long currentWorkspace,User currentUser){
+ public ProjectResponse createProject(ProjectRequest request, Long currentWorkspaceId,User currentUser){
 
-     Workspace workspace = workSpaceRepository.findById(currentWorkspace)
+     Workspace workspace = workSpaceRepository.findById(currentWorkspaceId)
              .orElseThrow(() -> new RuntimeException("Workspace not found"));
      Project project = new Project();
       project.setName(request.getName());

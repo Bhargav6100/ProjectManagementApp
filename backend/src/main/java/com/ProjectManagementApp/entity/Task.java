@@ -1,6 +1,10 @@
 package com.ProjectManagementApp.entity;
 
 import jakarta.persistence.*;
+import org.springframework.cglib.core.Local;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="task")
@@ -15,12 +19,18 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "project", nullable = false)
     private Project project;
+
+    @Column(name = "createdAt", nullable = false, length = 100)
+    private LocalDateTime createdAt;
     @ManyToOne
-    @JoinColumn(name = "assignedTo", nullable = false)
-    private User assignedTo;
+    @JoinColumn(name = "assignedToUserId", nullable = false)
+    private User assignedToUserId;
     @ManyToOne
     @JoinColumn(name = "assignedBy", nullable = false)
     private User assignedBy;
+
+    @Column(name = "dueDate", nullable = false)
+    private LocalDate dueDate;
     @Enumerated(EnumType.STRING)
     @Column(name = "taskStatus", nullable = false, length = 100)
     public TaskStatus taskStatus;
@@ -33,14 +43,24 @@ public Task(){
 
 }
 
-    public Task(String title, String description, Project project, User assignedTo, User assignedBy, TaskStatus taskStatus, TaskPriority taskPriority) {
+    public Task(String title, String description, Project project, LocalDateTime createdAt, User assignedToUserId, User assignedBy, LocalDate dueDate, TaskStatus taskStatus, TaskPriority taskPriority) {
         this.title = title;
         this.description = description;
         this.project = project;
-        this.assignedTo = assignedTo;
+        this.createdAt=createdAt;
+        this.assignedToUserId = assignedToUserId;
         this.assignedBy = assignedBy;
+        this.dueDate = dueDate;
         this.taskStatus = taskStatus;
         this.taskPriority = taskPriority;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -59,20 +79,36 @@ public Task(){
         this.description = description;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public Project getProject() {
         return project;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
     }
 
     public void setProject(Project project) {
         this.project = project;
     }
 
-    public User getAssignedTo() {
-        return assignedTo;
+    public User getAssignedToUserId() {
+        return assignedToUserId;
     }
 
-    public void setAssignedTo(User assignedTo) {
-        this.assignedTo = assignedTo;
+    public void setAssignedToUserId(User assignedTo) {
+        this.assignedToUserId = assignedTo;
     }
 
     public User getAssignedBy() {
@@ -102,12 +138,14 @@ public Task(){
     @Override
     public String toString() {
         return "Task{" +
-                "title='" + title + '\'' +
-                ", id=" + id +
+                "id=" + id +
+                ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", project=" + project +
-                ", assignedTo=" + assignedTo +
+                ", createdAt=" + createdAt +
+                ", assignedToUserId=" + assignedToUserId +
                 ", assignedBy=" + assignedBy +
+                ", dueDate=" + dueDate +
                 ", taskStatus=" + taskStatus +
                 ", taskPriority=" + taskPriority +
                 '}';

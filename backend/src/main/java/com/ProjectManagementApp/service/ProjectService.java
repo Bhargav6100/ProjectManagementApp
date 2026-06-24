@@ -71,6 +71,22 @@ public class ProjectService {
               saved.getCreatedBy().getEmail(),
               saved.getCreatedAt()
       );
-
+ }
+public ProjectResponse updateProject(ProjectRequest request,Long projectId){
+     Project project = projectRepository.findById(projectId)
+             .orElseThrow(()->new RuntimeException("Project not found"));
+         project.setName(request.getName());
+         project.setDescription(request.getDescription());
+         project.setStatus(request.getStatus());
+         Project update = projectRepository.save(project);
+         return new ProjectResponse(
+                 update.getId(),
+                 update.getName(),
+                 update.getDescription(),
+                 update.getStatus(),
+                 update.getWorkspace().getId(),
+                 update.getCreatedBy().getEmail(),
+                 update.getCreatedAt()
+         );
  }
 }

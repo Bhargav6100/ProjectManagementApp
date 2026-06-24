@@ -1,6 +1,8 @@
 package com.ProjectManagementApp.Controller;
 
 import com.ProjectManagementApp.dto.ProjectRequest;
+import com.ProjectManagementApp.dto.WorkspaceRequest;
+import com.ProjectManagementApp.dto.WorkspaceResponse;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.repository.UserRepository;
 import com.ProjectManagementApp.service.ProjectService;
@@ -44,4 +46,15 @@ public class ProjectController {
     public ProjectResponse findProjectById(@PathVariable Long id){
         return projectService.getProjectById(id);
     }
+   @PutMapping("/projects/{projectId}")
+   public ResponseEntity<ProjectResponse> updateProject(@PathVariable Long projectId,
+                                                        @RequestBody ProjectRequest request,
+                                                        Authentication authentication){
+       String email =authentication.getName();
+       User currentUser = userRepository.findByEmail(email)
+               .orElseThrow();
+
+       ProjectResponse response = projectService.updateProject(request,projectId);
+       return ResponseEntity.ok(response);
+   }
 }

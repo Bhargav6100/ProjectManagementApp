@@ -1,9 +1,7 @@
 package com.ProjectManagementApp.Controller;
 
-import com.ProjectManagementApp.dto.ProjectRequest;
-import com.ProjectManagementApp.dto.ProjectResponse;
-import com.ProjectManagementApp.dto.TaskRequest;
-import com.ProjectManagementApp.dto.TaskResponse;
+import com.ProjectManagementApp.dto.*;
+import com.ProjectManagementApp.entity.TaskPriority;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.repository.UserRepository;
 import com.ProjectManagementApp.service.TaskService;
@@ -21,7 +19,7 @@ public class TaskController {
         this.taskService = taskService;
         this.userRepository = userRepository;
     }
-    @PostMapping("api/projects/{projectId}/tasks")
+    @PostMapping("/api/projects/{projectId}/tasks")
     public ResponseEntity<TaskResponse> createTask(@PathVariable Long projectId, @RequestBody TaskRequest request, Authentication authentication){
         String email = authentication.getName();
 
@@ -32,7 +30,7 @@ public class TaskController {
 
         return ResponseEntity.ok(response);
     }
-    @GetMapping("api/projects/{projectId}/tasks")
+    @GetMapping("/api/projects/{projectId}/tasks")
     public ResponseEntity<List<TaskResponse>> getTasksByProject(
             @PathVariable Long projectId
     ) {
@@ -56,5 +54,31 @@ public class TaskController {
 
         TaskResponse response = taskService.updateTask(request,taskId);
         return ResponseEntity.ok(response);
+    }
+    @PatchMapping("/api/tasks/{taskId}/status")
+    public ResponseEntity<TaskResponse> updateTaskStatus(
+            @PathVariable Long taskId,
+            @RequestBody TaskStatusPatch request
+    ) {
+
+        return ResponseEntity.ok(
+                taskService.updateTaskStatus(
+                        request,
+                        taskId
+                )
+        );
+    }
+    @PatchMapping("/api/tasks/{taskId}/priority")
+    public ResponseEntity<TaskResponse> updateTaskPriority(
+            @PathVariable Long taskId,
+            @RequestBody TaskPriorityPatch request
+    ) {
+
+        return ResponseEntity.ok(
+                taskService.updateTaskPriority(
+                        request,
+                        taskId
+                )
+        );
     }
 }

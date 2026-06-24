@@ -1,9 +1,6 @@
 package com.ProjectManagementApp.service;
 
-import com.ProjectManagementApp.dto.ProjectRequest;
-import com.ProjectManagementApp.dto.ProjectResponse;
-import com.ProjectManagementApp.dto.TaskRequest;
-import com.ProjectManagementApp.dto.TaskResponse;
+import com.ProjectManagementApp.dto.*;
 import com.ProjectManagementApp.entity.Project;
 import com.ProjectManagementApp.entity.Task;
 import com.ProjectManagementApp.entity.User;
@@ -111,6 +108,42 @@ public class TaskService {
                 update.getCreatedAt(),
                 update.getAssignedBy().getEmail(),
                 update.getProject().getId()
+        );
+    }
+    public TaskResponse updateTaskStatus(TaskStatusPatch request, Long taskId){
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(()->new RuntimeException("Task not found"));
+        task.setTaskStatus(request.getTaskStatus());
+        Task patched = taskRepository.save(task);
+        return new TaskResponse(
+                patched.getId(),
+                patched.getTitle(),
+                patched.getDescription(),
+                patched.getDueDate(),
+                patched.getAssignedToUserId().getId(),
+                patched.getTaskStatus(),
+                patched.getTaskPriority(),
+                patched.getCreatedAt(),
+                patched.getAssignedBy().getEmail(),
+                patched.getProject().getId()
+        );
+    }
+    public TaskResponse updateTaskPriority(TaskPriorityPatch request, Long taskId){
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(()->new RuntimeException("Task not found"));
+        task.setTaskPriority(request.getTaskPriority());
+        Task patched = taskRepository.save(task);
+        return new TaskResponse(
+                patched.getId(),
+                patched.getTitle(),
+                patched.getDescription(),
+                patched.getDueDate(),
+                patched.getAssignedToUserId().getId(),
+                patched.getTaskStatus(),
+                patched.getTaskPriority(),
+                patched.getCreatedAt(),
+                patched.getAssignedBy().getEmail(),
+                patched.getProject().getId()
         );
     }
 }

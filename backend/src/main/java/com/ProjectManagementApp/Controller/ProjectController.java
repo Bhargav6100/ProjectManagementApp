@@ -67,4 +67,8 @@ public class ProjectController {
                 )
         );
     }
+    @DeleteMapping("/{projectId}")
+    public String deleteProject(@PathVariable Long projectId){
+        return projectService.deleteProject(projectId);
+    }
 }

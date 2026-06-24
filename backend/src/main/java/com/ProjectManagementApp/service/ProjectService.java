@@ -112,4 +112,10 @@ public ProjectResponse updateProject(ProjectRequest request,Long projectId){
                 patched.getCreatedAt()
         );
     }
+    public String deleteProject(Long projectId){
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+        projectRepository.delete(project);
+        return "Project deleted successfully";
+    }
 }

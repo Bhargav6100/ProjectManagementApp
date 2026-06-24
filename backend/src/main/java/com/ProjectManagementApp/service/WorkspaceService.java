@@ -76,4 +76,10 @@ public class WorkspaceService {
                updated.getCreatedBy().getEmail()
        );
     }
+    public String deleteWorkspace(Long workspaceId){
+        Workspace workspace = workSpaceRepository.findById(workspaceId)
+                .orElseThrow(() -> new RuntimeException("Workspace not found"));
+        workSpaceRepository.delete(workspace);
+        return "Workspace deleted successfully";
+    }
 }

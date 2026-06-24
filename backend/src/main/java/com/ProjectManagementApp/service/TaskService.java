@@ -4,6 +4,7 @@ import com.ProjectManagementApp.dto.*;
 import com.ProjectManagementApp.entity.Project;
 import com.ProjectManagementApp.entity.Task;
 import com.ProjectManagementApp.entity.User;
+import com.ProjectManagementApp.entity.Workspace;
 import com.ProjectManagementApp.repository.ProjectRepository;
 import com.ProjectManagementApp.repository.TaskRepository;
 import com.ProjectManagementApp.repository.UserRepository;
@@ -145,5 +146,11 @@ public class TaskService {
                 patched.getAssignedBy().getEmail(),
                 patched.getProject().getId()
         );
+    }
+    public String deleteTask(Long taskId){
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+        taskRepository.delete(task);
+        return "Task deleted successfully";
     }
 }

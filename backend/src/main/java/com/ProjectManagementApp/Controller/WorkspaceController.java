@@ -58,4 +58,8 @@ public class WorkspaceController {
          WorkspaceResponse response = workspaceService.updateWorkspace(request,workspaceId);
        return ResponseEntity.ok(response);
     }
+    @DeleteMapping("/{workspaceId}")
+    public String deleteWorkspace(@PathVariable Long workspaceId){
+        return workspaceService.deleteWorkspace(workspaceId);
+    }
 }

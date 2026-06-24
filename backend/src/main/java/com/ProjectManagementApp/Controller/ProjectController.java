@@ -36,9 +36,9 @@ public class ProjectController {
 
       return ResponseEntity.ok(response);
   }
-  @GetMapping("/projects")
-    public List<ProjectResponse> findAllProjects(){
-      return projectService.getAllProjects();
+  @GetMapping("/{workspaceId}/projects")
+    public ResponseEntity<List<ProjectResponse>> findAllProjectsByWorkSpaceId(@PathVariable Long workspaceId){
+      return ResponseEntity.ok(projectService.getAllProjectsbyWorkspaceId(workspaceId));
   }
     @GetMapping("/projects/{id}")
     public ProjectResponse findProjectById(@PathVariable Long id){

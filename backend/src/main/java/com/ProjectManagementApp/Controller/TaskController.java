@@ -1,5 +1,6 @@
 package com.ProjectManagementApp.Controller;
 
+import com.ProjectManagementApp.dto.ProjectResponse;
 import com.ProjectManagementApp.dto.TaskRequest;
 import com.ProjectManagementApp.dto.TaskResponse;
 import com.ProjectManagementApp.entity.User;
@@ -9,8 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/projects")
 public class TaskController {
     private final TaskService taskService;
     private final UserRepository userRepository;
@@ -18,7 +20,7 @@ public class TaskController {
         this.taskService = taskService;
         this.userRepository = userRepository;
     }
-    @PostMapping("/{projectId}/tasks")
+    @PostMapping("api/projects/{projectId}/tasks")
     public ResponseEntity<TaskResponse> createTask(@PathVariable Long projectId, @RequestBody TaskRequest request, Authentication authentication){
         String email = authentication.getName();
 
@@ -29,7 +31,19 @@ public class TaskController {
 
         return ResponseEntity.ok(response);
     }
+    @GetMapping("api/projects/{projectId}/tasks")
+    public ResponseEntity<List<TaskResponse>> getTasksByProject(
+            @PathVariable Long projectId
+    ) {
+        return ResponseEntity.ok(taskService.getTaskByProjectId(projectId));
+    }
+    @GetMapping("/api/tasks/{id}")
+    public ResponseEntity<TaskResponse> findTaskById(@PathVariable Long id){
+        try {
+            return ResponseEntity.ok(taskService.getTasksByTaskId(id));
+        } catch (RuntimeException ex) {
+            return ResponseEntity.notFound().build();
+        }
 
-
-
+    }
 }

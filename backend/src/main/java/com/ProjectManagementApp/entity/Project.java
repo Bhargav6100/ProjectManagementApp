@@ -11,7 +11,7 @@ public class Project {
     private long id;
     @ManyToOne
     @JoinColumn(name = "workspace", nullable = false)
-    private Workspace workSpace;
+    private Workspace workspace;
     @Column(name = "name", nullable = false, length = 100)
     private String name;
     @Column(name = "createdAt", nullable = false, length = 100)
@@ -28,8 +28,8 @@ public class Project {
     public Project(){
 
     }
-    public Project(Workspace workSpace, String name, LocalDateTime createdAt, String description, ProjectStatus status,User createdBy) {
-        this.workSpace = workSpace;
+    public Project(Workspace workspace, String name, LocalDateTime createdAt, String description, ProjectStatus status,User createdBy) {
+        this.workspace = workspace;
         this.name = name;
         this.createdAt = createdAt;
         this.description = description;
@@ -37,12 +37,12 @@ public class Project {
         this.createdBy = createdBy;
     }
 
-    public Workspace getWorkSpace() {
-        return workSpace;
+    public Workspace getWorkspace() {
+        return workspace;
     }
 
-    public void setWorkSpace(Workspace workSpace) {
-        this.workSpace = workSpace;
+    public void setWorkspace(Workspace workSpace) {
+        this.workspace = workSpace;
     }
 
     public long getId() {
@@ -96,7 +96,7 @@ public class Project {
     @Override
     public String toString() {
         return "Project{" +
-                "workSpace=" + workSpace +
+                "workSpace=" + workspace +
                 ", name='" + name + '\'' +
                 ", id=" + id +
                 ", createdAt=" + createdAt +

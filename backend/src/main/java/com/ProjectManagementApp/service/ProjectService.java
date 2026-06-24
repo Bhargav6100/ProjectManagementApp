@@ -2,7 +2,6 @@ package com.ProjectManagementApp.service;
 
 import com.ProjectManagementApp.dto.ProjectRequest;
 import com.ProjectManagementApp.dto.ProjectResponse;
-import com.ProjectManagementApp.dto.WorkspaceResponse;
 import com.ProjectManagementApp.entity.Project;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.entity.Workspace;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProjectService {
@@ -23,15 +21,15 @@ public class ProjectService {
      this.workSpaceRepository = workSpaceRepository;
  }
 
- public List<ProjectResponse> getAllProjects(){
-     return projectRepository.findAll()
+ public List<ProjectResponse> getAllProjectsbyWorkspaceId(Long workspaceId){
+     return projectRepository.findByWorkspaceId(workspaceId)
              .stream()
              .map(project -> new ProjectResponse(
                      project.getId(),
                      project.getName(),
                      project.getDescription(),
                      project.getStatus(),
-                     project.getWorkSpace().getId(),
+                     project.getWorkspace().getId(),
                      project.getCreatedBy().getEmail(),
                      project.getCreatedAt()
              ))
@@ -46,7 +44,7 @@ public class ProjectService {
                 project.getName(),
                 project.getDescription(),
                 project.getStatus(),
-                project.getWorkSpace().getId(),
+                project.getWorkspace().getId(),
                 project.getCreatedBy().getEmail(),
                 project.getCreatedAt()
         );
@@ -59,7 +57,7 @@ public class ProjectService {
       project.setName(request.getName());
       project.setDescription(request.getDescription());
       project.setStatus(request.getStatus());
-      project.setWorkSpace(workspace);
+      project.setWorkspace(workspace);
       project.setCreatedAt(LocalDateTime.now());
       project.setCreatedBy(currentUser);
       Project saved = projectRepository.save(project);
@@ -69,7 +67,7 @@ public class ProjectService {
               saved.getName(),
               saved.getDescription(),
               saved.getStatus(),
-              saved.getWorkSpace().getId(),
+              saved.getWorkspace().getId(),
               saved.getCreatedBy().getEmail(),
               saved.getCreatedAt()
       );

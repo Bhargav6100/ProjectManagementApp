@@ -1,5 +1,6 @@
 package com.ProjectManagementApp.service;
 
+import com.ProjectManagementApp.dto.ProjectResponse;
 import com.ProjectManagementApp.dto.TaskRequest;
 import com.ProjectManagementApp.dto.TaskResponse;
 import com.ProjectManagementApp.entity.Project;
@@ -11,6 +12,7 @@ import com.ProjectManagementApp.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class TaskService {
@@ -23,6 +25,39 @@ public class TaskService {
         this.taskRepository = taskRepository;
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
+    }
+    public TaskResponse getTasksByTaskId(Long taskId){
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task with that Id not found"));
+        return new TaskResponse(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getDueDate(),
+                task.getAssignedToUserId().getId(),
+                task.getTaskStatus(),
+                task.getTaskPriority(),
+                task.getCreatedAt(),
+                task.getAssignedBy().getEmail(),
+                task.getProject().getId()
+        );
+    }
+    public List<TaskResponse> getTaskByProjectId(Long projectId){
+        return taskRepository.findByProjectId(projectId)
+                .stream()
+                .map(task -> new TaskResponse(
+                        task.getId(),
+                        task.getTitle(),
+                        task.getDescription(),
+                        task.getDueDate(),
+                        task.getAssignedToUserId().getId(),
+                        task.getTaskStatus(),
+                        task.getTaskPriority(),
+                        task.getCreatedAt(),
+                        task.getAssignedBy().getEmail(),
+                        task.getProject().getId()
+                ))
+                .toList();
     }
 
     public TaskResponse createTask(TaskRequest request, Long projectId, User currentUser){

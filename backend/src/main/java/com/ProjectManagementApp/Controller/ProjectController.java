@@ -1,7 +1,6 @@
 package com.ProjectManagementApp.Controller;
 
 import com.ProjectManagementApp.dto.ProjectRequest;
-import com.ProjectManagementApp.entity.Project;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.repository.UserRepository;
 import com.ProjectManagementApp.service.ProjectService;
@@ -38,12 +37,11 @@ public class ProjectController {
       return ResponseEntity.ok(response);
   }
   @GetMapping("/projects")
-    public List<Project> findAllProjects(){
+    public List<ProjectResponse> findAllProjects(){
       return projectService.getAllProjects();
   }
     @GetMapping("/projects/{id}")
-    public Project findProjectById(@PathVariable Long id){
-        return projectService.getProjectById(id)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+    public ProjectResponse findProjectById(@PathVariable Long id){
+        return projectService.getProjectById(id);
     }
 }

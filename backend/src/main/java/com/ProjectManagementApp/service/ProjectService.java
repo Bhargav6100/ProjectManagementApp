@@ -2,6 +2,7 @@ package com.ProjectManagementApp.service;
 
 import com.ProjectManagementApp.dto.ProjectRequest;
 import com.ProjectManagementApp.dto.ProjectResponse;
+import com.ProjectManagementApp.dto.WorkspaceResponse;
 import com.ProjectManagementApp.entity.Project;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.entity.Workspace;
@@ -22,10 +23,33 @@ public class ProjectService {
      this.workSpaceRepository = workSpaceRepository;
  }
 
- public List<Project> getAllProjects(){return projectRepository.findAll();}
+ public List<ProjectResponse> getAllProjects(){
+     return projectRepository.findAll()
+             .stream()
+             .map(project -> new ProjectResponse(
+                     project.getId(),
+                     project.getName(),
+                     project.getDescription(),
+                     project.getStatus(),
+                     project.getWorkSpace().getId(),
+                     project.getCreatedBy().getEmail(),
+                     project.getCreatedAt()
+             ))
+             .toList();
+ }
 
-    public Optional<Project> getProjectById(Long id) {
-        return projectRepository.findById(id);
+    public ProjectResponse getProjectById(Long id) {
+        Project project =  projectRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+        return new ProjectResponse(
+                project.getId(),
+                project.getName(),
+                project.getDescription(),
+                project.getStatus(),
+                project.getWorkSpace().getId(),
+                project.getCreatedBy().getEmail(),
+                project.getCreatedAt()
+        );
     }
  public ProjectResponse createProject(ProjectRequest request, Long currentWorkspaceId,User currentUser){
 

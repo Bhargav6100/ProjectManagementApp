@@ -10,6 +10,8 @@ import com.ProjectManagementApp.repository.WorkSpaceRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProjectService {
@@ -19,6 +21,12 @@ public class ProjectService {
      this.projectRepository=projectRepository;
      this.workSpaceRepository = workSpaceRepository;
  }
+
+ public List<Project> getAllProjects(){return projectRepository.findAll();}
+
+    public Optional<Project> getProjectById(Long id) {
+        return projectRepository.findById(id);
+    }
  public ProjectResponse createProject(ProjectRequest request, Long currentWorkspaceId,User currentUser){
 
      Workspace workspace = workSpaceRepository.findById(currentWorkspaceId)

@@ -1,6 +1,7 @@
 package com.ProjectManagementApp.Controller;
 
 import com.ProjectManagementApp.dto.ProjectRequest;
+import com.ProjectManagementApp.entity.Project;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.repository.UserRepository;
 import com.ProjectManagementApp.service.ProjectService;
@@ -8,6 +9,8 @@ import com.ProjectManagementApp.dto.ProjectResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/workspaces")
@@ -34,4 +37,13 @@ public class ProjectController {
 
       return ResponseEntity.ok(response);
   }
+  @GetMapping("/projects")
+    public List<Project> findAllProjects(){
+      return projectService.getAllProjects();
+  }
+    @GetMapping("/projects/{id}")
+    public Project findProjectById(@PathVariable Long id){
+        return projectService.getProjectById(id)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+    }
 }

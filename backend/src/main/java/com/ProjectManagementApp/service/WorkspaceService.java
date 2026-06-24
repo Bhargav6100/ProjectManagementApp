@@ -10,18 +10,37 @@ import java.util.Optional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
 @Service
 public class WorkspaceService {
 
     private final WorkSpaceRepository workSpaceRepository;
 
-    public List<Workspace> getAllWorkspace() {
-        return workSpaceRepository.findAll();
+    public List<WorkspaceResponse> getAllWorkspace() {
+        return workSpaceRepository.findAll()
+                .stream()
+                .map(workspace -> new WorkspaceResponse(
+                        workspace.getId(),
+                        workspace.getName(),
+                        workspace.getDescription(),
+                        workspace.getCreatedAt(),
+                        workspace.getCreatedBy().getEmail()
+                ))
+        .toList();
     }
 
     // Get a specific record by its ID
-    public Optional<Workspace> getWorkspaceById(Long id) {
-        return workSpaceRepository.findById(id);
+    public WorkspaceResponse getWorkspaceById(Long id) {
+
+        Workspace workspace= workSpaceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Workspace not found"));
+        return new WorkspaceResponse(
+                workspace.getId(),
+                workspace.getName(),
+                workspace.getDescription(),
+                workspace.getCreatedAt(),
+                workspace.getCreatedBy().getEmail()
+        );
     }
 
    public WorkspaceService(WorkSpaceRepository workSpaceRepository){

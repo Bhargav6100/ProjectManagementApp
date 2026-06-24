@@ -1,9 +1,11 @@
 package com.ProjectManagementApp.dto;
 
 import com.ProjectManagementApp.entity.TaskPriority;
+import jakarta.validation.constraints.NotNull;
 
 public class TaskPriorityPatch {
-private TaskPriority taskPriority;
+    @NotNull(message = "Task priority is required")
+    private TaskPriority taskPriority;
 
     public TaskPriorityPatch(TaskPriority taskPriority) {
         this.taskPriority = taskPriority;

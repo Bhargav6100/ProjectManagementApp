@@ -4,6 +4,7 @@ import com.ProjectManagementApp.dto.*;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.repository.UserRepository;
 import com.ProjectManagementApp.service.ProjectService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class ProjectController {
   @PostMapping("/{workspaceId}/projects")
   public ResponseEntity<ProjectResponse> createProject(
           @PathVariable Long workspaceId,
-          @RequestBody ProjectRequest request,
+          @Valid @RequestBody ProjectRequest request,
           Authentication authentication
   ) {
       String email = authentication.getName();
@@ -45,7 +46,7 @@ public class ProjectController {
     }
    @PutMapping("/projects/{projectId}")
    public ResponseEntity<ProjectResponse> updateProject(@PathVariable Long projectId,
-                                                        @RequestBody ProjectRequest request,
+                                                        @Valid @RequestBody ProjectRequest request,
                                                         Authentication authentication){
        String email =authentication.getName();
        User currentUser = userRepository.findByEmail(email)
@@ -57,7 +58,7 @@ public class ProjectController {
     @PatchMapping("/projects/{projectId}/status")
     public ResponseEntity<ProjectResponse> updateProjectStatus(
             @PathVariable Long projectId,
-            @RequestBody ProjectStatusPatch request
+            @Valid @RequestBody ProjectStatusPatch request
     ) {
 
         return ResponseEntity.ok(

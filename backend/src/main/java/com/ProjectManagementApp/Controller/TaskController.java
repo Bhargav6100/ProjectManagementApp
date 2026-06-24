@@ -5,6 +5,7 @@ import com.ProjectManagementApp.entity.TaskPriority;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.repository.UserRepository;
 import com.ProjectManagementApp.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class TaskController {
         this.userRepository = userRepository;
     }
     @PostMapping("/api/projects/{projectId}/tasks")
-    public ResponseEntity<TaskResponse> createTask(@PathVariable Long projectId, @RequestBody TaskRequest request, Authentication authentication){
+    public ResponseEntity<TaskResponse> createTask(@PathVariable Long projectId, @Valid @RequestBody TaskRequest request, Authentication authentication){
         String email = authentication.getName();
 
         User currentUser = userRepository.findByEmail(email)
@@ -46,7 +47,7 @@ public class TaskController {
     }
     @PutMapping("/api/tasks/{taskId}")
     public ResponseEntity<TaskResponse> updateTask(@PathVariable Long taskId,
-                                                         @RequestBody TaskRequest request,
+                                                   @Valid @RequestBody TaskRequest request,
                                                          Authentication authentication){
         String email =authentication.getName();
         User currentUser = userRepository.findByEmail(email)
@@ -58,7 +59,7 @@ public class TaskController {
     @PatchMapping("/api/tasks/{taskId}/status")
     public ResponseEntity<TaskResponse> updateTaskStatus(
             @PathVariable Long taskId,
-            @RequestBody TaskStatusPatch request
+            @Valid @RequestBody TaskStatusPatch request
     ) {
 
         return ResponseEntity.ok(
@@ -71,7 +72,7 @@ public class TaskController {
     @PatchMapping("/api/tasks/{taskId}/priority")
     public ResponseEntity<TaskResponse> updateTaskPriority(
             @PathVariable Long taskId,
-            @RequestBody TaskPriorityPatch request
+            @Valid @RequestBody TaskPriorityPatch request
     ) {
 
         return ResponseEntity.ok(

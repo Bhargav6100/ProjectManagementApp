@@ -1,8 +1,15 @@
 package com.ProjectManagementApp.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import org.antlr.v4.runtime.misc.NotNull;
+
 public class WorkspaceRequest {
- private String name;
- private String description;
+    @NotBlank(message = "Workspace name is required")
+    @Size(max = 100, message = "Workspace name cannot exceed 100 characters")
+    private String name;
+    @NotBlank(message = "Description is required")
+    private String description;
 
  public WorkspaceRequest(String name, String description){
      this.name=name;

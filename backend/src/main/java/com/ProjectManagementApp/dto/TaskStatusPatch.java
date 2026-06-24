@@ -1,9 +1,11 @@
 package com.ProjectManagementApp.dto;
 
 import com.ProjectManagementApp.entity.TaskStatus;
+import jakarta.validation.constraints.NotNull;
 
 public class TaskStatusPatch {
-private TaskStatus taskStatus;
+    @NotNull(message = "Task status is required")
+    private TaskStatus taskStatus;
 
 public TaskStatusPatch(){
 

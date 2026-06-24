@@ -5,6 +5,7 @@ import com.ProjectManagementApp.dto.WorkspaceResponse;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.repository.UserRepository;
 import com.ProjectManagementApp.service.WorkspaceService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class WorkspaceController {
 
     @PostMapping
     public ResponseEntity<WorkspaceResponse> createWorkspace(
-            @RequestBody WorkspaceRequest request,
+            @Valid @RequestBody WorkspaceRequest request,
             Authentication authentication
     ) {
         String email = authentication.getName();
@@ -49,8 +50,9 @@ public class WorkspaceController {
         return workspaceService.getWorkspaceById(id);
     }
     @PutMapping("/{workspaceId}")
-    public ResponseEntity<WorkspaceResponse> updateWorkspace(@PathVariable Long workspaceId,
-            @RequestBody WorkspaceRequest request,Authentication authentication){
+    public ResponseEntity<WorkspaceResponse>
+    updateWorkspace( @PathVariable Long workspaceId,@Valid @RequestBody WorkspaceRequest request,
+                     Authentication authentication){
          String email =authentication.getName();
          User currentUser = userRepository.findByEmail(email)
                  .orElseThrow();

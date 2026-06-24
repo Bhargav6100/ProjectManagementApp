@@ -1,5 +1,6 @@
 package com.ProjectManagementApp.service;
 
+import com.ProjectManagementApp.dto.ProjectRequest;
 import com.ProjectManagementApp.dto.ProjectResponse;
 import com.ProjectManagementApp.dto.TaskRequest;
 import com.ProjectManagementApp.dto.TaskResponse;
@@ -90,5 +91,26 @@ public class TaskService {
                    saved.getAssignedBy().getEmail(),
                    saved.getProject().getId()
            );
+    }
+    public TaskResponse updateTask(TaskRequest request, Long taskId){
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(()->new RuntimeException("Task not found"));
+        task.setTitle(request.getTitle());
+        task.setDescription(request.getDescription());
+        task.setTaskStatus(request.getTaskStatus());
+        task.setTaskPriority(request.getTaskPriority());
+        Task update = taskRepository.save(task);
+        return new TaskResponse(
+                update.getId(),
+                update.getTitle(),
+                update.getDescription(),
+                update.getDueDate(),
+                update.getAssignedToUserId().getId(),
+                update.getTaskStatus(),
+                update.getTaskPriority(),
+                update.getCreatedAt(),
+                update.getAssignedBy().getEmail(),
+                update.getProject().getId()
+        );
     }
 }

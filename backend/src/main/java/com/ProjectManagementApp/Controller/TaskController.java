@@ -1,5 +1,6 @@
 package com.ProjectManagementApp.Controller;
 
+import com.ProjectManagementApp.dto.ProjectRequest;
 import com.ProjectManagementApp.dto.ProjectResponse;
 import com.ProjectManagementApp.dto.TaskRequest;
 import com.ProjectManagementApp.dto.TaskResponse;
@@ -44,6 +45,16 @@ public class TaskController {
         } catch (RuntimeException ex) {
             return ResponseEntity.notFound().build();
         }
+    }
+    @PutMapping("/api/tasks/{taskId}")
+    public ResponseEntity<TaskResponse> updateTask(@PathVariable Long taskId,
+                                                         @RequestBody TaskRequest request,
+                                                         Authentication authentication){
+        String email =authentication.getName();
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow();
 
+        TaskResponse response = taskService.updateTask(request,taskId);
+        return ResponseEntity.ok(response);
     }
 }

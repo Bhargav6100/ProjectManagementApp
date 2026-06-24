@@ -2,6 +2,7 @@ package com.ProjectManagementApp.service;
 
 import com.ProjectManagementApp.dto.ProjectRequest;
 import com.ProjectManagementApp.dto.ProjectResponse;
+import com.ProjectManagementApp.dto.ProjectStatusPatch;
 import com.ProjectManagementApp.entity.Project;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.entity.Workspace;
@@ -89,4 +90,26 @@ public ProjectResponse updateProject(ProjectRequest request,Long projectId){
                  update.getCreatedAt()
          );
  }
+    public ProjectResponse updateProjectStatus(
+            ProjectStatusPatch request,
+            Long projectId
+    ) {
+
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+
+        project.setStatus(request.getProjectStatus());
+
+        Project patched = projectRepository.save(project);
+
+        return new ProjectResponse(
+                patched.getId(),
+                patched.getName(),
+                patched.getDescription(),
+                patched.getStatus(),
+                patched.getWorkspace().getId(),
+                patched.getCreatedBy().getEmail(),
+                patched.getCreatedAt()
+        );
+    }
 }

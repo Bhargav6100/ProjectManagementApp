@@ -1,12 +1,9 @@
 package com.ProjectManagementApp.Controller;
 
-import com.ProjectManagementApp.dto.ProjectRequest;
-import com.ProjectManagementApp.dto.WorkspaceRequest;
-import com.ProjectManagementApp.dto.WorkspaceResponse;
+import com.ProjectManagementApp.dto.*;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.repository.UserRepository;
 import com.ProjectManagementApp.service.ProjectService;
-import com.ProjectManagementApp.dto.ProjectResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -57,4 +54,17 @@ public class ProjectController {
        ProjectResponse response = projectService.updateProject(request,projectId);
        return ResponseEntity.ok(response);
    }
+    @PatchMapping("/projects/{projectId}/status")
+    public ResponseEntity<ProjectResponse> updateProjectStatus(
+            @PathVariable Long projectId,
+            @RequestBody ProjectStatusPatch request
+    ) {
+
+        return ResponseEntity.ok(
+                projectService.updateProjectStatus(
+                        request,
+                        projectId
+                )
+        );
+    }
 }

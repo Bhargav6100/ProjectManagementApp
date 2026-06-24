@@ -6,13 +6,23 @@ import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.entity.Workspace;
 import com.ProjectManagementApp.repository.WorkSpaceRepository;
 import org.springframework.stereotype.Service;
-
+import java.util.Optional;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class WorkspaceService {
 
     private final WorkSpaceRepository workSpaceRepository;
+
+    public List<Workspace> getAllWorkspace() {
+        return workSpaceRepository.findAll();
+    }
+
+    // Get a specific record by its ID
+    public Optional<Workspace> getWorkspaceById(Long id) {
+        return workSpaceRepository.findById(id);
+    }
 
    public WorkspaceService(WorkSpaceRepository workSpaceRepository){
        this.workSpaceRepository=workSpaceRepository;

@@ -3,11 +3,14 @@ package com.ProjectManagementApp.Controller;
 import com.ProjectManagementApp.dto.WorkspaceRequest;
 import com.ProjectManagementApp.dto.WorkspaceResponse;
 import com.ProjectManagementApp.entity.User;
+import com.ProjectManagementApp.entity.Workspace;
 import com.ProjectManagementApp.repository.UserRepository;
 import com.ProjectManagementApp.service.WorkspaceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/workspaces")
@@ -37,5 +40,14 @@ public class WorkspaceController {
         WorkspaceResponse response = workspaceService.createWorkspace(request, currentUser);
 
         return ResponseEntity.ok(response);
+    }
+    @GetMapping
+    public List<Workspace> getAllWorkspace() {
+        return workspaceService.getAllWorkspace();
+    }
+    @GetMapping("/{id}")
+    public Workspace getWorkspaceById(@PathVariable Long id) {
+        return workspaceService.getWorkspaceById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }

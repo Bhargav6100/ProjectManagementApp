@@ -6,8 +6,12 @@ import com.ProjectManagementApp.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/users")
 public class UsersController {
@@ -33,5 +37,14 @@ public class UsersController {
         );
 
         return ResponseEntity.ok(response);
+    }
+    @GetMapping
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }

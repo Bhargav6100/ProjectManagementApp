@@ -1,7 +1,6 @@
 package com.ProjectManagementApp.Controller;
 
 import com.ProjectManagementApp.dto.*;
-import com.ProjectManagementApp.entity.TaskPriority;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.repository.UserRepository;
 import com.ProjectManagementApp.service.TaskService;
@@ -85,5 +84,10 @@ public class TaskController {
     @DeleteMapping("/{taskId}")
     public String deleteTask(@PathVariable Long taskId){
         return taskService.deleteTask(taskId);
+    }
+
+    @GetMapping("/api/users/{userId}/tasks")
+    public List<TaskResponse>getUserTasks(@PathVariable Long userId){
+        return taskService.getTaskAssignedToUser(userId);
     }
 }

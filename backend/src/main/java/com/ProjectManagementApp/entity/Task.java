@@ -24,7 +24,7 @@ public class Task {
     private LocalDateTime createdAt;
     @ManyToOne
     @JoinColumn(name = "assignedToUserId", nullable = false)
-    private User assignedToUserId;
+    private User assignedTo;
     @ManyToOne
     @JoinColumn(name = "assignedBy", nullable = false)
     private User assignedBy;
@@ -43,12 +43,12 @@ public Task(){
 
 }
 
-    public Task(String title, String description, Project project, LocalDateTime createdAt, User assignedToUserId, User assignedBy, LocalDate dueDate, TaskStatus taskStatus, TaskPriority taskPriority) {
+    public Task(String title, String description, Project project, LocalDateTime createdAt, User assignedTo, User assignedBy, LocalDate dueDate, TaskStatus taskStatus, TaskPriority taskPriority) {
         this.title = title;
         this.description = description;
         this.project = project;
         this.createdAt=createdAt;
-        this.assignedToUserId = assignedToUserId;
+        this.assignedTo = assignedTo;
         this.assignedBy = assignedBy;
         this.dueDate = dueDate;
         this.taskStatus = taskStatus;
@@ -103,12 +103,12 @@ public Task(){
         this.project = project;
     }
 
-    public User getAssignedToUserId() {
-        return assignedToUserId;
+    public User getAssignedTo() {
+        return assignedTo;
     }
 
-    public void setAssignedToUserId(User assignedTo) {
-        this.assignedToUserId = assignedTo;
+    public void setAssignedTo(User assignedTo) {
+        this.assignedTo = assignedTo;
     }
 
     public User getAssignedBy() {
@@ -143,7 +143,7 @@ public Task(){
                 ", description='" + description + '\'' +
                 ", project=" + project +
                 ", createdAt=" + createdAt +
-                ", assignedToUserId=" + assignedToUserId +
+                ", assignedToUserId=" + assignedTo +
                 ", assignedBy=" + assignedBy +
                 ", dueDate=" + dueDate +
                 ", taskStatus=" + taskStatus +

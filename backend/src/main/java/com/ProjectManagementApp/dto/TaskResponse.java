@@ -12,17 +12,19 @@ public class TaskResponse {
     private String description;
     private LocalDate dueDate;
     private long assignedToUserId;
+    private String assignedToName;
     private TaskStatus taskStatus;
     private long projectId;
     private TaskPriority taskPriority;
     private LocalDateTime createdAt;
     private String createdBy;
 
-    public TaskResponse(long id, String title, String description, LocalDate dueDate, long assignedToUserId, TaskStatus taskStatus, TaskPriority taskPriority, LocalDateTime createdAt, String createdBy,long projectId) {
+    public TaskResponse(long id, String title, String description, LocalDate dueDate, String assignedToName, long assignedToUserId, TaskStatus taskStatus, TaskPriority taskPriority, LocalDateTime createdAt, String createdBy,long projectId) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
+        this.assignedToName = assignedToName;
         this.assignedToUserId = assignedToUserId;
         this.taskStatus = taskStatus;
         this.taskPriority = taskPriority;
@@ -65,6 +67,18 @@ public class TaskResponse {
 
     public long getAssignedToUserId() {
         return assignedToUserId;
+    }
+
+    public String getAssignedToName() {
+        return assignedToName;
+    }
+
+    public void setAssignedToName(String assignedToName) {
+        this.assignedToName = assignedToName;
+    }
+
+    public void setProjectId(long projectId) {
+        this.projectId = projectId;
     }
 
     public void setAssignedToUserId(long assignedToUserId) {

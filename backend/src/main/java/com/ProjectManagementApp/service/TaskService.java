@@ -4,7 +4,6 @@ import com.ProjectManagementApp.dto.*;
 import com.ProjectManagementApp.entity.Project;
 import com.ProjectManagementApp.entity.Task;
 import com.ProjectManagementApp.entity.User;
-import com.ProjectManagementApp.entity.Workspace;
 import com.ProjectManagementApp.repository.ProjectRepository;
 import com.ProjectManagementApp.repository.TaskRepository;
 import com.ProjectManagementApp.repository.UserRepository;
@@ -25,7 +24,8 @@ public class TaskService {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
     }
-    public TaskResponse getTasksByTaskId(Long taskId){
+
+    public TaskResponse getTasksByTaskId(Long taskId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task with that Id not found"));
         return new TaskResponse(
@@ -33,7 +33,8 @@ public class TaskService {
                 task.getTitle(),
                 task.getDescription(),
                 task.getDueDate(),
-                task.getAssignedToUserId().getId(),
+                task.getAssignedTo().getFirstName() + " " + task.getAssignedTo().getLastName(),
+                task.getAssignedTo().getId(),
                 task.getTaskStatus(),
                 task.getTaskPriority(),
                 task.getCreatedAt(),
@@ -41,7 +42,8 @@ public class TaskService {
                 task.getProject().getId()
         );
     }
-    public List<TaskResponse> getTaskByProjectId(Long projectId){
+
+    public List<TaskResponse> getTaskByProjectId(Long projectId) {
         return taskRepository.findByProjectId(projectId)
                 .stream()
                 .map(task -> new TaskResponse(
@@ -49,7 +51,8 @@ public class TaskService {
                         task.getTitle(),
                         task.getDescription(),
                         task.getDueDate(),
-                        task.getAssignedToUserId().getId(),
+                        task.getAssignedTo().getFirstName() + " " + task.getAssignedTo().getLastName(),
+                        task.getAssignedTo().getId(),
                         task.getTaskStatus(),
                         task.getTaskPriority(),
                         task.getCreatedAt(),
@@ -59,40 +62,42 @@ public class TaskService {
                 .toList();
     }
 
-    public TaskResponse createTask(TaskRequest request, Long projectId, User currentUser){
+    public TaskResponse createTask(TaskRequest request, Long projectId, User currentUser) {
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new RuntimeException("Project not found"));
         User assignedTo = userRepository.findById(request.getAssignedToUserId())
                 .orElseThrow();
 
         Task task = new Task();
-           task.setTitle(request.getTitle());
-           task.setDescription(request.getDescription());
-           task.setDueDate(request.getDueDate());
-           task.setProject(project);
-           task.setAssignedToUserId(assignedTo);
-           task.setTaskStatus(request.getTaskStatus());
-           task.setTaskPriority(request.getTaskPriority());
-           task.setAssignedBy(currentUser);
-           task.setCreatedAt(LocalDateTime.now());
+        task.setTitle(request.getTitle());
+        task.setDescription(request.getDescription());
+        task.setDueDate(request.getDueDate());
+        task.setProject(project);
+        task.setAssignedTo(assignedTo);
+        task.setTaskStatus(request.getTaskStatus());
+        task.setTaskPriority(request.getTaskPriority());
+        task.setAssignedBy(currentUser);
+        task.setCreatedAt(LocalDateTime.now());
 
-           Task saved = taskRepository.save(task);
+        Task saved = taskRepository.save(task);
 
-           return new TaskResponse(
-                   saved.getId(),
-                   saved.getTitle(),
-                   saved.getDescription(),
-                   saved.getDueDate(),
-                   saved.getAssignedToUserId().getId(),
-                   saved.getTaskStatus(),
-                   saved.getTaskPriority(),
-                   saved.getCreatedAt(),
-                   saved.getAssignedBy().getEmail(),
-                   saved.getProject().getId()
-           );
+        return new TaskResponse(
+                saved.getId(),
+                saved.getTitle(),
+                saved.getDescription(),
+                saved.getDueDate(),
+                task.getAssignedTo().getFirstName() + " " + task.getAssignedTo().getLastName(),
+                saved.getAssignedTo().getId(),
+                saved.getTaskStatus(),
+                saved.getTaskPriority(),
+                saved.getCreatedAt(),
+                saved.getAssignedBy().getEmail(),
+                saved.getProject().getId()
+        );
     }
-    public TaskResponse updateTask(TaskRequest request, Long taskId){
+
+    public TaskResponse updateTask(TaskRequest request, Long taskId) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(()->new RuntimeException("Task not found"));
+                .orElseThrow(() -> new RuntimeException("Task not found"));
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
         task.setTaskStatus(request.getTaskStatus());
@@ -103,7 +108,8 @@ public class TaskService {
                 update.getTitle(),
                 update.getDescription(),
                 update.getDueDate(),
-                update.getAssignedToUserId().getId(),
+                task.getAssignedTo().getFirstName() + " " + task.getAssignedTo().getLastName(),
+                update.getAssignedTo().getId(),
                 update.getTaskStatus(),
                 update.getTaskPriority(),
                 update.getCreatedAt(),
@@ -111,9 +117,10 @@ public class TaskService {
                 update.getProject().getId()
         );
     }
-    public TaskResponse updateTaskStatus(TaskStatusPatch request, Long taskId){
+
+    public TaskResponse updateTaskStatus(TaskStatusPatch request, Long taskId) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(()->new RuntimeException("Task not found"));
+                .orElseThrow(() -> new RuntimeException("Task not found"));
         task.setTaskStatus(request.getTaskStatus());
         Task patched = taskRepository.save(task);
         return new TaskResponse(
@@ -121,7 +128,8 @@ public class TaskService {
                 patched.getTitle(),
                 patched.getDescription(),
                 patched.getDueDate(),
-                patched.getAssignedToUserId().getId(),
+                task.getAssignedTo().getFirstName() + " " + task.getAssignedTo().getLastName(),
+                patched.getAssignedTo().getId(),
                 patched.getTaskStatus(),
                 patched.getTaskPriority(),
                 patched.getCreatedAt(),
@@ -129,9 +137,10 @@ public class TaskService {
                 patched.getProject().getId()
         );
     }
-    public TaskResponse updateTaskPriority(TaskPriorityPatch request, Long taskId){
+
+    public TaskResponse updateTaskPriority(TaskPriorityPatch request, Long taskId) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(()->new RuntimeException("Task not found"));
+                .orElseThrow(() -> new RuntimeException("Task not found"));
         task.setTaskPriority(request.getTaskPriority());
         Task patched = taskRepository.save(task);
         return new TaskResponse(
@@ -139,7 +148,8 @@ public class TaskService {
                 patched.getTitle(),
                 patched.getDescription(),
                 patched.getDueDate(),
-                patched.getAssignedToUserId().getId(),
+                task.getAssignedTo().getFirstName() + " " + task.getAssignedTo().getLastName(),
+                patched.getAssignedTo().getId(),
                 patched.getTaskStatus(),
                 patched.getTaskPriority(),
                 patched.getCreatedAt(),
@@ -147,10 +157,30 @@ public class TaskService {
                 patched.getProject().getId()
         );
     }
-    public String deleteTask(Long taskId){
+
+    public String deleteTask(Long taskId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
         taskRepository.delete(task);
         return "Task deleted successfully";
+    }
+
+    public List<TaskResponse> getTaskAssignedToUser(Long userId) {
+        return taskRepository.findByAssignedToId(userId)
+                .stream()
+                .map(task -> new TaskResponse(
+                        task.getId(),
+                        task.getTitle(),
+                        task.getDescription(),
+                        task.getDueDate(),
+                        task.getAssignedTo().getFirstName() + " " + task.getAssignedTo().getLastName(),
+                        task.getAssignedTo().getId(),
+                        task.getTaskStatus(),
+                        task.getTaskPriority(),
+                        task.getCreatedAt(),
+                        task.getAssignedBy().getEmail(),
+                        task.getProject().getId()
+                ))
+                .toList();
     }
 }

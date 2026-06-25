@@ -3,6 +3,7 @@ package com.ProjectManagementApp.Controller;
 import com.ProjectManagementApp.dto.AuthResponse;
 import com.ProjectManagementApp.dto.LoginRequest;
 import com.ProjectManagementApp.dto.RegisterRequest;
+import com.ProjectManagementApp.entity.Roles;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.repository.UserRepository;
 import com.ProjectManagementApp.security.JwtService;
@@ -41,7 +42,7 @@ public class AuthController {
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole("MEMBER");
+        user.setRole(Roles.MEMBER);
         user.setCreatedAt(LocalDateTime.now());
 
         userRepository.save(user);

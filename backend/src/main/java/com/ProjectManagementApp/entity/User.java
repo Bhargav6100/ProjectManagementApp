@@ -21,8 +21,9 @@ public class User {
     @Column(name = "password", nullable = false, length = 100)
     private String password;
 
-    @Column(name = "role", nullable = false, length = 100)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role",nullable = false, length = 100)
+    private Roles role;
 
     @Column(name = "created_at", nullable = false, length = 100)
     private LocalDateTime createdAt;
@@ -30,7 +31,7 @@ public class User {
 
     }
 
-    public User(String firstName, String lastName, String email,String password,String role){
+    public User(String firstName, String lastName, String email,String password,Roles role){
         this.firstName=firstName;
         this.lastName=lastName;
         this.email=email;
@@ -78,11 +79,11 @@ public class User {
         this.password = password;
     }
 
-    public String getRole() {
+    public Roles getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Roles role) {
         this.role = role;
     }
 

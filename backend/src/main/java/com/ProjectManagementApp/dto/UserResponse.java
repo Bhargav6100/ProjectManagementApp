@@ -1,15 +1,17 @@
 package com.ProjectManagementApp.dto;
 
+import com.ProjectManagementApp.entity.Roles;
+
 public class UserResponse {
 private String firstName;
 private String lastName;
     private String email;
-    private String role;
+    private Roles role;
 
     public UserResponse(){
 
     }
-    public UserResponse(String firstName, String lastName, String email, String role) {
+    public UserResponse(String firstName, String lastName, String email, Roles role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -40,11 +42,11 @@ private String lastName;
         this.email = email;
     }
 
-    public String getRole() {
+    public Roles getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Roles role) {
         this.role = role;
     }
 }

@@ -8,8 +8,11 @@ import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.entity.Workspace;
 import com.ProjectManagementApp.repository.ProjectRepository;
 import com.ProjectManagementApp.repository.WorkSpaceRepository;
+import com.ProjectManagementApp.repository.WorkspaceMemberRepository;
+import com.ProjectManagementApp.entity.Roles;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,9 +20,11 @@ import java.util.List;
 public class ProjectService {
  private final ProjectRepository projectRepository;
  private final WorkSpaceRepository workSpaceRepository;
- public ProjectService(ProjectRepository projectRepository, WorkSpaceRepository workSpaceRepository){
+ private final WorkspaceMemberRepository workspaceMemberRepository;
+ public ProjectService(ProjectRepository projectRepository, WorkSpaceRepository workSpaceRepository,WorkspaceMemberRepository workspaceMemberRepository){
      this.projectRepository=projectRepository;
      this.workSpaceRepository = workSpaceRepository;
+     this.workspaceMemberRepository = workspaceMemberRepository;
  }
 
  public List<ProjectResponse> getAllProjectsbyWorkspaceId(Long workspaceId){
@@ -50,29 +55,45 @@ public class ProjectService {
                 project.getCreatedAt()
         );
     }
- public ProjectResponse createProject(ProjectRequest request, Long currentWorkspaceId,User currentUser){
+    public ProjectResponse createProject(ProjectRequest request, Long currentWorkspaceId, User currentUser)
+            throws AccessDeniedException {
 
-     Workspace workspace = workSpaceRepository.findById(currentWorkspaceId)
-             .orElseThrow(() -> new RuntimeException("Workspace not found"));
-     Project project = new Project();
-      project.setName(request.getName());
-      project.setDescription(request.getDescription());
-      project.setStatus(request.getStatus());
-      project.setWorkspace(workspace);
-      project.setCreatedAt(LocalDateTime.now());
-      project.setCreatedBy(currentUser);
-      Project saved = projectRepository.save(project);
+        Workspace workspace = workSpaceRepository.findById(currentWorkspaceId)
+                .orElseThrow(() -> new RuntimeException("Workspace not found"));
 
-      return new ProjectResponse(
-              saved.getId(),
-              saved.getName(),
-              saved.getDescription(),
-              saved.getStatus(),
-              saved.getWorkspace().getId(),
-              saved.getCreatedBy().getEmail(),
-              saved.getCreatedAt()
-      );
- }
+        if (currentUser.getRole().equals(Roles.PROJECT_MANAGER)) {
+
+            boolean belongsToWorkspace = workspaceMemberRepository
+                    .existsByWorkspaceIdAndUserId(currentWorkspaceId, currentUser.getId());
+
+            if (!belongsToWorkspace) {
+                throw new AccessDeniedException("You are not allowed to manage this workspace");
+            }
+
+        } else if (!currentUser.getRole().equals(Roles.ADMIN)) {
+            throw new AccessDeniedException("Only admin or project manager can create projects");
+        }
+
+        Project project = new Project();
+        project.setName(request.getName());
+        project.setDescription(request.getDescription());
+        project.setStatus(request.getStatus());
+        project.setWorkspace(workspace);
+        project.setCreatedAt(LocalDateTime.now());
+        project.setCreatedBy(currentUser);
+
+        Project saved = projectRepository.save(project);
+
+        return new ProjectResponse(
+                saved.getId(),
+                saved.getName(),
+                saved.getDescription(),
+                saved.getStatus(),
+                saved.getWorkspace().getId(),
+                saved.getCreatedBy().getEmail(),
+                saved.getCreatedAt()
+        );
+    }
 public ProjectResponse updateProject(ProjectRequest request,Long projectId){
      Project project = projectRepository.findById(projectId)
              .orElseThrow(()->new RuntimeException("Project not found"));

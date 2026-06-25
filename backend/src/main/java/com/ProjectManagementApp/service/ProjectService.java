@@ -94,9 +94,21 @@ public class ProjectService {
                 saved.getCreatedAt()
         );
     }
-public ProjectResponse updateProject(ProjectRequest request,Long projectId){
+public ProjectResponse updateProject(ProjectRequest request,Long projectId, User currentUser) throws AccessDeniedException {
      Project project = projectRepository.findById(projectId)
              .orElseThrow(()->new RuntimeException("Project not found"));
+    if (currentUser.getRole().equals(Roles.PROJECT_MANAGER)) {
+
+        boolean isProjectCreator = projectRepository
+                .existsByIdAndCreatedById(project.getId(),currentUser.getId());
+
+        if (!isProjectCreator) {
+            throw new AccessDeniedException("You are not allowed to manage this project");
+        }
+
+    } else if (!currentUser.getRole().equals(Roles.ADMIN)) {
+        throw new AccessDeniedException("Only admin or creator of this project can update projects");
+    }
          project.setName(request.getName());
          project.setDescription(request.getDescription());
          project.setStatus(request.getStatus());
@@ -113,12 +125,25 @@ public ProjectResponse updateProject(ProjectRequest request,Long projectId){
  }
     public ProjectResponse updateProjectStatus(
             ProjectStatusPatch request,
-            Long projectId
-    ) {
+            Long projectId,
+            User currentUser
+    ) throws AccessDeniedException {
 
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
+        if (currentUser.getRole().equals(Roles.PROJECT_MANAGER)) {
+
+            boolean isProjectCreator = projectRepository
+                    .existsByIdAndCreatedById(project.getId(),currentUser.getId());
+
+            if (!isProjectCreator) {
+                throw new AccessDeniedException("You are not allowed to manage this project");
+            }
+
+        } else if (!currentUser.getRole().equals(Roles.ADMIN)) {
+            throw new AccessDeniedException("Only admin or creator of this project can update status of the projects");
+        }
         project.setStatus(request.getProjectStatus());
 
         Project patched = projectRepository.save(project);
@@ -133,9 +158,21 @@ public ProjectResponse updateProject(ProjectRequest request,Long projectId){
                 patched.getCreatedAt()
         );
     }
-    public String deleteProject(Long projectId){
+    public String deleteProject(Long projectId,User currentUser) throws AccessDeniedException {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
+        if (currentUser.getRole().equals(Roles.PROJECT_MANAGER)) {
+
+            boolean isProjectCreator = projectRepository
+                    .existsByIdAndCreatedById(project.getId(),currentUser.getId());
+
+            if (!isProjectCreator) {
+                throw new AccessDeniedException("You are not allowed to delete this project");
+            }
+
+        } else if (!currentUser.getRole().equals(Roles.ADMIN)) {
+            throw new AccessDeniedException("Only admin or creator of this project can delete the projects");
+        }
         projectRepository.delete(project);
         return "Project deleted successfully";
     }

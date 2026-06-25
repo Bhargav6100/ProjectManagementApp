@@ -48,29 +48,29 @@ public class ProjectController {
    @PutMapping("/projects/{projectId}")
    public ResponseEntity<ProjectResponse> updateProject(@PathVariable Long projectId,
                                                         @Valid @RequestBody ProjectRequest request,
-                                                        Authentication authentication){
+                                                        Authentication authentication) throws AccessDeniedException {
        String email =authentication.getName();
        User currentUser = userRepository.findByEmail(email)
                .orElseThrow();
 
-       ProjectResponse response = projectService.updateProject(request,projectId);
+       ProjectResponse response = projectService.updateProject(request,projectId,currentUser);
        return ResponseEntity.ok(response);
    }
     @PatchMapping("/projects/{projectId}/status")
-    public ResponseEntity<ProjectResponse> updateProjectStatus(
-            @PathVariable Long projectId,
-            @Valid @RequestBody ProjectStatusPatch request
-    ) {
+    public ResponseEntity<ProjectResponse> updateProjectStatus(@PathVariable Long projectId, @Valid @RequestBody ProjectStatusPatch request,
+            Authentication authentication) throws AccessDeniedException {
 
-        return ResponseEntity.ok(
-                projectService.updateProjectStatus(
-                        request,
-                        projectId
-                )
+        String email = authentication.getName();
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow();
+        return ResponseEntity.ok(projectService.updateProjectStatus(request, projectId, currentUser)
         );
     }
     @DeleteMapping("/{projectId}")
-    public String deleteProject(@PathVariable Long projectId){
-        return projectService.deleteProject(projectId);
+    public String deleteProject(@PathVariable Long projectId,Authentication authentication) throws AccessDeniedException {
+        String email = authentication.getName();
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow();
+        return projectService.deleteProject(projectId,currentUser);
     }
 }

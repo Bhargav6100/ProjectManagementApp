@@ -4,9 +4,11 @@ import com.ProjectManagementApp.dto.WorkspaceRequest;
 import com.ProjectManagementApp.dto.WorkspaceResponse;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.entity.Workspace;
+import com.ProjectManagementApp.exception.ResourceNotFoundException;
 import com.ProjectManagementApp.repository.WorkSpaceRepository;
 import org.springframework.stereotype.Service;
-import java.util.Optional;
+
+import java.lang.module.ResolutionException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -38,7 +40,7 @@ public class WorkspaceService {
     public WorkspaceResponse getWorkspaceById(Long id) {
 
         Workspace workspace= workSpaceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Workspace not found"));
+                .orElseThrow(() -> new ResolutionException("Workspace not found"));
         return new WorkspaceResponse(
                 workspace.getId(),
                 workspace.getName(),
@@ -64,7 +66,7 @@ public class WorkspaceService {
    }
    public WorkspaceResponse updateWorkspace(WorkspaceRequest request,Long workspaceId){
        Workspace workspace = workSpaceRepository.findById(workspaceId)
-               .orElseThrow(() -> new RuntimeException("Workspace not found"));
+               .orElseThrow(() -> new ResourceNotFoundException("Workspace not found"));
         workspace.setName(request.getName());
         workspace.setDescription(request.getDescription());
         Workspace updated = workSpaceRepository.save(workspace);
@@ -78,7 +80,7 @@ public class WorkspaceService {
     }
     public String deleteWorkspace(Long workspaceId){
         Workspace workspace = workSpaceRepository.findById(workspaceId)
-                .orElseThrow(() -> new RuntimeException("Workspace not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Workspace not found"));
         workSpaceRepository.delete(workspace);
         return "Workspace deleted successfully";
     }

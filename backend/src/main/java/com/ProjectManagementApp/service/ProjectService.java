@@ -6,6 +6,7 @@ import com.ProjectManagementApp.dto.ProjectStatusPatch;
 import com.ProjectManagementApp.entity.Project;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.entity.Workspace;
+import com.ProjectManagementApp.exception.ResourceNotFoundException;
 import com.ProjectManagementApp.repository.ProjectRepository;
 import com.ProjectManagementApp.repository.WorkSpaceRepository;
 import com.ProjectManagementApp.repository.WorkspaceMemberRepository;
@@ -43,7 +44,7 @@ public class ProjectService {
  }
     public ProjectResponse getProjectById(Long id) {
         Project project =  projectRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
         return new ProjectResponse(
                 project.getId(),
                 project.getName(),
@@ -58,7 +59,7 @@ public class ProjectService {
             throws AccessDeniedException {
 
         Workspace workspace = workSpaceRepository.findById(currentWorkspaceId)
-                .orElseThrow(() -> new RuntimeException("Workspace not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
 
         if (currentUser.getRole().equals(Roles.PROJECT_MANAGER)) {
 
@@ -95,7 +96,7 @@ public class ProjectService {
     }
 public ProjectResponse updateProject(ProjectRequest request,Long projectId, User currentUser) throws AccessDeniedException {
      Project project = projectRepository.findById(projectId)
-             .orElseThrow(()->new RuntimeException("Project not found"));
+             .orElseThrow(()->new ResourceNotFoundException("Project not found"));
     if (currentUser.getRole().equals(Roles.PROJECT_MANAGER)) {
 
         boolean isProjectCreator = projectRepository
@@ -129,7 +130,7 @@ public ProjectResponse updateProject(ProjectRequest request,Long projectId, User
     ) throws AccessDeniedException {
 
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
 
         if (currentUser.getRole().equals(Roles.PROJECT_MANAGER)) {
 
@@ -159,7 +160,7 @@ public ProjectResponse updateProject(ProjectRequest request,Long projectId, User
     }
     public String deleteProject(Long projectId,User currentUser) throws AccessDeniedException {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
         if (currentUser.getRole().equals(Roles.PROJECT_MANAGER)) {
 
             boolean isProjectCreator = projectRepository

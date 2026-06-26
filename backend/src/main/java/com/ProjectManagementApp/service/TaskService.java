@@ -5,6 +5,7 @@ import com.ProjectManagementApp.entity.Project;
 import com.ProjectManagementApp.entity.Roles;
 import com.ProjectManagementApp.entity.Task;
 import com.ProjectManagementApp.entity.User;
+import com.ProjectManagementApp.exception.ResourceNotFoundException;
 import com.ProjectManagementApp.repository.ProjectRepository;
 import com.ProjectManagementApp.repository.TaskRepository;
 import com.ProjectManagementApp.repository.UserRepository;
@@ -32,7 +33,7 @@ public class TaskService {
 
     public TaskResponse getTasksByTaskId(Long taskId) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new RuntimeException("Task with that Id not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Task with that Id not found"));
         return new TaskResponse(
                 task.getId(),
                 task.getTitle(),
@@ -68,7 +69,7 @@ public class TaskService {
     }
 
     public TaskResponse createTask(TaskRequest request, Long projectId, User currentUser) throws AccessDeniedException {
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new RuntimeException("Project not found"));
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ResourceNotFoundException("Project not found"));
         User assignedTo = userRepository.findById(request.getAssignedToUserId())
                 .orElseThrow();
         Long workspaceId = project.getWorkspace().getId();
@@ -126,7 +127,7 @@ public class TaskService {
 
     public TaskResponse updateTask(TaskRequest request, Long taskId, User currentUser) throws AccessDeniedException {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
         if (currentUser.getRole().equals(Roles.PROJECT_MANAGER)) {
 
             boolean isTaskAssigner = taskRepository
@@ -160,7 +161,7 @@ public class TaskService {
 
     public TaskResponse updateTaskStatus(TaskStatusPatch request, Long taskId, User currentUser) throws AccessDeniedException {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
         if (currentUser.getRole().equals(Roles.PROJECT_MANAGER)) {
 
             boolean isTaskAssigner = taskRepository
@@ -198,7 +199,7 @@ public class TaskService {
 
     public TaskResponse updateTaskPriority(TaskPriorityPatch request, Long taskId, User currentUser) throws AccessDeniedException {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
         if (currentUser.getRole().equals(Roles.PROJECT_MANAGER)) {
 
             boolean isTaskAssigner = taskRepository
@@ -230,7 +231,7 @@ public class TaskService {
 
     public String deleteTask(Long taskId, User currentUser) throws AccessDeniedException {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
         if (currentUser.getRole().equals(Roles.PROJECT_MANAGER)) {
 
             boolean isTaskAssigner = taskRepository

@@ -4,6 +4,8 @@ import com.ProjectManagementApp.dto.WorkspaceMemberResponse;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.entity.Workspace;
 import com.ProjectManagementApp.entity.WorkspaceMember;
+import com.ProjectManagementApp.exception.DuplicateResourceException;
+import com.ProjectManagementApp.exception.ResourceNotFoundException;
 import com.ProjectManagementApp.repository.UserRepository;
 import com.ProjectManagementApp.repository.WorkSpaceRepository;
 import com.ProjectManagementApp.repository.WorkspaceMemberRepository;
@@ -23,16 +25,16 @@ public class WorkspaceMemberService {
     public WorkspaceMemberResponse addMember(Long workspaceId, Long userId) {
 
         Workspace workspace = workSpaceRepository.findById(workspaceId)
-                .orElseThrow(() -> new RuntimeException("Workspace not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Workspace not found"));
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         boolean alreadyMember = workspaceMemberRepository
                 .existsByWorkspaceIdAndUserId(workspaceId, userId);
 
         if (alreadyMember) {
-            throw new RuntimeException("User is already a member of this workspace");
+            throw new DuplicateResourceException("User is already a member of this workspace");
         }
 
         WorkspaceMember member = new WorkspaceMember();

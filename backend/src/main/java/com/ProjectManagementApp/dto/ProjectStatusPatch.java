@@ -5,20 +5,20 @@ import jakarta.validation.constraints.NotNull;
 
 public class ProjectStatusPatch {
  @NotNull(message = "Project status is required")
- private ProjectStatus projectStatus;
+ private ProjectStatus status;
 
  public ProjectStatusPatch(){
 
  }
  public ProjectStatusPatch(ProjectStatus projectStatus){
-  this.projectStatus=projectStatus;
+  this.status=projectStatus;
  }
 
  public ProjectStatus getProjectStatus() {
-  return projectStatus;
+  return status;
  }
 
  public void setProjectStatus(ProjectStatus projectStatus) {
-  this.projectStatus = projectStatus;
+  this.status = projectStatus;
  }
 }

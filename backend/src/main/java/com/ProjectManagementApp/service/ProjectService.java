@@ -41,7 +41,6 @@ public class ProjectService {
              ))
              .toList();
  }
-
     public ProjectResponse getProjectById(Long id) {
         Project project =  projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
@@ -101,12 +100,13 @@ public ProjectResponse updateProject(ProjectRequest request,Long projectId, User
 
         boolean isProjectCreator = projectRepository
                 .existsByIdAndCreatedById(project.getId(),currentUser.getId());
-
+      System.out.println(isProjectCreator);
         if (!isProjectCreator) {
             throw new AccessDeniedException("You are not allowed to manage this project");
         }
 
-    } else if (!currentUser.getRole().equals(Roles.ADMIN)) {
+    }
+    else if (!currentUser.getRole().equals(Roles.ADMIN)) {
         throw new AccessDeniedException("Only admin or creator of this project can update projects");
     }
          project.setName(request.getName());

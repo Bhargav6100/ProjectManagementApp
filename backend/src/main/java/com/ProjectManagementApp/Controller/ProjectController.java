@@ -66,7 +66,7 @@ public class ProjectController {
         return ResponseEntity.ok(projectService.updateProjectStatus(request, projectId, currentUser)
         );
     }
-    @DeleteMapping("/{projectId}")
+    @DeleteMapping("/projects/{projectId}")
     public String deleteProject(@PathVariable Long projectId,Authentication authentication) throws AccessDeniedException {
         String email = authentication.getName();
         User currentUser = userRepository.findByEmail(email)

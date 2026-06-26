@@ -31,9 +31,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/auth/register").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST,"/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/workspaces").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/workspaces/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/workspaces/**").hasRole("ADMIN")
 
+                        .requestMatchers(HttpMethod.PUT, "/api/workspaces/**").hasAnyRole("ADMIN", "PROJECT_MANAGER")
                         .requestMatchers(HttpMethod.POST, "/api/workspaces/*/projects").hasAnyRole("ADMIN", "PROJECT_MANAGER")
                         .requestMatchers(HttpMethod.POST, "/api/projects/*/tasks").hasAnyRole("ADMIN", "PROJECT_MANAGER")
 

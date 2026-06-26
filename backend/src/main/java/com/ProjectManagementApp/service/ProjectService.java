@@ -100,7 +100,6 @@ public ProjectResponse updateProject(ProjectRequest request,Long projectId, User
 
         boolean isProjectCreator = projectRepository
                 .existsByIdAndCreatedById(project.getId(),currentUser.getId());
-      System.out.println(isProjectCreator);
         if (!isProjectCreator) {
             throw new AccessDeniedException("You are not allowed to manage this project");
         }

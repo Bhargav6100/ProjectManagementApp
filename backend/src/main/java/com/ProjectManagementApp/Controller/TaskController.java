@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
@@ -20,7 +21,7 @@ public class TaskController {
         this.userRepository = userRepository;
     }
     @PostMapping("/api/projects/{projectId}/tasks")
-    public ResponseEntity<TaskResponse> createTask(@PathVariable Long projectId, @Valid @RequestBody TaskRequest request, Authentication authentication){
+    public ResponseEntity<TaskResponse> createTask(@PathVariable Long projectId, @Valid @RequestBody TaskRequest request, Authentication authentication) throws AccessDeniedException {
         String email = authentication.getName();
 
         User currentUser = userRepository.findByEmail(email)
@@ -47,43 +48,49 @@ public class TaskController {
     @PutMapping("/api/tasks/{taskId}")
     public ResponseEntity<TaskResponse> updateTask(@PathVariable Long taskId,
                                                    @Valid @RequestBody TaskRequest request,
-                                                         Authentication authentication){
+                                                         Authentication authentication) throws AccessDeniedException {
         String email =authentication.getName();
         User currentUser = userRepository.findByEmail(email)
                 .orElseThrow();
 
-        TaskResponse response = taskService.updateTask(request,taskId);
+        TaskResponse response = taskService.updateTask(request,taskId,currentUser);
         return ResponseEntity.ok(response);
     }
     @PatchMapping("/api/tasks/{taskId}/status")
-    public ResponseEntity<TaskResponse> updateTaskStatus(
-            @PathVariable Long taskId,
-            @Valid @RequestBody TaskStatusPatch request
-    ) {
+    public ResponseEntity<TaskResponse> updateTaskStatus(@PathVariable Long taskId,
+            @Valid @RequestBody TaskStatusPatch request,
+            Authentication authentication) throws AccessDeniedException {
+
+        String email =authentication.getName();
+        User currentUser = userRepository.findByEmail(email).orElseThrow();
 
         return ResponseEntity.ok(
                 taskService.updateTaskStatus(
                         request,
-                        taskId
+                        taskId,
+                        currentUser
                 )
         );
     }
     @PatchMapping("/api/tasks/{taskId}/priority")
-    public ResponseEntity<TaskResponse> updateTaskPriority(
-            @PathVariable Long taskId,
-            @Valid @RequestBody TaskPriorityPatch request
-    ) {
-
+    public ResponseEntity<TaskResponse> updateTaskPriority(@PathVariable Long taskId,
+            @Valid @RequestBody TaskPriorityPatch request, Authentication authentication
+    ) throws AccessDeniedException {
+        String email =authentication.getName();
+        User currentUser = userRepository.findByEmail(email).orElseThrow();
         return ResponseEntity.ok(
                 taskService.updateTaskPriority(
                         request,
-                        taskId
+                        taskId,
+                        currentUser
                 )
         );
     }
     @DeleteMapping("/{taskId}")
-    public String deleteTask(@PathVariable Long taskId){
-        return taskService.deleteTask(taskId);
+    public String deleteTask(@PathVariable Long taskId,Authentication authentication) throws AccessDeniedException {
+        String email =authentication.getName();
+        User currentUser = userRepository.findByEmail(email).orElseThrow();
+        return taskService.deleteTask(taskId,currentUser);
     }
 
     @GetMapping("/api/users/{userId}/tasks")

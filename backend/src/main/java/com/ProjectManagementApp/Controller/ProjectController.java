@@ -38,12 +38,33 @@ public class ProjectController {
       return ResponseEntity.ok(response);
   }
   @GetMapping("/{workspaceId}/projects")
-    public ResponseEntity<List<ProjectResponse>> findAllProjectsByWorkSpaceId(@PathVariable Long workspaceId){
-      return ResponseEntity.ok(projectService.getAllProjectsbyWorkspaceId(workspaceId));
+    public ResponseEntity<List<ProjectResponse>> findAllProjectsByWorkSpaceId(@PathVariable Long workspaceId,Authentication authentication) throws AccessDeniedException {
+      String email = authentication.getName();
+
+      User currentUser = userRepository.findByEmail(email)
+              .orElseThrow();
+
+      return ResponseEntity.ok(projectService.getAllProjectsbyWorkspaceId(workspaceId,currentUser));
   }
     @GetMapping("/projects/{id}")
-    public ProjectResponse findProjectById(@PathVariable Long id){
-        return projectService.getProjectById(id);
+    public ProjectResponse findProjectById(@PathVariable Long id,Authentication authentication) throws AccessDeniedException {
+        String email = authentication.getName();
+
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow();
+
+
+        return projectService.getProjectById(id,currentUser);
+    }
+    @GetMapping("/projects/my-projects")
+    public ResponseEntity<List<ProjectResponse>> getMyProjects(Authentication authentication) {
+
+        String email = authentication.getName();
+
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow();
+
+        return ResponseEntity.ok(projectService.getMyProjects(currentUser));
     }
    @PutMapping("/projects/{projectId}")
    public ResponseEntity<ProjectResponse> updateProject(@PathVariable Long projectId,

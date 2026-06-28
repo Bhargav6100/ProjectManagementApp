@@ -51,7 +51,7 @@ public class WorkspaceController {
         return workspaceService.getAllWorkspace(currentUser);
     }
     @GetMapping("/my-workspaces")
-    public List<WorkspaceMemberResponse> getMyWorkspaces(Authentication authentication) throws AccessDeniedException {
+    public List<WorkspaceResponse> getMyWorkspaces(Authentication authentication) throws AccessDeniedException {
         String email =authentication.getName();
         User currentUser = userRepository.findByEmail(email)
                 .orElseThrow();

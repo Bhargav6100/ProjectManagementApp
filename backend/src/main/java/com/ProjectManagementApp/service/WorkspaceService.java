@@ -1,7 +1,6 @@
 package com.ProjectManagementApp.service;
 
-
-import com.ProjectManagementApp.dto.WorkspaceMemberResponse;
+import com.ProjectManagementApp.entity.WorkspaceMember;
 import com.ProjectManagementApp.dto.WorkspaceRequest;
 import com.ProjectManagementApp.dto.WorkspaceResponse;
 import com.ProjectManagementApp.entity.Roles;
@@ -46,17 +45,17 @@ public class WorkspaceService {
                 .toList();
     }
 
-    public List<WorkspaceMemberResponse> getMyWorkspaces(User currentUser) throws AccessDeniedException {
+    public List<WorkspaceResponse> getMyWorkspaces(User currentUser) {
+
         return workspaceMemberRepository.findByUserId(currentUser.getId())
                 .stream()
-                .map(member -> new WorkspaceMemberResponse(
-                        member.getId(),
-                        member.getWorkspace().getName(),
-                        member.getUser().getFirstName() + member.getUser().getLastName(),
-                        member.getJoinedAt(),
-                        member.getWorkspace().getId(),
-                        member.getUser().getEmail(),
-                        member.getUser().getRole()
+                .map(WorkspaceMember::getWorkspace)
+                .map(workspace -> new WorkspaceResponse(
+                        workspace.getId(),
+                        workspace.getName(),
+                        workspace.getDescription(),
+                        workspace.getCreatedAt(),
+                        workspace.getCreatedBy().getEmail()
                 ))
                 .toList();
     }

@@ -28,23 +28,24 @@ public class ProjectService {
      this.workspaceMemberRepository = workspaceMemberRepository;
  }
 
- public List<ProjectResponse> getAllProjectsbyWorkspaceId(Long workspaceId){
-     return projectRepository.findByWorkspaceId(workspaceId)
-             .stream()
-             .map(project -> new ProjectResponse(
-                     project.getId(),
-                     project.getName(),
-                     project.getDescription(),
-                     project.getStatus(),
-                     project.getWorkspace().getId(),
-                     project.getCreatedBy().getEmail(),
-                     project.getCreatedAt()
-             ))
-             .toList();
- }
-    public ProjectResponse getProjectById(Long id) {
-        Project project =  projectRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
+    public List<ProjectResponse> getAllProjectsbyWorkspaceId(Long workspaceId, User currentUser)
+            throws AccessDeniedException {
+
+        if (!currentUser.getRole().equals(Roles.ADMIN)) {
+            boolean isMember = workspaceMemberRepository
+                    .existsByWorkspaceIdAndUserId(workspaceId, currentUser.getId());
+
+            if (!isMember) {
+                throw new AccessDeniedException("You are not allowed to view projects in this workspace");
+            }
+        }
+
+        return projectRepository.findByWorkspaceId(workspaceId)
+                .stream()
+                .map(this::mapToProjectResponse)
+                .toList();
+    }
+    private ProjectResponse mapToProjectResponse(Project project) {
         return new ProjectResponse(
                 project.getId(),
                 project.getName(),
@@ -55,11 +56,50 @@ public class ProjectService {
                 project.getCreatedAt()
         );
     }
+    public List<ProjectResponse> getMyProjects(User currentUser) {
+
+        if (currentUser.getRole().equals(Roles.ADMIN)) {
+            return projectRepository.findAll()
+                    .stream()
+                    .map(this::mapToProjectResponse)
+                    .toList();
+        }
+
+        List<Long> workspaceIds = workspaceMemberRepository
+                .findByUserId(currentUser.getId())
+                .stream()
+                .map(member -> member.getWorkspace().getId())
+                .toList();
+
+        return projectRepository.findByWorkspaceIdIn(workspaceIds)
+                .stream()
+                .map(this::mapToProjectResponse)
+                .toList();
+    }
+    public ProjectResponse getProjectById(Long id, User currentUser)
+            throws AccessDeniedException {
+
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
+
+        Long workspaceId = project.getWorkspace().getId();
+
+        if (!currentUser.getRole().equals(Roles.ADMIN)) {
+            boolean isMember = workspaceMemberRepository
+                    .existsByWorkspaceIdAndUserId(workspaceId, currentUser.getId());
+
+            if (!isMember) {
+                throw new AccessDeniedException("You are not allowed to view this project");
+            }
+        }
+
+        return mapToProjectResponse(project);
+    }
     public ProjectResponse createProject(ProjectRequest request, Long currentWorkspaceId, User currentUser)
             throws AccessDeniedException {
 
         Workspace workspace = workSpaceRepository.findById(currentWorkspaceId)
-                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Workspace not found"));
 
         if (currentUser.getRole().equals(Roles.PROJECT_MANAGER)) {
 

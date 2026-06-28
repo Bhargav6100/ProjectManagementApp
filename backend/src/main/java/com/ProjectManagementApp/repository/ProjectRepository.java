@@ -8,4 +8,6 @@ import java.util.List;
 public interface ProjectRepository extends JpaRepository<Project,Long> {
  List<Project> findByWorkspaceId(Long workspaceId);
  boolean existsByIdAndCreatedById(Long projectId,Long userId);
+
+ List<Project> findByWorkspaceIdIn(List<Long> workspaceIds);
 }

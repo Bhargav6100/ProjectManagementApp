@@ -10,9 +10,10 @@ import com.ProjectManagementApp.repository.ProjectRepository;
 import com.ProjectManagementApp.repository.TaskRepository;
 import com.ProjectManagementApp.repository.UserRepository;
 import com.ProjectManagementApp.repository.WorkspaceMemberRepository;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,9 +32,7 @@ public class TaskService {
         this.workspaceMemberRepository = workspaceMemberRepository;
     }
 
-    public TaskResponse getTasksByTaskId(Long taskId) {
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new ResourceNotFoundException("Task with that Id not found"));
+    private TaskResponse mapToTaskResponse(Task task) {
         return new TaskResponse(
                 task.getId(),
                 task.getTitle(),
@@ -48,23 +47,53 @@ public class TaskService {
                 task.getProject().getId()
         );
     }
+    public TaskResponse getTasksByTaskId(Long taskId, User currentUser) throws AccessDeniedException {
 
-    public List<TaskResponse> getTaskByProjectId(Long projectId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
+
+        if (!currentUser.getRole().equals(Roles.ADMIN)) {
+
+            Long workspaceId = task.getProject().getWorkspace().getId();
+
+            boolean isWorkspaceMember = workspaceMemberRepository
+                    .existsByWorkspaceIdAndUserId(workspaceId, currentUser.getId());
+
+            boolean isAssignedTo = taskRepository
+                    .existsByIdAndAssignedToId(taskId, currentUser.getId());
+
+            boolean isAssignedBy = taskRepository
+                    .existsByIdAndAssignedById(taskId, currentUser.getId());
+
+            if (!isWorkspaceMember && !isAssignedTo && !isAssignedBy) {
+                throw new AccessDeniedException("You are not allowed to view this task");
+            }
+        }
+
+        return mapToTaskResponse(task);
+    }
+
+    public List<TaskResponse> getTaskByProjectId(Long projectId, User currentUser)
+            throws AccessDeniedException {
+
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
+
+        Long workspaceId = project.getWorkspace().getId();
+
+        if (!currentUser.getRole().equals(Roles.ADMIN)) {
+
+            boolean isWorkspaceMember = workspaceMemberRepository
+                    .existsByWorkspaceIdAndUserId(workspaceId, currentUser.getId());
+
+            if (!isWorkspaceMember) {
+                throw new AccessDeniedException("You are not allowed to view tasks in this project");
+            }
+        }
+
         return taskRepository.findByProjectId(projectId)
                 .stream()
-                .map(task -> new TaskResponse(
-                        task.getId(),
-                        task.getTitle(),
-                        task.getDescription(),
-                        task.getDueDate(),
-                        task.getAssignedTo().getFirstName() + " " + task.getAssignedTo().getLastName(),
-                        task.getAssignedTo().getId(),
-                        task.getTaskStatus(),
-                        task.getTaskPriority(),
-                        task.getCreatedAt(),
-                        task.getAssignedBy().getEmail(),
-                        task.getProject().getId()
-                ))
+                .map(this::mapToTaskResponse)
                 .toList();
     }
 
@@ -264,6 +293,13 @@ public class TaskService {
                         task.getAssignedBy().getEmail(),
                         task.getProject().getId()
                 ))
+                .toList();
+    }
+    public List<TaskResponse> getMyAssignedTasks(User currentUser) {
+
+        return taskRepository.findByAssignedToId(currentUser.getId())
+                .stream()
+                .map(this::mapToTaskResponse)
                 .toList();
     }
 }

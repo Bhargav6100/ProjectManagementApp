@@ -11,9 +11,10 @@ import com.ProjectManagementApp.repository.ProjectRepository;
 import com.ProjectManagementApp.repository.WorkSpaceRepository;
 import com.ProjectManagementApp.repository.WorkspaceMemberRepository;
 import com.ProjectManagementApp.entity.Roles;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
+
 import java.time.LocalDateTime;
 import java.util.List;
 

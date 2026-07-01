@@ -1,6 +1,5 @@
 package com.ProjectManagementApp.dto;
 
-import com.ProjectManagementApp.entity.Project;
 import com.ProjectManagementApp.entity.ProjectStatus;
 
 import java.time.LocalDateTime;

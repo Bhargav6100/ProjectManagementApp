@@ -1,28 +1,35 @@
-import { AppBar, Toolbar, Typography, Button, IconButton } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 
-export default function Dashboard() {
- const navigate = useNavigate();
- const {logout,user} = useAuth();
-  const handleLogOut = ()=>{
-      logout();
-    navigate("/login")
+
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import AdminPanel from "./AdminPanel";
+// import ProjectManagerPanel from "./ProjectManagerPanel";
+// import MemberPanel from "./MemberPanel";
+
+export default function Dashboard(): React.JSX.Element {
+  const { user, isAuthenticated } = useAuth();
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
   }
-  return (
-    <AppBar position="static">
-      <Toolbar>
-        <IconButton size="large" edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }}>
-          <MenuIcon />
-        </IconButton>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          My App
-        </Typography>
-        <p>Hello, {user?.firstName}</p>
-        <Button color="inherit" onClick={handleLogOut}>Log out</Button>
-      </Toolbar>
-    </AppBar>
-  );
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+
+  if (user.role === "ADMIN") {
+    return <AdminPanel />;
+  }
+
+  // if (user.role === "PROJECT_MANAGER") {
+  //   return <div>Project Manager Panel</div>;
+  //   // later: return <ProjectManagerPanel />;
+  // }
+
+  // if (user.role === "MEMBER") {
+  //   return <div>Member Panel</div>;
+  //   // later: return <MemberPanel />;
+  // }
+
+  return <div>Unauthorized role</div>;
 }
 

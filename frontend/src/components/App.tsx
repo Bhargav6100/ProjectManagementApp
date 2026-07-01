@@ -12,11 +12,12 @@ function App() {
     <Route path="/login" Component={Login}/>
     <Route path="/signup" Component={Register}/> 
     <Route element={<ProtectedRoute />}>
-        <Route path="/dashboard" element={<Dashboard />} />
+        {/* <Route path="/admin" element={<AdminPanel />}> */}
+  <Route path="/dashboard" element={<Dashboard />} />
+</Route>
         {/* <Route path="/workspaces" element={<WorkspaceList />} />
         <Route path="/projects" element={<ProjectList />} />
         <Route path="/tasks" element={<TaskList />} /> */}
-    </Route>
     </Routes>
     </>
   )

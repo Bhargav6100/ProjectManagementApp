@@ -1,11 +1,31 @@
 import React,{useState} from 'react'
+import { useNavigate } from 'react-router-dom';
 import { Container, Paper, TextField, Button, Typography, Box } from '@mui/material';
-import { Link } from 'react-router-dom';
+import MenuItem from "@mui/material/MenuItem";
+import { registerUser } from '../../services/authServices';
 const Register = () => {
+    const navigate = useNavigate();
+    type UserRole = "ADMIN" | "PROJECT_MANAGER" | "MEMBER";
      const [firstName, setFirstName] = useState<string>('');
      const [lastName, setLastName] = useState<string>('');
      const [email, setEmail] = useState<string>('');
      const [password, setPassword] = useState<string>('');  
+     const [role, setRole] = useState<UserRole>("MEMBER");
+
+     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  e.preventDefault();
+
+  await registerUser({
+    firstName,
+    lastName,
+    email,
+    password,
+    role,
+  });
+
+  alert("User created successfully");
+  navigate("/dashboard")
+};
       
   return (
     <>
@@ -14,7 +34,7 @@ const Register = () => {
         <Typography variant="h5" align="center" gutterBottom>
           Register
         </Typography>
-        <Box component="form" sx={{ mt: 1 }}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
@@ -55,6 +75,21 @@ const Register = () => {
             value={password}
             onChange={(e: React.ChangeEvent<HTMLInputElement>): void => setPassword(e.target.value)}
           />
+          <TextField
+              margin="normal"
+              required
+              fullWidth
+              select
+              label="Role"
+              value={role}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+              setRole(e.target.value as UserRole)
+              }
+            >
+  <MenuItem value="ADMIN">Admin</MenuItem>
+  <MenuItem value="PROJECT_MANAGER">Project Manager</MenuItem>
+  <MenuItem value="MEMBER">Member</MenuItem>
+</TextField>
           <Button
             type="submit"
             fullWidth

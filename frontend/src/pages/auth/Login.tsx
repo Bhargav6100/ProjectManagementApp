@@ -3,6 +3,7 @@ import { Container, Paper, TextField, Button, Typography, Box } from '@mui/mater
 import { loginUser,getCurrentUser } from '../../services/authServices';
 import { useNavigate } from 'react-router-dom';
 import { useAuth} from '../../context/AuthContext';
+import { Link } from 'react-router-dom';
 export default function Login(): React.JSX.Element {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');  
@@ -23,6 +24,7 @@ export default function Login(): React.JSX.Element {
 };
 
   return (
+    <>
     <Container maxWidth="xs">
       <Paper elevation={3} sx={{ padding: 4, marginTop: 8 }}>
         <Typography variant="h5" align="center" gutterBottom>
@@ -60,5 +62,12 @@ export default function Login(): React.JSX.Element {
         </Box>
       </Paper>
     </Container>
+    {/* <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+  Don't have an account?{' '}
+  <Link 
+    to="/signup">Sign up
+  </Link>
+</Typography> */}
+  </>
   );
 }

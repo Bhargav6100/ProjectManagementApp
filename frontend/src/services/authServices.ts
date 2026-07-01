@@ -1,23 +1,31 @@
 import axios from "axios";
 import api from "../api/axios";
+import type { Roles } from "../utils/Roles";
 
-interface UserPayload {
+interface LoginRequest {
   email: string;
   password: string;
 }
 
-interface UserResponse {
+interface LoginResponse {
  token:string
 }
 
-export async function loginUser(email:string,password:string): Promise<UserResponse> {
-  const payload: UserPayload = {
+interface UserResponse {
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: Roles;
+}
+
+export async function loginUser(email:string,password:string): Promise<LoginResponse> {
+  const payload: LoginRequest = {
     email,
     password
   };
 
   try {
-    const response = await api.post<UserResponse>(
+    const response = await api.post<LoginResponse>(
       'api/auth/login', 
       payload
     );
@@ -32,4 +40,12 @@ export async function loginUser(email:string,password:string): Promise<UserRespo
     }
     throw error;
 }
+}
+export async function getCurrentUser(): Promise<UserResponse> {
+
+    const response = await api.get<UserResponse>(
+        "/api/users/me"
+    );
+
+    return response.data;
 }

@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
 import { Container, Paper, TextField, Button, Typography, Box } from '@mui/material';
-import { loginUser } from '../../services/authServices';
+import { loginUser,getCurrentUser } from '../../services/authServices';
 import { useNavigate } from 'react-router-dom';
-
+import { useAuth} from '../../context/AuthContext';
 export default function Login(): React.JSX.Element {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');  
+  
+  const {login,setUser} = useAuth();
+
   const navigate = useNavigate();
- const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
   e.preventDefault();
   const data = await loginUser(email, password);
-  localStorage.setItem("token", data.token);
+  login(data.token);
+  const userData=await getCurrentUser();
+  setUser(userData);
   setEmail('')
   setPassword('')
   

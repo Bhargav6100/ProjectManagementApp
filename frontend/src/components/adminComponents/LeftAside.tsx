@@ -48,7 +48,7 @@ export default function AdminSideBar(): React.JSX.Element {
       <Divider />
 
       <List sx={{ px: 2, py: 3 }}>
-        <ListItemButton sx={{ borderRadius: 2, mb: 1 }}>
+        <ListItemButton sx={{ borderRadius: 2, mb: 1 }} onClick={()=>navigate("/users")}>
           <ListItemIcon>
             <GroupsIcon />
           </ListItemIcon>

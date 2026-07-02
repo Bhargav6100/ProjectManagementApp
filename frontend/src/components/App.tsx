@@ -4,6 +4,7 @@ import Register from '../pages/auth/Register.tsx'
 import Dashboard from '../pages/dashboard/Dashboard.tsx'
 import { Route,Routes } from 'react-router-dom'
 import ProtectedRoute from './ProtectedRoute.tsx'
+import UsersList from '../pages/users/UsersList.tsx'
 function App() {
  
   return (
@@ -11,6 +12,7 @@ function App() {
     <Routes>
     <Route path="/login" Component={Login}/>
     <Route path="/signup" Component={Register}/> 
+    <Route path="/users" Component={UsersList}/>
     <Route element={<ProtectedRoute />}>
         {/* <Route path="/admin" element={<AdminPanel />}> */}
   <Route path="/dashboard" element={<Dashboard />} />

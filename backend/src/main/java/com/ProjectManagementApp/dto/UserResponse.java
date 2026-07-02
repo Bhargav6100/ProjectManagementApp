@@ -3,19 +3,29 @@ package com.ProjectManagementApp.dto;
 import com.ProjectManagementApp.entity.Roles;
 
 public class UserResponse {
-private String firstName;
-private String lastName;
+    private long id;
+    private String firstName;
+    private String lastName;
     private String email;
     private Roles role;
 
     public UserResponse(){
 
     }
-    public UserResponse(String firstName, String lastName, String email, Roles role) {
+    public UserResponse(long id,String firstName, String lastName, String email, Roles role) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.role = role;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getFirstName() {

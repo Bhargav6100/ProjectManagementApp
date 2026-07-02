@@ -12,6 +12,7 @@ interface LoginResponse {
 }
 
 interface UserResponse {
+  id: Number,
   firstName: string;
   lastName: string;
   email: string;

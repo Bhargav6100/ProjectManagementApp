@@ -5,10 +5,7 @@ import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -30,6 +27,7 @@ public class UsersController {
                 .orElseThrow();
 
         UserResponse response = new UserResponse(
+                user.getId(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
@@ -46,5 +44,10 @@ public class UsersController {
     public User getUserById(@PathVariable Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+    @DeleteMapping("/{id}")
+    public String deleteUsersById(@PathVariable Long id){
+        userRepository.deleteById(id);
+     return "User deleted successfully";
     }
 }

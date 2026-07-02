@@ -6,15 +6,18 @@ import App from './components/App.tsx'
 import { AuthProvider } from './context/AuthContext.tsx'
 import {UsersProvider} from './context/UsersContext.tsx'
 import { WorkspaceProvider } from './context/WorkspaceContext.tsx'
+import { ProjectProvider } from './context/ProjectContext.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
   <AuthProvider>
   <UsersProvider>
   <WorkspaceProvider>
+  <ProjectProvider>
   <StrictMode>
   <App />
   </StrictMode>,
+  </ProjectProvider>  
   </WorkspaceProvider>
   </UsersProvider>
   </AuthProvider>

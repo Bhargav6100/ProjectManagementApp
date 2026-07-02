@@ -55,7 +55,7 @@ export default function AdminSideBar(): React.JSX.Element {
           <ListItemText primary="Users" />
         </ListItemButton>
 
-        <ListItemButton sx={{ borderRadius: 2, mb: 1 }}>
+        <ListItemButton sx={{ borderRadius: 2, mb: 1 }} onClick={()=>navigate("/workspaces")}>
           <ListItemIcon>
             <WorkspacesIcon />
           </ListItemIcon>

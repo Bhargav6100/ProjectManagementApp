@@ -4,8 +4,11 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import WorkspacesIcon from "@mui/icons-material/Workspaces";
 import FolderIcon from "@mui/icons-material/Folder";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
-
+import { useUsers } from "../../context/UsersContext";
+import { useWorkspaces } from "../../context/WorkspaceContext";
 export default function DashboardContents(): React.JSX.Element {
+  const {users} = useUsers();
+  const {workspaces} = useWorkspaces();
   const navigate = useNavigate();
     return (
     <Box>
@@ -28,14 +31,14 @@ export default function DashboardContents(): React.JSX.Element {
         <Paper sx={{ p: 3, borderRadius: 3 }}>
           <Typography color="text.secondary">Total Users</Typography>
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
-            0
+            {users.length}
           </Typography>
         </Paper>
 
         <Paper sx={{ p: 3, borderRadius: 3 }}>
           <Typography color="text.secondary">Workspaces</Typography>
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
-            0
+            {workspaces.length}
           </Typography>
         </Paper>
 

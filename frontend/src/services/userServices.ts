@@ -1,7 +1,7 @@
 import api from "../api/axios";
 import type { Roles } from "../utils/Roles";
 export interface UserResponse {
-  id: Number,
+  id: Number;
   firstName: string;
   lastName: string;
   email: string;

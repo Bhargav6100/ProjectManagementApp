@@ -14,23 +14,20 @@ export interface WorkspaceResponse {
 }
 
 export async function getAllWorkspaces():Promise<WorkspaceResponse[]>{
-    const response = await api.get("http://localhost:8080/api/workspaces")
+    const response = await api.get("/api/workspaces")
     return response.data;   
 }
 export async function getWorkspaceById(id:number):Promise<WorkspaceResponse>{
-    const response = await api.get(`http://localhost:8080/api/workspaces/${id}`)
+    const response = await api.get(`/api/workspaces/${id}`)
     return response.data;
 }
 export async function updateWorkspace(workspaceId:number,request:WorkspaceRequest):Promise<WorkspaceResponse>{
-    const response = await api.put(`http://localhost:8080/api/workspaces/${workspaceId}`,request)
+    const response = await api.put(`/api/workspaces/${workspaceId}`,request)
     return response.data;
 }
-export async function getAllProjectsByWorkspace(workspaceId:number){
-    const response = await api.get(`http://localhost:8080/api/workspaces/${workspaceId}/projects`)
-    return response.data;   
-}
+
 export async function deleteWorkspacesById(id:Number){
-  const response = await api.delete(`http://localhost:8080/api/workspaces/${id}`);
+  const response = await api.delete(`/api/workspaces/${id}`);
    return  response.data;
 }
 export async function createWorkspace(

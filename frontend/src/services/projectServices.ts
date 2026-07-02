@@ -18,7 +18,21 @@ export interface ProjectResponse {
 }
 
 export async function createProject(workspaceId: number,request: ProjectRequest):Promise<ProjectResponse> {
-  const response = await api.post<ProjectResponse>(`http://localhost:8080/api/workspaces/${workspaceId}/projects`,request);
+  const response = await api.post<ProjectResponse>(`/api/workspaces/${workspaceId}/projects`,request);
 
   return response.data;
+}
+export async function getProjectById(id:number):Promise<ProjectResponse>{
+    const response = await api.get(`/api/projects/${id}`)
+   
+    return response.data;
+}
+export async function getProjectsByWorkspace(workspaceId:number){
+    const response = await api.get(`/api/workspaces/${workspaceId}/projects`)
+    return response.data;   
+}
+export async function deleteProjectById(projectId:Number){
+  const response = await api.delete(`/api/projects/${projectId}`);
+   
+  return  response.data;
 }

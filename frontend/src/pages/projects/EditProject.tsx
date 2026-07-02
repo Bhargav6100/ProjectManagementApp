@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   Box,
@@ -11,36 +11,61 @@ import {
 } from "@mui/material";
 
 import FolderIcon from "@mui/icons-material/Folder";
-import { createProject } from "../../services/projectServices";
+import { useProjects } from "../../context/ProjectContext";
+import { updateProject } from "../../services/projectServices";
 import type { ProjectStatus } from "../../utils/ProjectStatus";
 
-export default function ProjectForm(): React.JSX.Element {
+export default function EditProject(): React.JSX.Element {
+  const { workspaceId, projectId } = useParams();
   const navigate = useNavigate();
-  const { workspaceId } = useParams();
+
+  const { currentProject, fetchProjectById, fetchProjectsByWorkspace, loading } =
+    useProjects();
+
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [status, setStatus] = useState<ProjectStatus>("ACTIVE");
+
+  useEffect(() => {
+    if (projectId) {
+      fetchProjectById(Number(projectId));
+    }
+  }, [projectId]);
+
+  useEffect(() => {
+    if (currentProject) {
+      setName(currentProject.name);
+      setDescription(currentProject.description);
+      setStatus(currentProject.status);
+    }
+  }, [currentProject]);
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ): Promise<void> => {
     e.preventDefault();
 
-    if (!workspaceId) {
-      alert("Workspace id is missing");
+    if (!workspaceId || !projectId) {
+      alert("Workspace id or project id is missing");
       return;
     }
 
-    await createProject(Number(workspaceId), {
+    await updateProject(Number(projectId), {
       name,
       description,
       status,
     });
 
-    alert("Project created successfully");
+    await fetchProjectsByWorkspace(Number(workspaceId));
+
+    alert("Project updated successfully");
 
     navigate(`/dashboard/workspaces/${workspaceId}`);
   };
+
+  if (loading) {
+    return <Typography>Loading project...</Typography>;
+  }
 
   return (
     <Container maxWidth="sm">
@@ -49,7 +74,7 @@ export default function ProjectForm(): React.JSX.Element {
           <FolderIcon color="primary" />
 
           <Typography variant="h5" sx={{ fontWeight: 700 }}>
-            Create Project
+            Edit Project
           </Typography>
         </Box>
 
@@ -59,8 +84,6 @@ export default function ProjectForm(): React.JSX.Element {
             required
             fullWidth
             label="Project Name"
-            autoComplete="off"
-            autoFocus
             value={name}
             onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
               setName(e.target.value)
@@ -92,7 +115,7 @@ export default function ProjectForm(): React.JSX.Element {
             }
           >
             <MenuItem value="ACTIVE">Active</MenuItem>
-            <MenuItem value="COMPLETE">Complete</MenuItem>
+            <MenuItem value="COMPLETE">Completed</MenuItem>
             <MenuItem value="ARCHIVED">Archived</MenuItem>
           </TextField>
 
@@ -108,14 +131,16 @@ export default function ProjectForm(): React.JSX.Element {
               textTransform: "none",
             }}
           >
-            Create Project
+            Update Project
           </Button>
 
           <Button
             fullWidth
             variant="outlined"
             sx={{ borderRadius: 2, textTransform: "none" }}
-            onClick={() => navigate(`/dashboard/workspaces/${workspaceId}`)}
+            onClick={() =>
+              navigate(`/dashboard/workspaces/${workspaceId}/projects/${projectId}`)
+            }
           >
             Cancel
           </Button>

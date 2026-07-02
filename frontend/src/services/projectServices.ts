@@ -31,6 +31,10 @@ export async function getProjectsByWorkspace(workspaceId:number){
     const response = await api.get(`/api/workspaces/${workspaceId}/projects`)
     return response.data;   
 }
+export async function updateProject(projectId: number,request: ProjectRequest): Promise<ProjectResponse> {
+  const response = await api.put<ProjectResponse>(`/api/projects/${projectId}`,request);
+  return response.data;
+}
 export async function deleteProjectById(projectId:Number){
   const response = await api.delete(`/api/projects/${projectId}`);
    

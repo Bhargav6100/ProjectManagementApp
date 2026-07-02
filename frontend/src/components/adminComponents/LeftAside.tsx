@@ -8,7 +8,7 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-
+import { useState } from "react";
 import GroupsIcon from "@mui/icons-material/Groups";
 import WorkspacesIcon from "@mui/icons-material/Workspaces";
 import FolderIcon from "@mui/icons-material/Folder";
@@ -18,9 +18,10 @@ import LogoutIcon from "@mui/icons-material/Logout";
 
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-
+import SelectWorkspaceDialog from "../common/SelectWorkspaceDialog";
 export default function AdminSideBar(): React.JSX.Element {
   const navigate = useNavigate();
+ const [workspaceDialogOpen, setWorkspaceDialogOpen] = useState<boolean>(false);
   const { user, logout } = useAuth();
 
   const handleLogout = (): void => {
@@ -29,6 +30,7 @@ export default function AdminSideBar(): React.JSX.Element {
   };
 
   return (
+    <>
     <Box
       sx={{
         width: 280,
@@ -62,12 +64,12 @@ export default function AdminSideBar(): React.JSX.Element {
           <ListItemText primary="Workspaces" />
         </ListItemButton>
 
-        <ListItemButton sx={{ borderRadius: 2, mb: 1 }}>
-          <ListItemIcon>
-            <FolderIcon />
-          </ListItemIcon>
-          <ListItemText primary="Projects" />
-        </ListItemButton>
+       <ListItemButton onClick={() => setWorkspaceDialogOpen(true)} sx={{ borderRadius: 2, mb: 1 }}>
+       <ListItemIcon>
+        <FolderIcon />
+       </ListItemIcon>
+       <ListItemText primary="Projects" />
+       </ListItemButton>
 
         <ListItemButton sx={{ borderRadius: 2, mb: 1 }}>
           <ListItemIcon>
@@ -111,5 +113,15 @@ export default function AdminSideBar(): React.JSX.Element {
         </ListItemButton>
       </Box>
     </Box>
+    <SelectWorkspaceDialog open={workspaceDialogOpen}
+     title="Select Workspace"
+     description="Choose a workspace to view its projects."
+      continueLabel="Open Workspace"
+      onClose={() => setWorkspaceDialogOpen(false)}
+      onContinue={(workspaceId: number): void => {
+      navigate(`/dashboard/workspaces/${workspaceId}`);
+  }}
+/>
+    </>
   );
 }

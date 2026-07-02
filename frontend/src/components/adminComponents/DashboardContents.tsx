@@ -1,16 +1,22 @@
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { useNavigate} from "react-router-dom";
+import { useState } from "react";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import WorkspacesIcon from "@mui/icons-material/Workspaces";
 import FolderIcon from "@mui/icons-material/Folder";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import { useUsers } from "../../context/UsersContext";
 import { useWorkspaces } from "../../context/WorkspaceContext";
+import { useProjects } from "../../context/ProjectContext";
+import SelectWorkspaceDialog from "../../components/common/SelectWorkspaceDialog";
 export default function DashboardContents(): React.JSX.Element {
   const {users} = useUsers();
   const {workspaces} = useWorkspaces();
+  const {projects} = useProjects();
   const navigate = useNavigate();
+  const [projectDialogOpen, setProjectDialogOpen] = useState<boolean>(false);
     return (
+     <> 
     <Box>
       <Typography variant="h4" sx={{ fontWeight: 700, mb: 3 }}>
         Dashboard Overview
@@ -45,7 +51,7 @@ export default function DashboardContents(): React.JSX.Element {
         <Paper sx={{ p: 3, borderRadius: 3 }}>
           <Typography color="text.secondary">Projects</Typography>
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
-           0
+           {projects.length}
           </Typography>
         </Paper>
 
@@ -71,9 +77,9 @@ export default function DashboardContents(): React.JSX.Element {
             Create Workspace
           </Button>
 
-          <Button variant="outlined" onClick={() => navigate("/dashboard/workspaces/")} startIcon={<FolderIcon />}>
-            Create Project
-          </Button>
+         <Button variant="outlined" onClick={() => setProjectDialogOpen(true)} startIcon={<FolderIcon />}>
+           Create Project
+         </Button>
 
           <Button variant="outlined" startIcon={<TaskAltIcon />}>
             Create Task
@@ -81,5 +87,16 @@ export default function DashboardContents(): React.JSX.Element {
         </Box>
       </Paper>
     </Box>
+   <SelectWorkspaceDialog
+      open={projectDialogOpen}
+      title="Create Project"
+      description="Choose the workspace where this project should be created."
+      continueLabel="Continue"
+      onClose={() => setProjectDialogOpen(false)}
+      onContinue={(workspaceId: number): void => {
+    navigate(`/dashboard/workspaces/${workspaceId}/projects/create`);
+  }}
+/>
+</>
   );
 }

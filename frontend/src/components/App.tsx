@@ -7,6 +7,8 @@ import ProtectedRoute from './ProtectedRoute.tsx'
 import UsersList from '../pages/users/UsersList.tsx'
 import WorkspaceList from '../pages/workspace/WorkspaceList.tsx'
 import WorkspaceForm from '../pages/workspace/WorkspaceForm.tsx'
+import WorkspaceDetails from '../pages/workspace/WorkspaceDetails.tsx'
+import EditWorkspace from '../pages/workspace/EditWorkspaceForm.tsx'
 function App() {
  
   return (
@@ -20,6 +22,8 @@ function App() {
         {/* <Route path="/admin" element={<AdminPanel />}> */}
   <Route path="/dashboard" element={<Dashboard />} />
   <Route path="/dashboard/workspaces/create" element={<WorkspaceForm/>}/>
+  <Route path="/dashboard/workspaces/:id" element={<WorkspaceDetails/>}/>
+  <Route path="/dashboard/workspaces/:id/edit" element={<EditWorkspace/>}/>
 </Route>
         {/* <Route path="/workspaces" element={<WorkspaceList />} />
         <Route path="/projects" element={<ProjectList />} />

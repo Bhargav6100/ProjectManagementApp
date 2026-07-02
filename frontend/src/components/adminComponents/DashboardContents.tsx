@@ -45,7 +45,7 @@ export default function DashboardContents(): React.JSX.Element {
         <Paper sx={{ p: 3, borderRadius: 3 }}>
           <Typography color="text.secondary">Projects</Typography>
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
-            0
+           0
           </Typography>
         </Paper>
 

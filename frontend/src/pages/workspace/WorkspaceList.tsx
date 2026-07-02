@@ -237,6 +237,7 @@ export default function AdminWorkspaces(): React.JSX.Element {
                 filteredWorkspaces.map((workspace) => (
                   <TableRow
                     key={workspace.id}
+                    onClick={() => navigate(`/dashboard/workspaces/${workspace.id}`)}
                     hover
                     sx={{
                       "&:last-child td": {
@@ -285,7 +286,11 @@ export default function AdminWorkspaces(): React.JSX.Element {
                       {isAdmin ? (
                         <>
                           <Tooltip title="Edit workspace">
-                            <IconButton size="small">
+                            <IconButton size="small"
+                             onClick={(e): void => {
+                             e.stopPropagation();
+                             navigate(`/dashboard/workspaces/${workspace.id}/edit`);
+                             }}>
                               <EditIcon fontSize="small" />
                             </IconButton>
                           </Tooltip>
@@ -294,7 +299,10 @@ export default function AdminWorkspaces(): React.JSX.Element {
                             <IconButton
                               size="small"
                               color="error"
-                              onClick={() => deleteWorkspace(workspace.id)}
+                              onClick={(e): void => {
+                              e.stopPropagation();
+                              deleteWorkspace(workspace.id);
+                             }}
                             >
                               <DeleteIcon fontSize="small" />
                             </IconButton>

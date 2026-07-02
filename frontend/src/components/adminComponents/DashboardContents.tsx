@@ -1,5 +1,5 @@
 import { Box, Button, Paper, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import WorkspacesIcon from "@mui/icons-material/Workspaces";
 import FolderIcon from "@mui/icons-material/Folder";
@@ -67,11 +67,11 @@ export default function DashboardContents(): React.JSX.Element {
             Add User
           </Button>
 
-          <Button variant="outlined" startIcon={<WorkspacesIcon />}>
+          <Button onClick={() => navigate('/dashboard/workspaces/create')} variant="outlined" startIcon={<WorkspacesIcon />}>
             Create Workspace
           </Button>
 
-          <Button variant="outlined" startIcon={<FolderIcon />}>
+          <Button variant="outlined" onClick={() => navigate("/dashboard/workspaces/")} startIcon={<FolderIcon />}>
             Create Project
           </Button>
 

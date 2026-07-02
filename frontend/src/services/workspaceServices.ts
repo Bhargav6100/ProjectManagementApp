@@ -26,7 +26,7 @@ export async function updateWorkspace(workspaceId:number,request:WorkspaceReques
     return response.data;
 }
 export async function getAllProjectsByWorkspace(workspaceId:number){
-    const response = await api.get(`http://localhost:8080//api/workspaces/${workspaceId}/projects`)
+    const response = await api.get(`http://localhost:8080/api/workspaces/${workspaceId}/projects`)
     return response.data;   
 }
 export async function deleteWorkspacesById(id:Number){

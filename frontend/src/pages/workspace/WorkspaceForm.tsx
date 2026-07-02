@@ -82,7 +82,7 @@ export default function WorkspaceForm(): React.JSX.Element {
             fullWidth
             variant="outlined"
             sx={{ borderRadius: 2, textTransform: "none" }}
-            onClick={() => navigate("/dashboard/workspaces")}
+            onClick={() => navigate("/workspaces")}
           >
             Cancel
           </Button>

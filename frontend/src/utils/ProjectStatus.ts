@@ -1,4 +1,4 @@
 export type ProjectStatus =
   | "COMPLETE"
-  | "TO_DO"
+  | "ACTIVE"
   | "ARCHIVED"

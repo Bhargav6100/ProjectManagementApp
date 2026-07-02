@@ -9,6 +9,7 @@ import WorkspaceList from '../pages/workspace/WorkspaceList.tsx'
 import WorkspaceForm from '../pages/workspace/WorkspaceForm.tsx'
 import WorkspaceDetails from '../pages/workspace/WorkspaceDetails.tsx'
 import EditWorkspace from '../pages/workspace/EditWorkspaceForm.tsx'
+import ProjectForm from '../pages/projects/ProjectForm.tsx'
 function App() {
  
   return (
@@ -24,6 +25,7 @@ function App() {
   <Route path="/dashboard/workspaces/create" element={<WorkspaceForm/>}/>
   <Route path="/dashboard/workspaces/:id" element={<WorkspaceDetails/>}/>
   <Route path="/dashboard/workspaces/:id/edit" element={<EditWorkspace/>}/>
+  <Route path="/dashboard/workspaces/:workspaceId/projects/create" element={<ProjectForm/>}/>
 </Route>
         {/* <Route path="/workspaces" element={<WorkspaceList />} />
         <Route path="/projects" element={<ProjectList />} />

@@ -1,0 +1,24 @@
+import api from "../api/axios";
+import type { ProjectStatus } from "../utils/ProjectStatus";
+
+export interface ProjectRequest {
+  name: string;
+  description: string;
+  status: ProjectStatus;
+}
+
+export interface ProjectResponse {
+  id: number;
+  name: string;
+  description: string;
+  status: ProjectStatus;
+  workspaceId: number;
+  createdBy: string;
+  createdAt: string;
+}
+
+export async function createProject(workspaceId: number,request: ProjectRequest):Promise<ProjectResponse> {
+  const response = await api.post<ProjectResponse>(`http://localhost:8080/api/workspaces/${workspaceId}/projects`,request);
+
+  return response.data;
+}

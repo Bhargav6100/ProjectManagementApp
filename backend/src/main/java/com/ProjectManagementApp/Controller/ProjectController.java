@@ -14,8 +14,6 @@ import com.ProjectManagementApp.exception.ResourceNotFoundException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/workspaces")
-
 public class ProjectController {
     private final ProjectService projectService;
     private final UserRepository userRepository;

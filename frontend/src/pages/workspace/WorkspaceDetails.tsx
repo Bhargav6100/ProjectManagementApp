@@ -184,10 +184,10 @@ export default function WorkspaceDetails(): React.JSX.Element {
           startIcon={<FolderIcon />}
           sx={{ textTransform: "none", borderRadius: 2 }}
           onClick={() =>
-            navigate(`/dashboard/workspaces/${currentWorkspace.id}/projects`)
+            navigate(`/dashboard/workspaces/${currentWorkspace.id}/projects/create`)
           }
         >
-          Open Projects
+          Create Projects
         </Button>
       </Paper>
     </Box>

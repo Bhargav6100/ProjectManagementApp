@@ -11,4 +11,6 @@ public interface WorkspaceMemberRepository extends JpaRepository<WorkspaceMember
     boolean existsByWorkspaceIdAndUserId(Long workspaceId, Long userId);
 
     List<WorkspaceMember> findByUserId(Long userId);
+
+    List<WorkspaceMember> findByWorkspaceId(Long workspaceId);
 }

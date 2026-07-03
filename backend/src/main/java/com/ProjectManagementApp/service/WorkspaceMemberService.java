@@ -1,5 +1,6 @@
 package com.ProjectManagementApp.service;
 
+import com.ProjectManagementApp.dto.UserResponse;
 import com.ProjectManagementApp.dto.WorkspaceMemberResponse;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.entity.Workspace;
@@ -12,6 +13,8 @@ import com.ProjectManagementApp.repository.WorkspaceMemberRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 @Service
 public class WorkspaceMemberService {
   private final WorkSpaceRepository workSpaceRepository;
@@ -53,5 +56,19 @@ public class WorkspaceMemberService {
                 saved.getUser().getEmail(),
                 saved.getUser().getRole()
         );
+    }
+    public List<UserResponse> getWorkspaceMembers(Long workspaceId) {
+
+        return workspaceMemberRepository.findByWorkspaceId(workspaceId)
+                .stream()
+                .map(WorkspaceMember::getUser)
+                .map(user -> new UserResponse(
+                        user.getId(),
+                        user.getFirstName(),
+                        user.getLastName(),
+                        user.getEmail(),
+                        user.getRole()
+                ))
+                .toList();
     }
 }

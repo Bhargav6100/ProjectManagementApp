@@ -42,7 +42,10 @@ public class TaskController {
         User currentUser = getCurrentUser(authentication);
         return ResponseEntity.ok(taskService.getTaskByProjectId(projectId, currentUser));
     }
-
+    @GetMapping("/tasks")
+    public ResponseEntity<List<TaskResponse>> getAllTasks() {
+        return ResponseEntity.ok(taskService.getAllTasks());
+    }
     @GetMapping("/tasks/{id}")
     public ResponseEntity<TaskResponse> findTaskById(
             @PathVariable Long id,

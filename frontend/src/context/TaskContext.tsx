@@ -2,6 +2,7 @@ import { createContext, useContext, useState } from "react";
 import type { TaskStatus } from "../utils/TaskStatus";
 import type { TaskPriority } from "../utils/TaskPriority";
 import {
+  getAllTasks,
   deleteTaskById,
   getTaskById,
   getTasksByProject,
@@ -23,8 +24,10 @@ export interface AppTask {
 
 interface TaskContextType {
   tasks: AppTask[];
+  allTasks: AppTask[];
   currentTask: AppTask | null;
   loading: boolean;
+  fetchAllTasks:() => Promise<void>;
   fetchTasksByProject: (projectId: number) => Promise<void>;
   fetchTaskById: (taskId: number) => Promise<void>;
   deleteTask: (taskId: number) => Promise<void>;
@@ -38,6 +41,7 @@ export function TaskProvider({
   children: React.ReactNode;
 }): React.JSX.Element {
   const [tasks, setTasks] = useState<AppTask[]>([]);
+  const [allTasks,setAllTasks]=useState<AppTask[]>([]);
   const [currentTask, setCurrentTask] = useState<AppTask | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -51,6 +55,17 @@ export function TaskProvider({
       setLoading(false);
     }
   };
+   const fetchAllTasks = async():Promise<void> =>{
+      setLoading(true);
+  
+      try{
+        const data = await getAllTasks();
+         setAllTasks(data);
+      }
+      finally{
+        setLoading(false);
+      }
+    }
 
   const fetchTaskById = async (taskId: number): Promise<void> => {
     setLoading(true);
@@ -75,8 +90,10 @@ export function TaskProvider({
     <TaskContext.Provider
       value={{
         tasks,
+        allTasks,
         currentTask,
         loading,
+        fetchAllTasks,
         fetchTasksByProject,
         fetchTaskById,
         deleteTask,

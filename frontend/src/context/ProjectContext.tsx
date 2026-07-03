@@ -81,6 +81,9 @@ export function ProjectProvider({
     setProjects((prevProjects) =>
       prevProjects.filter((project) => project.id !== projectId)
     );
+    setAllProjects((prevProjects) =>
+    prevProjects.filter((project) => project.id !== projectId)
+  );
   };
 
   return (

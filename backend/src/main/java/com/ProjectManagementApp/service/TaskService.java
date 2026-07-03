@@ -153,6 +153,13 @@ public class TaskService {
                 saved.getProject().getId()
         );
     }
+    public List<TaskResponse> getAllTasks(){
+        return taskRepository.findAll()
+                .stream()
+                .map(this::mapToTaskResponse)
+                .toList();
+    }
+
 
     public TaskResponse updateTask(TaskRequest request, Long taskId, User currentUser) throws AccessDeniedException {
         Task task = taskRepository.findById(taskId)

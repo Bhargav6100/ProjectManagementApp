@@ -8,17 +8,22 @@ import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import { useUsers } from "../../context/UsersContext";
 import { useWorkspaces } from "../../context/WorkspaceContext";
 import { useProjects } from "../../context/ProjectContext";
+import { useTasks } from "../../context/TaskContext";
 import SelectWorkspaceDialog from "../../components/common/SelectWorkspaceDialog";
+import SelectProjectDialog from "../../components/common/SelectProjectDialog";
 export default function DashboardContents(): React.JSX.Element {
   const {users} = useUsers();
   const {workspaces,fetchWorkspaces} = useWorkspaces();
   const {allProjects,fetchAllProjects} = useProjects();
+  const {allTasks,fetchAllTasks}=useTasks();
   const navigate = useNavigate();
   const [projectDialogOpen, setProjectDialogOpen] = useState<boolean>(false);
+  const [taskDialogOpen,setTaskDialogOpen] = useState<boolean>(false);
   
   useEffect(()=>{
     fetchWorkspaces();
     fetchAllProjects();
+    fetchAllTasks();
   },[])
     return (
      <> 
@@ -60,10 +65,10 @@ export default function DashboardContents(): React.JSX.Element {
           </Typography>
         </Paper>
 
-        <Paper sx={{ p: 3, borderRadius: 3 }}>
+        <Paper onClick={(()=>navigate("/dashboard/tasks"))} sx={{ p: 3, borderRadius: 3 }}>
           <Typography color="text.secondary">Tasks</Typography>
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
-            0
+            {allTasks.length}
           </Typography>
         </Paper>
       </Box>
@@ -86,7 +91,7 @@ export default function DashboardContents(): React.JSX.Element {
            Create Project
          </Button>
 
-          <Button variant="outlined" startIcon={<TaskAltIcon />}>
+          <Button variant="outlined" onClick={() => setTaskDialogOpen(true)} startIcon={<TaskAltIcon />}>
             Create Task
           </Button>
         </Box>
@@ -102,6 +107,16 @@ export default function DashboardContents(): React.JSX.Element {
     navigate(`/dashboard/workspaces/${workspaceId}/projects/create`);
   }}
 />
+<SelectProjectDialog
+      open={taskDialogOpen}
+      title="Create Task"
+      description="Choose the project where this task should be created."
+      continueLabel="Continue"
+      onClose={() => setTaskDialogOpen(false)}
+      onContinue={(workspaceId:number,projectId: number): void => {
+    navigate(`/dashboard/workspaces/${workspaceId}/projects/${projectId}/tasks/create`);
+  }}
+  />
 </>
   );
 }

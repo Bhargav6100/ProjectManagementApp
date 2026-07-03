@@ -19,9 +19,11 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import SelectWorkspaceDialog from "../common/SelectWorkspaceDialog";
+import SelectProjectDialog from "../common/SelectProjectDialog";
 export default function AdminSideBar(): React.JSX.Element {
   const navigate = useNavigate();
  const [workspaceDialogOpen, setWorkspaceDialogOpen] = useState<boolean>(false);
+ const [projectDialogOpen, setProjectDialogOpen] = useState<boolean>(false);
   const { user, logout } = useAuth();
 
   const handleLogout = (): void => {
@@ -57,7 +59,7 @@ export default function AdminSideBar(): React.JSX.Element {
           <ListItemText primary="Users" />
         </ListItemButton>
 
-        <ListItemButton sx={{ borderRadius: 2, mb: 1 }} onClick={()=>navigate("/workspaces")}>
+        <ListItemButton sx={{ borderRadius: 2, mb: 1 }} onClick={()=>navigate("/dashboard/workspaces")}>
           <ListItemIcon>
             <WorkspacesIcon />
           </ListItemIcon>
@@ -71,7 +73,7 @@ export default function AdminSideBar(): React.JSX.Element {
        <ListItemText primary="Projects" />
        </ListItemButton>
 
-        <ListItemButton sx={{ borderRadius: 2, mb: 1 }}>
+        <ListItemButton onClick={() => setProjectDialogOpen(true)} sx={{ borderRadius: 2, mb: 1 }}>
           <ListItemIcon>
             <TaskAltIcon />
           </ListItemIcon>
@@ -120,6 +122,15 @@ export default function AdminSideBar(): React.JSX.Element {
       onClose={() => setWorkspaceDialogOpen(false)}
       onContinue={(workspaceId: number): void => {
       navigate(`/dashboard/workspaces/${workspaceId}`);
+  }}
+/>
+    <SelectProjectDialog open={projectDialogOpen}
+     title="Select Project"
+     description="Choose a Project to view its tasks."
+      continueLabel="Open Project"
+      onClose={() => setProjectDialogOpen(false)}
+      onContinue={(workspaceId: number,projectId: number): void => {
+      navigate(`/dashboard/workspaces/${workspaceId}/projects/${projectId}`);
   }}
 />
     </>

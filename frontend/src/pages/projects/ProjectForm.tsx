@@ -121,7 +121,7 @@ export default function ProjectForm(): React.JSX.Element {
             fullWidth
             variant="outlined"
             sx={{ borderRadius: 2, textTransform: "none" }}
-            onClick={() => navigate(`/dashboard/workspaces/${workspaceId}`)}
+            onClick={() => navigate("/dashboard")}
           >
             Cancel
           </Button>

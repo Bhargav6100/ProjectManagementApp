@@ -30,6 +30,12 @@ export async function createTask(projectId: number,request: TaskRequest):Promise
   return response.data;
 }
 
+export async function getAllTasks():Promise<TaskResponse[]>{
+  const response = await api.get("api/tasks")
+
+  return response.data;
+}
+
 export async function getTasksByProject(projectId: number): Promise<TaskResponse[]> {
   const response = await api.get<TaskResponse[]>(`/api/projects/${projectId}/tasks`);
   return response.data;

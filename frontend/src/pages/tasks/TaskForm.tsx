@@ -55,7 +55,7 @@ export default function TaskForm(): React.JSX.Element {
 
     alert("Task created successfully");
 
-    navigate(`/dashboard/workspaces/${workspaceId}/projects/${projectId}`);
+    navigate(`/dashboard/workspaces/${workspaceId}`);
   };
 
   return (

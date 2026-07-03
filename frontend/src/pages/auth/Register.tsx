@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Container, Paper, TextField, Button, Typography, Box } from '@mui/material';
 import MenuItem from "@mui/material/MenuItem";
 import { registerUser } from '../../services/authServices';
+import { useUsers } from '../../context/UsersContext';
 const Register = () => {
     const navigate = useNavigate();
     type UserRole = "ADMIN" | "PROJECT_MANAGER" | "MEMBER";
@@ -11,20 +12,24 @@ const Register = () => {
      const [email, setEmail] = useState<string>('');
      const [password, setPassword] = useState<string>('');  
      const [role, setRole] = useState<UserRole>("MEMBER");
+     
+     const {fetchUsers}=useUsers();
 
      const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
-  e.preventDefault();
+     e.preventDefault();
 
-  await registerUser({
-    firstName,
-    lastName,
-    email,
-    password,
-    role,
-  });
+     await registerUser({
+     firstName,
+     lastName,
+     email,
+     password,
+     role,
+    });
+
+  await fetchUsers();
 
   alert("User created successfully");
-  navigate("/dashboard")
+  navigate("/dashboard/users")
 };
       
   return (

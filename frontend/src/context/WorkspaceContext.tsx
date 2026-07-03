@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getAllWorkspaces,deleteWorkspacesById,getWorkspaceById} from "../services/workspaceServices";
-import {addMemberToTheWorkspace} from "../services/workspaceMembers";
+import {addMemberToTheWorkspace,getMembersOfWorkspace} from "../services/workspaceMembers";
+import type { AppUser } from "./UsersContext";
 export interface AppWorkspace {
   id:number, 
   name: string;
@@ -12,10 +13,12 @@ interface WorkspaceContextType {
   workspaces: AppWorkspace[];
   currentWorkspace : AppWorkspace | null;
   loading: boolean;
+  members:AppUser[];
   fetchWorkspaces: () => Promise<void>;
   deleteWorkspace: (id: Number) => Promise<void>;
   fetchWorkspaceById:(id:number) =>Promise<void>;
   addMemberToWorkspace: (workspaceId: number, userId: number) => Promise<void>;
+  fetchWorkspaceMembers:(workspaceId: number) => Promise<void>;
 }
 
 const WorkspaceContext = createContext<WorkspaceContextType | null>(null);
@@ -28,6 +31,7 @@ export function WorkspaceProvider({
   const [workspaces, setWorkspaces] = useState<AppWorkspace[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [currentWorkspace,setCurrentWorkspace]=useState<AppWorkspace | null>(null);
+  const [members,setMembers]=useState<AppUser[]>([]); 
 
   const fetchWorkspaces = async (): Promise<void> => {
     setLoading(true);
@@ -67,19 +71,32 @@ export function WorkspaceProvider({
   userId: number
 ): Promise<void> => {
   await addMemberToTheWorkspace(workspaceId, userId);
-
+  await fetchWorkspaceMembers(workspaceId);
   await fetchWorkspaceById(workspaceId);
 };
+  
+const fetchWorkspaceMembers = async (workspaceId: number):Promise<void>=>{
+   setLoading(true);
+  try{ 
+    const data = await getMembersOfWorkspace(workspaceId);
+    setMembers(data);
+}
+finally{
+  setLoading(false);
+}
+}
   return (
     <WorkspaceContext.Provider
       value={{
         workspaces,
         currentWorkspace,
         loading,
+        members,
         fetchWorkspaces,
         fetchWorkspaceById,
         deleteWorkspace,
         addMemberToWorkspace,
+        fetchWorkspaceMembers
       }}
     >
       {children}

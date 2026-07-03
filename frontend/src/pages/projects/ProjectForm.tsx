@@ -13,6 +13,7 @@ import {
 import FolderIcon from "@mui/icons-material/Folder";
 import { createProject } from "../../services/projectServices";
 import type { ProjectStatus } from "../../utils/ProjectStatus";
+import { useProjects } from "../../context/ProjectContext";
 
 export default function ProjectForm(): React.JSX.Element {
   const navigate = useNavigate();
@@ -20,6 +21,8 @@ export default function ProjectForm(): React.JSX.Element {
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [status, setStatus] = useState<ProjectStatus>("ACTIVE");
+ 
+  const {fetchProjectsByWorkspace} = useProjects();
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
@@ -36,8 +39,11 @@ export default function ProjectForm(): React.JSX.Element {
       description,
       status,
     });
+    
+    await fetchProjectsByWorkspace(Number(workspaceId));
 
     alert("Project created successfully");
+    
 
     navigate(`/dashboard/workspaces/${workspaceId}`);
   };

@@ -28,7 +28,7 @@ export default function WorkspaceDetails(): React.JSX.Element {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { currentWorkspace, fetchWorkspaceById,addMemberToWorkspace,loading } = useWorkspaces();
+  const { currentWorkspace, fetchWorkspaceById,addMemberToWorkspace,loading,fetchWorkspaceMembers,members } = useWorkspaces();
   const { projects, fetchProjectsByWorkspace } = useProjects();
   const { users } = useUsers();
   const [selectedUserId, setSelectedUserId] = useState<string>("");
@@ -67,6 +67,7 @@ const formatRole = (role: string): string => {
     if (id) {
       fetchWorkspaceById(Number(id));
       fetchProjectsByWorkspace(Number(id));
+      fetchWorkspaceMembers(Number(id));
     }
   }, [id]);
 
@@ -446,14 +447,14 @@ const formatRole = (role: string): string => {
 </Paper>
     <Chip
       icon={<GroupsIcon />}
-      label={`${users.length} Members`}
+      label={`${members.length} Members`}
       color="primary"
       variant="outlined"
       sx={{ fontWeight: 600 }}
     />
   </Box>
 
-  {users.length === 0 ? (
+  {members.length === 0 ? (
     <Box
       sx={{
         border: "1px dashed #d1d5db",
@@ -482,7 +483,7 @@ const formatRole = (role: string): string => {
         gap: 2,
       }}
     >
-      {users.map((member) => (
+      {members.map((member) => (
         <Paper
           key={member.id}
           variant="outlined"

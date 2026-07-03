@@ -21,7 +21,7 @@ export async function addMemberToTheWorkspace(workspaceId:number,userId:number):
   const response = await api.post(`/api/workspaces/${workspaceId}/members/${userId}`)
   return response.data;
 }
-export async function getMembersOfWorkspace(workspaceId:number):Promise<UserResponse>{
+export async function getMembersOfWorkspace(workspaceId:number):Promise<UserResponse[]>{
     const response = await api.get(`/api/workspaces/${workspaceId}/members`)
     return response.data;
 }

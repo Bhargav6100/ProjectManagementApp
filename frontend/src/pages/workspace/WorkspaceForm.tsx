@@ -11,12 +11,15 @@ import {
 
 import WorkspacesIcon from "@mui/icons-material/Workspaces";
 import { createWorkspace } from "../../services/workspaceServices";
+import { useWorkspaces } from "../../context/WorkspaceContext";
 
 export default function WorkspaceForm(): React.JSX.Element {
   const navigate = useNavigate();
 
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+
+  const {fetchWorkspaces} = useWorkspaces();
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
@@ -27,7 +30,8 @@ export default function WorkspaceForm(): React.JSX.Element {
       name,
       description,
     });
-
+   
+    await fetchWorkspaces();
     alert("Workspace created successfully");
     navigate("/dashboard");
   };

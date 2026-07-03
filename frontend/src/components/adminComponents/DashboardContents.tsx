@@ -69,7 +69,7 @@ export default function DashboardContents(): React.JSX.Element {
         </Typography>
 
         <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-          <Button  onClick={() => navigate('/signup')} variant="contained" startIcon={<PersonAddIcon />}>
+          <Button  onClick={() => navigate('/dashboard/users/create')} variant="contained" startIcon={<PersonAddIcon />}>
             Add User
           </Button>
 

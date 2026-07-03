@@ -159,7 +159,7 @@ export default function EditTask(): React.JSX.Element {
           >
             {members.map((member) => (
               <MenuItem key={member.id} value={String(member.id)}>
-                {member.firstName} {member.lastName} - {member.email}
+                {member.firstName}{member.lastName} - {member.email}
               </MenuItem>
             ))}
           </TextField>

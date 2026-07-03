@@ -11,12 +11,13 @@ import { useProjects } from "../../context/ProjectContext";
 import SelectWorkspaceDialog from "../../components/common/SelectWorkspaceDialog";
 export default function DashboardContents(): React.JSX.Element {
   const {users} = useUsers();
-  const {workspaces} = useWorkspaces();
+  const {workspaces,fetchWorkspaces} = useWorkspaces();
   const {allProjects,fetchAllProjects} = useProjects();
   const navigate = useNavigate();
   const [projectDialogOpen, setProjectDialogOpen] = useState<boolean>(false);
   
   useEffect(()=>{
+    fetchWorkspaces();
     fetchAllProjects();
   },[])
     return (
@@ -45,7 +46,7 @@ export default function DashboardContents(): React.JSX.Element {
           </Typography>
         </Paper>
 
-        <Paper sx={{ p: 3, borderRadius: 3 }}>
+        <Paper onClick={(()=>navigate("/dashboard/workspaces"))} sx={{ p: 3, borderRadius: 3 }}>
           <Typography color="text.secondary">Workspaces</Typography>
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
             {workspaces.length}

@@ -88,7 +88,7 @@ const formatRole = (role: string): string => {
           variant="outlined"
           startIcon={<ArrowBackIcon />}
           sx={{ mt: 2, textTransform: "none" }}
-          onClick={() => navigate("/workspaces")}
+          onClick={() => navigate("/dashboard/workspaces")}
         >
           Back to Workspaces
         </Button>
@@ -109,7 +109,7 @@ const formatRole = (role: string): string => {
           <Button
             startIcon={<ArrowBackIcon />}
             sx={{ mb: 1, textTransform: "none" }}
-            onClick={() => navigate("/workspaces")}
+            onClick={() => navigate("/dashboard/workspaces")}
           >
             Back to Workspaces
           </Button>
@@ -494,7 +494,7 @@ const formatRole = (role: string): string => {
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
             <Avatar sx={{ width: 44, height: 44 }}>
-              {getInitials(member.firstName, member.lastName)}
+              {getInitials(member.firstName,member.lastName)}
             </Avatar>
 
             <Box sx={{ minWidth: 0 }}>

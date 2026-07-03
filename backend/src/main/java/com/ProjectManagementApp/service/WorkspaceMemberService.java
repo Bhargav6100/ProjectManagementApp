@@ -50,7 +50,8 @@ public class WorkspaceMemberService {
         return new WorkspaceMemberResponse(
               saved.getId(),
                 saved.getWorkspace().getName(),
-                saved.getUser().getFirstName() + " " + saved.getUser().getLastName(),
+                saved.getUser().getFirstName(),
+                saved.getUser().getLastName(),
                 saved.getJoinedAt(),
                 saved.getWorkspace().getId(),
                 saved.getUser().getEmail(),

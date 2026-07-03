@@ -11,7 +11,9 @@ public class WorkspaceMemberResponse {
 
     private long id;
     private String workspaceName;
-    private String userName;
+    private String firstName;
+    private String lastName;
+
     private LocalDateTime joinedAt;
     private long workspaceId;
     private String email;
@@ -21,10 +23,11 @@ public class WorkspaceMemberResponse {
 
     }
 
-    public WorkspaceMemberResponse(long id, String workspaceName,String userName, LocalDateTime joinedAt, long workspaceId, String email, Roles role) {
+    public WorkspaceMemberResponse(long id, String workspaceName,String firstName, String lastName, LocalDateTime joinedAt, long workspaceId, String email, Roles role) {
         this.id = id;
         this.workspaceName = workspaceName;
-        this.userName = userName;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.joinedAt = joinedAt;
         this.workspaceId = workspaceId;
         this.email = email;
@@ -47,12 +50,28 @@ public class WorkspaceMemberResponse {
         this.workspaceName = workspaceName;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getWorkspaceName() {
+        return workspaceName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setWorkspaceName(String workspaceName) {
+        this.workspaceName = workspaceName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public LocalDateTime getJoinedAt() {

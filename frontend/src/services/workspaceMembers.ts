@@ -3,7 +3,8 @@ import api from '../api/axios';
 export interface WorkspaceMemberResponse {
   id: number;
   workspaceName: string;
-  userName: string;
+  firstName: string;
+  lastName: string;
   joinedAt: string;
   workspaceId: number;
   email: string,
@@ -21,7 +22,7 @@ export async function addMemberToTheWorkspace(workspaceId:number,userId:number):
   const response = await api.post(`/api/workspaces/${workspaceId}/members/${userId}`)
   return response.data;
 }
-export async function getMembersOfWorkspace(workspaceId:number):Promise<UserResponse[]>{
+export async function getMembersOfWorkspace(workspaceId:number):Promise<WorkspaceMemberResponse[]>{
     const response = await api.get(`/api/workspaces/${workspaceId}/members`)
     return response.data;
 }

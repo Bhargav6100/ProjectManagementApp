@@ -23,10 +23,10 @@ function App() {
     <Routes>
     <Route path="/login" Component={Login}/>
     {/* <Route path="/signup" Component={Register}/>  */}
-    <Route path="/workspaces" Component={WorkspaceList}/>
     <Route element={<ProtectedRoute />}>
         {/* <Route path="/admin" element={<AdminPanel />}> */}
   <Route path="/dashboard" element={<Dashboard />} />
+  <Route path="/dashboard/workspaces" element={<WorkspaceList/>}/>
   <Route path="/dashboard/users" element={<UsersList/>}/>
   <Route path="/dashboard/projects" element={<ProjectList/>}/>
   <Route path="/dashboard/users/create" element={<Register/>}/>

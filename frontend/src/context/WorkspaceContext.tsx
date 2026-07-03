@@ -1,24 +1,48 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { getAllWorkspaces,deleteWorkspacesById,getWorkspaceById} from "../services/workspaceServices";
-import {addMemberToTheWorkspace,getMembersOfWorkspace} from "../services/workspaceMembers";
-import type { AppUser } from "./UsersContext";
+
+import {
+  getAllWorkspaces,
+  deleteWorkspacesById,
+  getWorkspaceById,
+} from "../services/workspaceServices";
+
+import {
+  addMemberToTheWorkspace,
+  getMembersOfWorkspace,
+} from "../services/workspaceMembers";
+
+import type { Roles } from "../utils/Roles";
+
 export interface AppWorkspace {
-  id:number, 
+  id: number;
   name: string;
   description: string;
   createdAt: string;
   createdBy: string;
 }
+
+export interface WorkspaceMemberResponse {
+  id: number;
+  workspaceName: string;
+  firstName: string;
+  lastName: string;
+  joinedAt: string;
+  workspaceId: number;
+  email: string;
+  role: Roles;
+}
+
 interface WorkspaceContextType {
   workspaces: AppWorkspace[];
-  currentWorkspace : AppWorkspace | null;
+  currentWorkspace: AppWorkspace | null;
   loading: boolean;
-  members:AppUser[];
+  members: WorkspaceMemberResponse[];
+  membersByWorkspaceId: Record<number, WorkspaceMemberResponse[]>;
   fetchWorkspaces: () => Promise<void>;
-  deleteWorkspace: (id: Number) => Promise<void>;
-  fetchWorkspaceById:(id:number) =>Promise<void>;
-  addMemberToWorkspace: (workspaceId: number, userId: number) => Promise<void>;
-  fetchWorkspaceMembers:(workspaceId: number) => Promise<void>;
+  deleteWorkspace: (id: number) => Promise<void>;
+  fetchWorkspaceById: (id: number) => Promise<void>;
+  addMemberToWorkspace: (workspaceId: number,userId: number) => Promise<void>;
+  fetchWorkspaceMembers: (workspaceId: number) => Promise<void>;
 }
 
 const WorkspaceContext = createContext<WorkspaceContextType | null>(null);
@@ -30,8 +54,15 @@ export function WorkspaceProvider({
 }): React.JSX.Element {
   const [workspaces, setWorkspaces] = useState<AppWorkspace[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [currentWorkspace,setCurrentWorkspace]=useState<AppWorkspace | null>(null);
-  const [members,setMembers]=useState<AppUser[]>([]); 
+
+  const [currentWorkspace, setCurrentWorkspace] =
+    useState<AppWorkspace | null>(null);
+
+  const [members, setMembers] = useState<WorkspaceMemberResponse[]>([]);
+
+  const [membersByWorkspaceId, setMembersByWorkspaceId] = useState<
+    Record<number, WorkspaceMemberResponse[]>
+  >({});
 
   const fetchWorkspaces = async (): Promise<void> => {
     setLoading(true);
@@ -44,19 +75,21 @@ export function WorkspaceProvider({
     }
   };
 
-  const deleteWorkspace = async (id: Number): Promise<void> => {
+  const deleteWorkspace = async (id: number): Promise<void> => {
     await deleteWorkspacesById(id);
 
     setWorkspaces((prevWorkspaces) =>
-      prevWorkspaces.filter((workspaces) => workspaces.id!== id)
+      prevWorkspaces.filter((workspace) => workspace.id !== id)
     );
+
+    setMembersByWorkspaceId((prev) => {
+      const updatedMembers = { ...prev };
+      delete updatedMembers[id];
+      return updatedMembers;
+    });
   };
 
-  useEffect(() => {
-    fetchWorkspaces();
-  }, []);
-  
-  const fetchWorkspaceById = async (id:number): Promise<void> => {
+  const fetchWorkspaceById = async (id: number): Promise<void> => {
     setLoading(true);
 
     try {
@@ -66,25 +99,38 @@ export function WorkspaceProvider({
       setLoading(false);
     }
   };
+
+  const fetchWorkspaceMembers = async (
+    workspaceId: number
+  ): Promise<void> => {
+    setLoading(true);
+
+    try {
+      const data = await getMembersOfWorkspace(workspaceId);
+      setMembers(data);
+      setMembersByWorkspaceId((prev) => ({
+        ...prev,
+        [workspaceId]: data,
+      }));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const addMemberToWorkspace = async (
-  workspaceId: number,
-  userId: number
-): Promise<void> => {
-  await addMemberToTheWorkspace(workspaceId, userId);
-  await fetchWorkspaceMembers(workspaceId);
-  await fetchWorkspaceById(workspaceId);
-};
-  
-const fetchWorkspaceMembers = async (workspaceId: number):Promise<void>=>{
-   setLoading(true);
-  try{ 
-    const data = await getMembersOfWorkspace(workspaceId);
-    setMembers(data);
-}
-finally{
-  setLoading(false);
-}
-}
+    workspaceId: number,
+    userId: number
+  ): Promise<void> => {
+    await addMemberToTheWorkspace(workspaceId, userId);
+
+    await fetchWorkspaceMembers(workspaceId);
+    await fetchWorkspaceById(workspaceId);
+  };
+
+  useEffect(() => {
+    fetchWorkspaces();
+  }, []);
+
   return (
     <WorkspaceContext.Provider
       value={{
@@ -92,11 +138,12 @@ finally{
         currentWorkspace,
         loading,
         members,
+        membersByWorkspaceId,
         fetchWorkspaces,
         fetchWorkspaceById,
         deleteWorkspace,
         addMemberToWorkspace,
-        fetchWorkspaceMembers
+        fetchWorkspaceMembers,
       }}
     >
       {children}
@@ -108,7 +155,7 @@ export function useWorkspaces(): WorkspaceContextType {
   const context = useContext(WorkspaceContext);
 
   if (!context) {
-    throw new Error("Workspaces must be used inside WorkspaceProvider");
+    throw new Error("useWorkspaces must be used inside WorkspaceProvider");
   }
 
   return context;

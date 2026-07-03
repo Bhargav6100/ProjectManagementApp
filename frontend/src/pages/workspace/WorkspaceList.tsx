@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   Avatar,
   Box,
@@ -29,15 +29,40 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useWorkspaces } from "../../context/WorkspaceContext";
+import { useProjects } from "../../context/ProjectContext";
 
 export default function AdminWorkspaces(): React.JSX.Element {
   const navigate = useNavigate();
+
   const { user } = useAuth();
-  const { workspaces, loading, deleteWorkspace } = useWorkspaces();
+
+  const {
+    workspaces,
+    loading,
+    deleteWorkspace,
+    membersByWorkspaceId,
+    fetchWorkspaceMembers,
+  } = useWorkspaces();
+
+  const { allProjects, fetchAllProjects } = useProjects();
 
   const [search, setSearch] = useState<string>("");
 
   const isAdmin = user?.role === "ADMIN";
+
+  useEffect(() => {
+    fetchAllProjects();
+  }, []);
+
+  useEffect(() => {
+    if (workspaces.length === 0) return;
+
+    workspaces.forEach((workspace) => {
+      if (!membersByWorkspaceId[workspace.id]) {
+        fetchWorkspaceMembers(workspace.id);
+      }
+    });
+  }, [workspaces, membersByWorkspaceId, fetchWorkspaceMembers]);
 
   const filteredWorkspaces = useMemo(() => {
     return workspaces.filter((workspace) => {
@@ -54,19 +79,22 @@ export default function AdminWorkspaces(): React.JSX.Element {
     });
   }, [workspaces, search]);
 
-//   const totalProjects = workspaces.reduce(
-//     (sum, workspace) => sum + (workspace.projectCount ?? 0),
-//     0
-//   );
+  const totalMembers = useMemo(() => {
+    return Object.values(membersByWorkspaceId).reduce(
+      (sum, members) => sum + members.length,
+      0
+    );
+  }, [membersByWorkspaceId]);
 
-//   const totalMembers = workspaces.reduce(
-//     (sum, workspace) => sum + (workspace.memberCount ?? 0),
-//     0
-//   );
+  const emptyWorkspaces = useMemo(() => {
+    return workspaces.filter((workspace) => {
+      const workspaceProjects = allProjects.filter(
+        (project) => project.workspaceId === workspace.id
+      );
 
-//   const emptyWorkspaces = workspaces.filter(
-//     (workspace) => (workspace.projectCount ?? 0) === 0
-//   ).length;
+      return workspaceProjects.length === 0;
+    }).length;
+  }, [workspaces, allProjects]);
 
   const getInitials = (name: string): string => {
     return name
@@ -91,6 +119,7 @@ export default function AdminWorkspaces(): React.JSX.Element {
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
             Workspaces
           </Typography>
+
           <Typography color="text.secondary">
             View and manage all project workspaces.
           </Typography>
@@ -144,7 +173,7 @@ export default function AdminWorkspaces(): React.JSX.Element {
             <Box>
               <Typography color="text.secondary">Total Projects</Typography>
               <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                0
+                {allProjects.length}
               </Typography>
             </Box>
           </Box>
@@ -159,7 +188,7 @@ export default function AdminWorkspaces(): React.JSX.Element {
             <Box>
               <Typography color="text.secondary">Total Members</Typography>
               <Typography variant="h4" sx={{ fontWeight: 700 }}>
-               0
+                {totalMembers}
               </Typography>
             </Box>
           </Box>
@@ -168,7 +197,7 @@ export default function AdminWorkspaces(): React.JSX.Element {
         <Paper sx={{ p: 2.5, borderRadius: 3 }}>
           <Typography color="text.secondary">Empty Workspaces</Typography>
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
-            0
+            {emptyWorkspaces}
           </Typography>
         </Paper>
       </Box>
@@ -234,88 +263,115 @@ export default function AdminWorkspaces(): React.JSX.Element {
               )}
 
               {!loading &&
-                filteredWorkspaces.map((workspace) => (
-                  <TableRow
-                    key={workspace.id}
-                    onClick={() => navigate(`/dashboard/workspaces/${workspace.id}`)}
-                    hover
-                    sx={{
-                      "&:last-child td": {
-                        borderBottom: 0,
-                      },
-                    }}
-                  >
-                    <TableCell>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                        <Avatar sx={{ width: 40, height: 40 }}>
-                          {getInitials(workspace.name)}
-                        </Avatar>
+                filteredWorkspaces.map((workspace) => {
+                  const workspaceMembers =
+                    membersByWorkspaceId[workspace.id] ?? [];
 
-                        <Box>
-                          <Typography sx={{ fontWeight: 600 }}>
-                            {workspace.name}
-                          </Typography>
+                  const workspaceProjects = allProjects.filter(
+                    (project) => project.workspaceId === workspace.id
+                  );
 
-                          <Typography color="text.secondary" sx={{ fontSize: 13 }}>
-                            {workspace.description || "No description provided"}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </TableCell>
+                  const isWorkspaceActive = workspaceProjects.length > 0;
 
-                    <TableCell>{workspace.createdBy || "N/A"}</TableCell>
+                  return (
+                    <TableRow
+                      key={workspace.id}
+                      onClick={() =>
+                        navigate(`/dashboard/workspaces/${workspace.id}`)
+                      }
+                      hover
+                      sx={{
+                        cursor: "pointer",
+                        "&:last-child td": {
+                          borderBottom: 0,
+                        },
+                      }}
+                    >
+                      <TableCell>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1.5,
+                          }}
+                        >
+                          <Avatar sx={{ width: 40, height: 40 }}>
+                            {getInitials(workspace.name)}
+                          </Avatar>
 
-                    <TableCell>{0}</TableCell>
+                          <Box>
+                            <Typography sx={{ fontWeight: 600 }}>
+                              {workspace.name}
+                            </Typography>
 
-                    <TableCell>{0}</TableCell>
-
-                    <TableCell>
-                      <Chip
-                        label={
-                          (0) > 0 ? "Active" : "Empty"
-                        }
-                        size="small"
-                        color={
-                          (0) > 0 ? "success" : "default"
-                        }
-                        sx={{ fontWeight: 600 }}
-                      />
-                    </TableCell>
-
-                    <TableCell align="right">
-                      {isAdmin ? (
-                        <>
-                          <Tooltip title="Edit workspace">
-                            <IconButton size="small"
-                             onClick={(e): void => {
-                             e.stopPropagation();
-                             navigate(`/dashboard/workspaces/${workspace.id}/edit`);
-                             }}>
-                              <EditIcon fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-
-                          <Tooltip title="Delete workspace">
-                            <IconButton
-                              size="small"
-                              color="error"
-                              onClick={(e): void => {
-                              e.stopPropagation();
-                              deleteWorkspace(workspace.id);
-                             }}
+                            <Typography
+                              color="text.secondary"
+                              sx={{ fontSize: 13 }}
                             >
-                              <DeleteIcon fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-                        </>
-                      ) : (
-                        <Typography color="text.secondary" sx={{ fontSize: 13 }}>
-                          View only
-                        </Typography>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                              {workspace.description ||
+                                "No description provided"}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </TableCell>
+
+                      <TableCell>{workspace.createdBy || "N/A"}</TableCell>
+
+                      <TableCell>{workspaceMembers.length}</TableCell>
+
+                      <TableCell>{workspaceProjects.length}</TableCell>
+
+                      <TableCell>
+                        <Chip
+                          label={isWorkspaceActive ? "Active" : "Empty"}
+                          size="small"
+                          color={isWorkspaceActive ? "success" : "default"}
+                          sx={{ fontWeight: 600 }}
+                        />
+                      </TableCell>
+
+                      <TableCell align="right">
+                        {isAdmin ? (
+                          <>
+                            <Tooltip title="Edit workspace">
+                              <IconButton
+                                size="small"
+                                onClick={(e): void => {
+                                  e.stopPropagation();
+                                  navigate(
+                                    `/dashboard/workspaces/${workspace.id}/edit`
+                                  );
+                                }}
+                              >
+                                <EditIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+
+                            <Tooltip title="Delete workspace">
+                              <IconButton
+                                size="small"
+                                color="error"
+                                onClick={(e): void => {
+                                  e.stopPropagation();
+                                  deleteWorkspace(workspace.id);
+                                }}
+                              >
+                                <DeleteIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          </>
+                        ) : (
+                          <Typography
+                            color="text.secondary"
+                            sx={{ fontSize: 13 }}
+                          >
+                            View only
+                          </Typography>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
 
               {!loading && filteredWorkspaces.length === 0 && (
                 <TableRow>

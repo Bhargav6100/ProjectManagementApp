@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect,useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   Avatar,
@@ -6,7 +6,9 @@ import {
   Button,
   Chip,
   Divider,
+  MenuItem,
   Paper,
+  TextField,
   Typography,
 } from "@mui/material";
 
@@ -18,13 +20,48 @@ import FolderIcon from "@mui/icons-material/Folder";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import { useWorkspaces} from "../../context/WorkspaceContext";
 import { useProjects } from "../../context/ProjectContext";
+import GroupsIcon from "@mui/icons-material/Groups";
+import EmailIcon from "@mui/icons-material/Email";
+import { useUsers } from "../../context/UsersContext";
 
 export default function WorkspaceDetails(): React.JSX.Element {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { currentWorkspace, fetchWorkspaceById, loading } = useWorkspaces();
+  const { currentWorkspace, fetchWorkspaceById,addMemberToWorkspace,loading } = useWorkspaces();
   const { projects, fetchProjectsByWorkspace } = useProjects();
+  const { users } = useUsers();
+  const [selectedUserId, setSelectedUserId] = useState<string>("");
+  const getInitials = (firstName: string, lastName: string): string => {
+  return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+};
+
+const handleAddMember = async (): Promise<void> => {
+  if (!currentWorkspace) {
+    return;
+  }
+
+  if (!selectedUserId) {
+    alert("Please select a member");
+    return;
+  }
+
+  await addMemberToWorkspace(
+    currentWorkspace.id,
+    Number(selectedUserId)
+  );
+
+  alert("Member added to workspace successfully");
+  setSelectedUserId("");
+};
+
+const formatRole = (role: string): string => {
+  if (role === "PROJECT_MANAGER") {
+    return "Project Manager";
+  }
+
+  return role.charAt(0) + role.slice(1).toLowerCase();
+};
 
   useEffect(() => {
     if (id) {
@@ -318,6 +355,183 @@ export default function WorkspaceDetails(): React.JSX.Element {
                 Tasks
               </Typography>
             </Box>
+          </Box>
+        </Paper>
+      ))}
+    </Box>
+  )}
+</Paper>
+<Paper sx={{ p: 4, borderRadius: 3, mb: 3 }}>
+  <Box
+    sx={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      mb: 3,
+    }}
+  >
+    <Box>
+      <Typography variant="h6" sx={{ fontWeight: 700 }}>
+        Workspace Members
+      </Typography>
+
+      <Typography color="text.secondary">
+        Members available to work on projects in this workspace.
+      </Typography>
+    </Box>
+    <Paper sx={{ p: 4, borderRadius: 3, mb: 3 }}>
+  <Box
+    sx={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      mb: 3,
+    }}
+  >
+    <Box>
+      <Typography variant="h6" sx={{ fontWeight: 700 }}>
+        Workspace Members
+      </Typography>
+
+      <Typography color="text.secondary">
+        Add users to this workspace so they can work on projects and tasks.
+      </Typography>
+    </Box>
+  </Box>
+
+  <Box
+    sx={{
+      display: "flex",
+      gap: 2,
+      alignItems: "center",
+      flexWrap: "wrap",
+    }}
+  >
+    <TextField
+      select
+      label="Select Member"
+      value={selectedUserId}
+      onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+         setSelectedUserId(e.target.value)
+      }
+      sx={{ minWidth: 320 }}
+    >
+      {users.map((member) => (
+        <MenuItem key={member.id} value={String(member.id)}>
+          {member.firstName} {member.lastName} - {member.email}
+        </MenuItem>
+      ))}
+    </TextField>
+
+    <Button
+      variant="contained"
+      onClick={handleAddMember}
+      disabled={!selectedUserId}
+      sx={{
+        height: 56,
+        borderRadius: 2,
+        textTransform: "none",
+        px: 3,
+      }}
+    >
+      Add Member
+    </Button>
+  </Box>
+
+  {users.length === 0 && (
+    <Typography color="text.secondary" sx={{ mt: 2 }}>
+      No users available. Create users first before adding members to a workspace.
+    </Typography>
+  )}
+</Paper>
+    <Chip
+      icon={<GroupsIcon />}
+      label={`${users.length} Members`}
+      color="primary"
+      variant="outlined"
+      sx={{ fontWeight: 600 }}
+    />
+  </Box>
+
+  {users.length === 0 ? (
+    <Box
+      sx={{
+        border: "1px dashed #d1d5db",
+        borderRadius: 3,
+        p: 4,
+        textAlign: "center",
+      }}
+    >
+      <GroupsIcon color="disabled" sx={{ fontSize: 48, mb: 1 }} />
+
+      <Typography sx={{ fontWeight: 600 }}>No members found</Typography>
+
+      <Typography color="text.secondary">
+        Add users first so they can be assigned to projects and tasks.
+      </Typography>
+    </Box>
+  ) : (
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: {
+          xs: "1fr",
+          sm: "repeat(2, 1fr)",
+          md: "repeat(3, 1fr)",
+        },
+        gap: 2,
+      }}
+    >
+      {users.map((member) => (
+        <Paper
+          key={member.id}
+          variant="outlined"
+          sx={{
+            p: 2.5,
+            borderRadius: 3,
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <Avatar sx={{ width: 44, height: 44 }}>
+              {getInitials(member.firstName, member.lastName)}
+            </Avatar>
+
+            <Box sx={{ minWidth: 0 }}>
+              <Typography sx={{ fontWeight: 700 }}>
+                {member.firstName} {member.lastName}
+              </Typography>
+
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                <EmailIcon sx={{ fontSize: 15 }} color="disabled" />
+                <Typography
+                  color="text.secondary"
+                  sx={{
+                    fontSize: 13,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxWidth: 220,
+                  }}
+                >
+                  {member.email}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+
+          <Box sx={{ mt: 2 }}>
+            <Chip
+              label={formatRole(member.role)}
+              size="small"
+              color={
+                member.role === "ADMIN"
+                  ? "primary"
+                  : member.role === "PROJECT_MANAGER"
+                  ? "success"
+                  : "default"
+              }
+              sx={{ fontWeight: 600 }}
+            />
           </Box>
         </Paper>
       ))}

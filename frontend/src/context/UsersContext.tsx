@@ -3,7 +3,7 @@ import type { Roles } from "../utils/Roles";
 import { getAllUsers,deleteUserById} from "../services/userServices";
 
 export interface AppUser {
-  id:Number, 
+  id:number, 
   firstName: string;
   lastName: string;
   email: string;
@@ -14,7 +14,7 @@ interface UsersContextType {
   users: AppUser[];
   loading: boolean;
   fetchUsers: () => Promise<void>;
-  deleteUser: (id: Number) => Promise<void>;
+  deleteUser: (id: number) => Promise<void>;
 }
 
 const UsersContext = createContext<UsersContextType | null>(null);
@@ -38,7 +38,7 @@ export function UsersProvider({
     }
   };
 
-  const deleteUser = async (id: Number): Promise<void> => {
+  const deleteUser = async (id: number): Promise<void> => {
     await deleteUserById(id);
 
     setUsers((prevUsers) =>

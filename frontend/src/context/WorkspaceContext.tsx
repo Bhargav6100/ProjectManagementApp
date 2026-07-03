@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getAllWorkspaces,deleteWorkspacesById,getWorkspaceById} from "../services/workspaceServices";
+import {addMemberToTheWorkspace} from "../services/workspaceMembers";
 export interface AppWorkspace {
   id:number, 
   name: string;
@@ -13,7 +14,8 @@ interface WorkspaceContextType {
   loading: boolean;
   fetchWorkspaces: () => Promise<void>;
   deleteWorkspace: (id: Number) => Promise<void>;
-  fetchWorkspaceById:(id:number) =>Promise<void>
+  fetchWorkspaceById:(id:number) =>Promise<void>;
+  addMemberToWorkspace: (workspaceId: number, userId: number) => Promise<void>;
 }
 
 const WorkspaceContext = createContext<WorkspaceContextType | null>(null);
@@ -60,6 +62,14 @@ export function WorkspaceProvider({
       setLoading(false);
     }
   };
+  const addMemberToWorkspace = async (
+  workspaceId: number,
+  userId: number
+): Promise<void> => {
+  await addMemberToTheWorkspace(workspaceId, userId);
+
+  await fetchWorkspaceById(workspaceId);
+};
   return (
     <WorkspaceContext.Provider
       value={{
@@ -69,6 +79,7 @@ export function WorkspaceProvider({
         fetchWorkspaces,
         fetchWorkspaceById,
         deleteWorkspace,
+        addMemberToWorkspace,
       }}
     >
       {children}

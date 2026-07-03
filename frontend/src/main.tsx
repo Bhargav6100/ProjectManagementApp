@@ -7,6 +7,7 @@ import { AuthProvider } from './context/AuthContext.tsx'
 import {UsersProvider} from './context/UsersContext.tsx'
 import { WorkspaceProvider } from './context/WorkspaceContext.tsx'
 import { ProjectProvider } from './context/ProjectContext.tsx'
+import { TaskProvider } from './context/TaskContext.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
@@ -14,9 +15,11 @@ createRoot(document.getElementById('root')!).render(
   <UsersProvider>
   <WorkspaceProvider>
   <ProjectProvider>
+  <TaskProvider>
   <StrictMode>
   <App />
   </StrictMode>,
+  </TaskProvider>
   </ProjectProvider>  
   </WorkspaceProvider>
   </UsersProvider>

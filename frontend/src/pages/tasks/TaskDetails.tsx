@@ -166,15 +166,15 @@ export default function TaskDetails(): React.JSX.Element {
 
             <Box sx={{ display: "flex", gap: 1, mt: 1, flexWrap: "wrap" }}>
               <Chip
-                label={formatStatus(currentTask.status)}
-                color={getStatusColor(currentTask.status)}
+                label={formatStatus(currentTask.taskStatus)}
+                color={getStatusColor(currentTask.taskStatus)}
                 size="small"
                 sx={{ fontWeight: 600 }}
               />
 
               <Chip
-                label={currentTask.priority}
-                color={getPriorityColor(currentTask.priority)}
+                label={currentTask.taskPriority}
+                color={getPriorityColor(currentTask.taskPriority)}
                 size="small"
                 sx={{ fontWeight: 600 }}
               />
@@ -248,7 +248,7 @@ export default function TaskDetails(): React.JSX.Element {
                 </Typography>
 
                 <Typography sx={{ fontWeight: 600 }}>
-                  {currentTask.priority}
+                  {currentTask.taskPriority}
                 </Typography>
               </Box>
             </Box>

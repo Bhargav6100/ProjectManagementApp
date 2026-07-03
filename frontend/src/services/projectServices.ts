@@ -22,6 +22,11 @@ export async function createProject(workspaceId: number,request: ProjectRequest)
 
   return response.data;
 }
+export async function getAllProjects():Promise<ProjectResponse[]>{
+  const response = await api.get("api/projects")
+
+  return response.data;
+}
 export async function getProjectById(id:number):Promise<ProjectResponse>{
     const response = await api.get(`/api/projects/${id}`)
    

@@ -54,7 +54,10 @@ public class ProjectController {
         User currentUser = getCurrentUser(authentication);
         return ResponseEntity.ok(projectService.getProjectById(id, currentUser));
     }
-
+    @GetMapping("/api/projects")
+    public ResponseEntity<List<ProjectResponse>> findAllProjects(){
+        return ResponseEntity.ok(projectService.getAllProjects());
+    }
     @GetMapping("/api/projects/my-projects")
     public ResponseEntity<List<ProjectResponse>> getMyProjects(Authentication authentication) {
 

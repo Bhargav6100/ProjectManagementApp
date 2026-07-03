@@ -46,6 +46,14 @@ public class ProjectService {
                 .map(this::mapToProjectResponse)
                 .toList();
     }
+    public List<ProjectResponse> getAllProjects()
+            throws AccessDeniedException {
+        return projectRepository.findAll()
+                .stream()
+                .map(this::mapToProjectResponse)
+                .toList();
+    }
+
     private ProjectResponse mapToProjectResponse(Project project) {
         return new ProjectResponse(
                 project.getId(),

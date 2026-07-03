@@ -14,6 +14,8 @@ import ProjectDetails from '../pages/projects/ProjectDetails.tsx'
 import EditProject from '../pages/projects/EditProject.tsx'
 import TaskForm from '../pages/tasks/TaskForm.tsx'
 import TaskDetails from '../pages/tasks/TaskDetails.tsx'
+import EditTask from '../pages/tasks/EditTask.tsx'
+import ProjectList from '../pages/projects/ProjectList.tsx'
 function App() {
  
   return (
@@ -25,7 +27,8 @@ function App() {
     <Route element={<ProtectedRoute />}>
         {/* <Route path="/admin" element={<AdminPanel />}> */}
   <Route path="/dashboard" element={<Dashboard />} />
-  <Route path="/dashboard/users" Component={UsersList}/>
+  <Route path="/dashboard/users" element={<UsersList/>}/>
+  <Route path="/dashboard/projects" element={<ProjectList/>}/>
   <Route path="/dashboard/users/create" element={<Register/>}/>
   <Route path="/dashboard/workspaces/create" element={<WorkspaceForm/>}/>
   <Route path="/dashboard/workspaces/:id" element={<WorkspaceDetails/>}/>
@@ -35,6 +38,7 @@ function App() {
   <Route path="/dashboard/workspaces/:workspaceId/projects/:projectId/edit" element={<EditProject />}/>
   <Route path="/dashboard/workspaces/:workspaceId/projects/:projectId/tasks/:taskId" element={<TaskDetails/>}/>
   <Route path="/dashboard/workspaces/:workspaceId/projects/:projectId/tasks/create" element={<TaskForm />}/>
+  <Route path="/dashboard/workspaces/:workspaceId/projects/:projectId/tasks/:taskId/edit" element={<EditTask/>}/>
 </Route>
         {/* <Route path="/workspaces" element={<WorkspaceList />} />
         <Route path="/projects" element={<ProjectList />} />

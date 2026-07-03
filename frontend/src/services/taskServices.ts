@@ -18,8 +18,8 @@ export interface TaskResponse {
   dueDate: string;
   assignedToUserId: number;
   assignedToName?: string;
-  status: TaskStatus;
-  priority: TaskPriority;
+  taskStatus: TaskStatus;
+  taskPriority: TaskPriority;
   projectId: number;
   createdBy: string;
   createdAt: string;

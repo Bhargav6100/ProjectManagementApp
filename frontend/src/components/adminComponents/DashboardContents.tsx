@@ -1,6 +1,6 @@
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { useNavigate} from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import WorkspacesIcon from "@mui/icons-material/Workspaces";
 import FolderIcon from "@mui/icons-material/Folder";
@@ -12,9 +12,13 @@ import SelectWorkspaceDialog from "../../components/common/SelectWorkspaceDialog
 export default function DashboardContents(): React.JSX.Element {
   const {users} = useUsers();
   const {workspaces} = useWorkspaces();
-  const {projects} = useProjects();
+  const {allProjects,fetchAllProjects} = useProjects();
   const navigate = useNavigate();
   const [projectDialogOpen, setProjectDialogOpen] = useState<boolean>(false);
+  
+  useEffect(()=>{
+    fetchAllProjects();
+  },[])
     return (
      <> 
     <Box>
@@ -48,10 +52,10 @@ export default function DashboardContents(): React.JSX.Element {
           </Typography>
         </Paper>
 
-        <Paper sx={{ p: 3, borderRadius: 3 }}>
+        <Paper onClick={(()=>navigate("/dashboard/projects"))} sx={{ p: 3, borderRadius: 3 }}>
           <Typography color="text.secondary">Projects</Typography>
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
-           {projects.length}
+           {allProjects.length}
           </Typography>
         </Paper>
 

@@ -146,7 +146,7 @@ const getPriorityColor = (
             startIcon={<ArrowBackIcon />}
             sx={{ mb: 1, textTransform: "none" }}
             onClick={() =>
-              navigate(`/dashboard/workspaces/${workspaceId}/projects`)
+              navigate(`/dashboard/projects`)
             }
           >
             Back to Projects
@@ -406,15 +406,15 @@ const getPriorityColor = (
             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
               <Chip
                 size="small"
-                label={formatTaskStatus(task.status)}
-                color={getTaskStatusColor(task.status)}
+                label={formatTaskStatus(task.taskStatus)}
+                color={getTaskStatusColor(task.taskStatus)}
                 sx={{ fontWeight: 600 }}
               />
 
               <Chip
                 size="small"
-                label={task.priority}
-                color={getPriorityColor(task.priority)}
+                label={task.taskPriority}
+                color={getPriorityColor(task.taskPriority)}
                 sx={{ fontWeight: 600 }}
               />
             </Box>

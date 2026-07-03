@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import type {Roles}  from "../utils/Roles";
 
 export interface User{
+    id:number,
     firstName:string,
     lastName:string,
     email:string,

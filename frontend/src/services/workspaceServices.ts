@@ -4,7 +4,6 @@ export interface WorkspaceRequest {
   description: string;
 }
 
-
 export interface WorkspaceResponse {
   id: number;
   name: string;
@@ -25,7 +24,6 @@ export async function updateWorkspace(workspaceId:number,request:WorkspaceReques
     const response = await api.put(`/api/workspaces/${workspaceId}`,request)
     return response.data;
 }
-
 export async function deleteWorkspacesById(id:Number){
   const response = await api.delete(`/api/workspaces/${id}`);
    return  response.data;
@@ -34,5 +32,9 @@ export async function createWorkspace(
   request: WorkspaceRequest
 ): Promise<WorkspaceResponse> {
   const response = await api.post<WorkspaceResponse>("/api/workspaces", request);
+  return response.data;
+}
+  export async function getMyWorkspaces(): Promise<WorkspaceResponse[]> {
+  const response = await api.get<WorkspaceResponse[]>("/api/workspaces/my-workspaces");
   return response.data;
 }

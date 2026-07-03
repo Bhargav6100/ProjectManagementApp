@@ -26,6 +26,7 @@ interface RegisterRequest{
   role: Roles
 }
 interface RegisterResponse {
+  id: number,
   firstName: string;
   lastName: string;
   email: string;

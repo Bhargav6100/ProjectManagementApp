@@ -4,6 +4,7 @@ import {
   getAllWorkspaces,
   deleteWorkspacesById,
   getWorkspaceById,
+  getMyWorkspaces
 } from "../services/workspaceServices";
 
 import {
@@ -39,6 +40,7 @@ interface WorkspaceContextType {
   members: WorkspaceMemberResponse[];
   membersByWorkspaceId: Record<number, WorkspaceMemberResponse[]>;
   fetchWorkspaces: () => Promise<void>;
+  fetchMyWorkspaces:() => Promise<void>;
   deleteWorkspace: (id: number) => Promise<void>;
   fetchWorkspaceById: (id: number) => Promise<void>;
   addMemberToWorkspace: (workspaceId: number,userId: number) => Promise<void>;
@@ -74,6 +76,9 @@ export function WorkspaceProvider({
       setLoading(false);
     }
   };
+  useEffect(() => {
+    fetchWorkspaces();
+  }, []);
 
   const deleteWorkspace = async (id: number): Promise<void> => {
     await deleteWorkspacesById(id);
@@ -127,9 +132,17 @@ export function WorkspaceProvider({
     await fetchWorkspaceById(workspaceId);
   };
 
-  useEffect(() => {
-    fetchWorkspaces();
-  }, []);
+  const fetchMyWorkspaces = async (): Promise<void> => {
+  setLoading(true);
+
+  try {
+    const data = await getMyWorkspaces();
+    setWorkspaces(data);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <WorkspaceContext.Provider
@@ -140,6 +153,7 @@ export function WorkspaceProvider({
         members,
         membersByWorkspaceId,
         fetchWorkspaces,
+        fetchMyWorkspaces,
         fetchWorkspaceById,
         deleteWorkspace,
         addMemberToWorkspace,

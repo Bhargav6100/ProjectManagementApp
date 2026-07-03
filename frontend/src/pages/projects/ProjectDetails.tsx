@@ -18,6 +18,7 @@ import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import EditIcon from "@mui/icons-material/Edit";
 
 import { useProjects } from "../../context/ProjectContext";
+import { useTasks } from "../../context/TaskContext";
 import type { ProjectStatus } from "../../utils/ProjectStatus";
 
 export default function ProjectDetails(): React.JSX.Element {
@@ -25,10 +26,12 @@ export default function ProjectDetails(): React.JSX.Element {
   const navigate = useNavigate();
 
   const { currentProject, fetchProjectById, loading } = useProjects();
-
+  const {tasks,fetchTasksByProject} = useTasks();
   useEffect(() => {
     if (projectId) {
       fetchProjectById(Number(projectId));
+      fetchTasksByProject(Number(projectId));
+
     }
   }, [projectId]);
 
@@ -53,6 +56,53 @@ export default function ProjectDetails(): React.JSX.Element {
 
     return "default";
   };
+  const formatTaskStatus = (status: string): string => {
+  if (status === "TO_DO") {
+    return "To Do";
+  }
+
+  if (status === "IN_PROGRESS") {
+    return "In Progress";
+  }
+
+  return "Done";
+};
+
+const getTaskStatusColor = (
+  status: string
+): "warning" | "info" | "success" | "default" => {
+  if (status === "TO_DO") {
+    return "warning";
+  }
+
+  if (status === "IN_PROGRESS") {
+    return "info";
+  }
+
+  if (status === "DONE") {
+    return "success";
+  }
+
+  return "default";
+};
+
+const getPriorityColor = (
+  priority: string
+): "success" | "warning" | "error" | "default" => {
+  if (priority === "LOW") {
+    return "success";
+  }
+
+  if (priority === "MEDIUM") {
+    return "warning";
+  }
+
+  if (priority === "HIGH") {
+    return "error";
+  }
+
+  return "default";
+};
 
   if (loading) {
     return (
@@ -232,28 +282,152 @@ export default function ProjectDetails(): React.JSX.Element {
         </Box>
       </Paper>
 
-      <Paper sx={{ p: 4, borderRadius: 3 }}>
-        <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
-          Project Tasks
-        </Typography>
+     <Paper sx={{ p: 4, borderRadius: 3 }}>
+  <Box
+    sx={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      mb: 3,
+    }}
+  >
+    <Box>
+      <Typography variant="h6" sx={{ fontWeight: 700 }}>
+        Project Tasks
+      </Typography>
 
-        <Typography color="text.secondary" sx={{ mb: 3 }}>
-          Tasks connected to this project will be displayed here.
-        </Typography>
+      <Typography color="text.secondary">
+        Tasks connected to this project.
+      </Typography>
+    </Box>
 
-        <Button
+    <Button
+      variant="contained"
+      startIcon={<TaskAltIcon />}
+      sx={{ textTransform: "none", borderRadius: 2 }}
+      onClick={() =>
+        navigate(
+          `/dashboard/workspaces/${workspaceId}/projects/${currentProject.id}/tasks/create`
+        )
+      }
+    >
+      Create Task
+    </Button>
+  </Box>
+
+  {tasks.length === 0 ? (
+    <Box
+      sx={{
+        border: "1px dashed #d1d5db",
+        borderRadius: 3,
+        p: 4,
+        textAlign: "center",
+      }}
+    >
+      <TaskAltIcon color="disabled" sx={{ fontSize: 48, mb: 1 }} />
+
+      <Typography sx={{ fontWeight: 600 }}>
+        No tasks found
+      </Typography>
+
+      <Typography color="text.secondary" sx={{ mb: 2 }}>
+        Create your first task inside this project.
+      </Typography>
+
+      <Button
+        variant="outlined"
+        startIcon={<TaskAltIcon />}
+        sx={{ textTransform: "none", borderRadius: 2 }}
+        onClick={() =>
+          navigate(
+            `/dashboard/workspaces/${workspaceId}/projects/${currentProject.id}/tasks/create`
+          )
+        }
+      >
+        Create Task
+      </Button>
+    </Box>
+  ) : (
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: {
+          xs: "1fr",
+          md: "repeat(2, 1fr)",
+          lg: "repeat(3, 1fr)",
+        },
+        gap: 2,
+      }}
+    >
+      {tasks.map((task) => (
+        <Paper
+          key={task.id}
           variant="outlined"
-          startIcon={<TaskAltIcon />}
-          sx={{ textTransform: "none", borderRadius: 2 }}
+          sx={{
+            p: 2.5,
+            borderRadius: 3,
+            cursor: "pointer",
+            transition: "0.2s",
+            "&:hover": {
+              boxShadow: 3,
+              transform: "translateY(-2px)",
+            },
+          }}
           onClick={() =>
             navigate(
-              `/dashboard/workspaces/${workspaceId}/projects/${currentProject.id}/tasks`
+              `/dashboard/workspaces/${workspaceId}/projects/${currentProject.id}/tasks/${task.id}`
             )
           }
         >
-          Open Tasks
-        </Button>
-      </Paper>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
+            <Avatar sx={{ width: 42, height: 42 }}>
+              <TaskAltIcon />
+            </Avatar>
+
+            <Box>
+              <Typography sx={{ fontWeight: 700 }}>
+                {task.title}
+              </Typography>
+
+              <Typography color="text.secondary" sx={{ fontSize: 13 }}>
+                Assigned to{" "}
+                {task.assignedToName
+                  ? task.assignedToName
+                  : `User ID: ${task.assignedToUserId}`}
+              </Typography>
+            </Box>
+          </Box>
+
+          <Typography color="text.secondary" sx={{ mb: 2 }}>
+            {task.description || "No description provided."}
+          </Typography>
+
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+              <Chip
+                size="small"
+                label={formatTaskStatus(task.status)}
+                color={getTaskStatusColor(task.status)}
+                sx={{ fontWeight: 600 }}
+              />
+
+              <Chip
+                size="small"
+                label={task.priority}
+                color={getPriorityColor(task.priority)}
+                sx={{ fontWeight: 600 }}
+              />
+            </Box>
+
+            <Typography color="text.secondary" sx={{ fontSize: 13 }}>
+              Due Date: {new Date(task.dueDate).toLocaleDateString()}
+            </Typography>
+          </Box>
+        </Paper>
+      ))}
+    </Box>
+  )}
+</Paper>
     </Box>
   );
 }

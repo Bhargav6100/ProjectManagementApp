@@ -12,15 +12,15 @@ import {
 
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import { createTask } from "../../services/taskServices";
-import { useUsers } from "../../context/UsersContext";
 import type { TaskStatus } from "../../utils/TaskStatus";
 import type { TaskPriority } from "../../utils/TaskPriority";
+import { useWorkspaces } from "../../context/WorkspaceContext";
 
 export default function TaskForm(): React.JSX.Element {
   const navigate = useNavigate();
   const { workspaceId, projectId } = useParams();
 
-  const { users } = useUsers();
+  const {members}=useWorkspaces();
 
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -124,7 +124,7 @@ export default function TaskForm(): React.JSX.Element {
               setAssignedToUserId(e.target.value)
             }
           >
-            {users.map((member) => (
+            {members.map((member) => (
               <MenuItem key={member.id} value={String(member.id)}>
                 {member.firstName} {member.lastName} - {member.email}
               </MenuItem>
@@ -183,7 +183,7 @@ export default function TaskForm(): React.JSX.Element {
             variant="outlined"
             sx={{ borderRadius: 2, textTransform: "none" }}
             onClick={() =>
-              navigate(`/dashboard/workspaces/${workspaceId}/projects/${projectId}`)
+              navigate(`/dashboard/workspaces/${workspaceId}`)
             }
           >
             Cancel

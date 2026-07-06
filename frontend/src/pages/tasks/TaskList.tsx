@@ -51,7 +51,10 @@ export default function TaskList({
   const {user} = useAuth();
   const [search, setSearch] = useState<string>("");
   const [projectDialogOpen, setProjectDialogOpen] = useState<boolean>(false);
-
+ 
+  const isAdmin = user?.role=="ADMIN";
+  const isPM = user?.role=="PROJECT_MANAGER";
+  
   useEffect(() => {
     if(!user){
       return;
@@ -229,14 +232,14 @@ export default function TaskList({
           </Typography>
         </Box>
 
-        <Button
+        {isAdmin && isPM && <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={() => setProjectDialogOpen(true)}
           sx={{ borderRadius: 2, textTransform: "none", px: 3 }}
         >
           Create Task
-        </Button>
+        </Button>}
       </Box>
 
       <Box

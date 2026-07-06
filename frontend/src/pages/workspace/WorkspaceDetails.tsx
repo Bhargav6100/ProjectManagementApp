@@ -23,6 +23,7 @@ import { useProjects } from "../../context/ProjectContext";
 import GroupsIcon from "@mui/icons-material/Groups";
 import EmailIcon from "@mui/icons-material/Email";
 import { useUsers } from "../../context/UsersContext";
+import { useAuth } from "../../context/AuthContext";
 
 export default function WorkspaceDetails(): React.JSX.Element {
   const { id } = useParams();
@@ -31,11 +32,13 @@ export default function WorkspaceDetails(): React.JSX.Element {
   const { currentWorkspace, fetchWorkspaceById,addMemberToWorkspace,loading,fetchWorkspaceMembers,members } = useWorkspaces();
   const { projects, fetchProjectsByWorkspace } = useProjects();
   const { users } = useUsers();
+  const {user} = useAuth();
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const getInitials = (firstName: string, lastName: string): string => {
   return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
 };
-
+   const isAdmin = user?.role=="ADMIN";
+   const isPM = user?.role=="PROJECT_MANAGER";
 const handleAddMember = async (): Promise<void> => {
   if (!currentWorkspace) {
     return;
@@ -230,7 +233,7 @@ const formatRole = (role: string): string => {
       </Typography>
     </Box>
 
-    <Button
+    {isAdmin && isPM && <Button
       variant="outlined"
       startIcon={<FolderIcon />}
       sx={{ textTransform: "none", borderRadius: 2 }}
@@ -239,7 +242,7 @@ const formatRole = (role: string): string => {
       }
     >
       Create Project
-    </Button>
+    </Button>}
   </Box>
 
   {projects.length === 0 ? (
@@ -380,7 +383,7 @@ const formatRole = (role: string): string => {
         Members available to work on projects in this workspace.
       </Typography>
     </Box>
-    <Paper sx={{ p: 4, borderRadius: 3, mb: 3 }}>
+   {isAdmin && isPM && <Paper sx={{ p: 4, borderRadius: 3, mb: 3 }}>
   <Box
     sx={{
       display: "flex",
@@ -389,7 +392,7 @@ const formatRole = (role: string): string => {
       mb: 3,
     }}
   >
-    <Box>
+     <Box>
       <Typography variant="h6" sx={{ fontWeight: 700 }}>
         Workspace Members
       </Typography>
@@ -444,7 +447,7 @@ const formatRole = (role: string): string => {
       No users available. Create users first before adding members to a workspace.
     </Typography>
   )}
-</Paper>
+</Paper>}
     <Chip
       icon={<GroupsIcon />}
       label={`${members.length} Members`}

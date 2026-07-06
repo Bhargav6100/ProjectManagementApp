@@ -19,6 +19,7 @@ import EditIcon from "@mui/icons-material/Edit";
 
 import { useProjects } from "../../context/ProjectContext";
 import { useTasks } from "../../context/TaskContext";
+import {useAuth} from "../../context/AuthContext";
 import type { ProjectStatus } from "../../utils/ProjectStatus";
 
 export default function ProjectDetails(): React.JSX.Element {
@@ -27,6 +28,9 @@ export default function ProjectDetails(): React.JSX.Element {
 
   const { currentProject, fetchProjectById, loading } = useProjects();
   const {tasks,fetchTasksByProject} = useTasks();
+  const {user} = useAuth();
+  const isAdmin = user?.role === "ADMIN";
+  const isPM = user?.role ==="PROJECT_MANAGER";
   useEffect(() => {
     if (projectId) {
       fetchProjectById(Number(projectId));
@@ -162,7 +166,7 @@ const getPriorityColor = (
         </Box>
 
         <Box sx={{ display: "flex", gap: 1.5 }}>
-          <Button
+         {isAdmin && isPM &&<Button
             variant="outlined"
             startIcon={<EditIcon />}
             sx={{ borderRadius: 2, textTransform: "none", px: 3 }}
@@ -173,9 +177,9 @@ const getPriorityColor = (
             }
           >
             Edit Project
-          </Button>
+          </Button>}
 
-          <Button
+         {isAdmin && isPM && <Button
             variant="contained"
             startIcon={<TaskAltIcon />}
             sx={{ borderRadius: 2, textTransform: "none", px: 3 }}
@@ -186,7 +190,7 @@ const getPriorityColor = (
             }
           >
             Create Task
-          </Button>
+          </Button>}
         </Box>
       </Box>
 
@@ -301,7 +305,7 @@ const getPriorityColor = (
       </Typography>
     </Box>
 
-    <Button
+    {isAdmin && isPM && <Button
       variant="contained"
       startIcon={<TaskAltIcon />}
       sx={{ textTransform: "none", borderRadius: 2 }}
@@ -312,7 +316,7 @@ const getPriorityColor = (
       }
     >
       Create Task
-    </Button>
+    </Button>}
   </Box>
 
   {tasks.length === 0 ? (
@@ -330,11 +334,11 @@ const getPriorityColor = (
         No tasks found
       </Typography>
 
-      <Typography color="text.secondary" sx={{ mb: 2 }}>
+      {isAdmin && isPM && <Typography color="text.secondary" sx={{ mb: 2 }}>
         Create your first task inside this project.
-      </Typography>
+      </Typography>}
 
-      <Button
+      {isAdmin && isPM &&<Button
         variant="outlined"
         startIcon={<TaskAltIcon />}
         sx={{ textTransform: "none", borderRadius: 2 }}
@@ -345,7 +349,7 @@ const getPriorityColor = (
         }
       >
         Create Task
-      </Button>
+      </Button>}
     </Box>
   ) : (
     <Box

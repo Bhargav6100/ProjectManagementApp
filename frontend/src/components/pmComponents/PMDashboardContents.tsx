@@ -23,7 +23,7 @@ export default function PMDashboardContents(): React.JSX.Element {
 
   const { users } = useUsers();
   const { workspaces, fetchMyWorkspaces } = useWorkspaces();
-  const { allProjects, fetchAllProjects } = useProjects();
+  const { allProjects, fetchMyProjects } = useProjects();
   const { allTasks, fetchAllTasks } = useTasks();
 
   const [projectDialogOpen, setProjectDialogOpen] = useState<boolean>(false);
@@ -31,7 +31,7 @@ export default function PMDashboardContents(): React.JSX.Element {
 
   useEffect(() => {
     fetchMyWorkspaces();
-    fetchAllProjects();
+    fetchMyProjects();
     fetchAllTasks();
   }, []);
 

@@ -27,6 +27,10 @@ export async function getAllProjects():Promise<ProjectResponse[]>{
 
   return response.data;
 }
+export async function getMyProjects(): Promise<ProjectResponse[]> {
+  const response = await api.get<ProjectResponse[]>("/api/projects/my-projects");
+  return response.data;
+}
 export async function getProjectById(id:number):Promise<ProjectResponse>{
     const response = await api.get(`/api/projects/${id}`)
    

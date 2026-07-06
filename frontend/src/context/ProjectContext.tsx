@@ -2,6 +2,7 @@ import { createContext, useContext, useState } from "react";
 import type { ProjectStatus } from "../utils/ProjectStatus";
 import {
   getAllProjects,
+  getMyProjects,
   getProjectsByWorkspace,
   getProjectById,
   deleteProjectById,
@@ -25,6 +26,7 @@ interface ProjectContextType {
   fetchProjectsByWorkspace: (workspaceId: number) => Promise<void>;
   fetchProjectById: (projectId: number) => Promise<void>;
   fetchAllProjects: ()=> Promise<void>;
+  fetchMyProjects: () => Promise<void>;
   deleteProject: (projectId: number) => Promise<void>;
 }
 
@@ -63,6 +65,16 @@ export function ProjectProvider({
       setLoading(false);
     }
   }
+  const fetchMyProjects = async (): Promise<void> => {
+  setLoading(true);
+
+  try {
+    const data = await getMyProjects();
+    setAllProjects(data);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const fetchProjectById = async (projectId: number): Promise<void> => {
     setLoading(true);
@@ -94,6 +106,7 @@ export function ProjectProvider({
         loading,
         allProjects,
         fetchAllProjects,
+        fetchMyProjects,
         fetchProjectsByWorkspace,
         fetchProjectById,
         deleteProject,

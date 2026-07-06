@@ -302,6 +302,13 @@ public class TaskService {
                 ))
                 .toList();
     }
+    public List<TaskResponse> getAllTasksAssignedByMe(User currentUser) {
+
+        return taskRepository.findByAssignedById(currentUser.getId())
+                .stream()
+                .map(this::mapToTaskResponse)
+                .toList();
+    }
     public List<TaskResponse> getMyAssignedTasks(User currentUser) {
 
         return taskRepository.findByAssignedToId(currentUser.getId())

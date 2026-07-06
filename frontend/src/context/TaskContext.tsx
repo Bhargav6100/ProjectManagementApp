@@ -6,6 +6,8 @@ import {
   deleteTaskById,
   getTaskById,
   getTasksByProject,
+  getMyTasks,
+  getTasksCreatedByMe
 } from "../services/taskServices";
 
 export interface AppTask {
@@ -27,7 +29,10 @@ interface TaskContextType {
   allTasks: AppTask[];
   currentTask: AppTask | null;
   loading: boolean;
+  myCreatedTasks: AppTask[];
   fetchAllTasks:() => Promise<void>;
+  fetchMyTasks:()=> Promise<void>;
+  fetchMyAssignedTasks:()=>Promise<void>;
   fetchTasksByProject: (projectId: number) => Promise<void>;
   fetchTaskById: (taskId: number) => Promise<void>;
   deleteTask: (taskId: number) => Promise<void>;
@@ -44,7 +49,7 @@ export function TaskProvider({
   const [allTasks,setAllTasks]=useState<AppTask[]>([]);
   const [currentTask, setCurrentTask] = useState<AppTask | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-
+  const [myCreatedTasks,setMyCreatedTasks]=useState<AppTask[]>([]);
   const fetchTasksByProject = async (projectId: number): Promise<void> => {
     setLoading(true);
 
@@ -77,6 +82,27 @@ export function TaskProvider({
       setLoading(false);
     }
   };
+ 
+    const fetchMyTasks = async (): Promise<void> => {
+    setLoading(true);
+  
+    try {
+      const data = await getMyTasks();
+      setAllTasks(data);
+    } finally {
+      setLoading(false);
+    }
+  };
+   const fetchMyAssignedTasks = async (): Promise<void> => {
+    setLoading(true);
+  
+    try {
+      const data = await getTasksCreatedByMe();
+      setMyCreatedTasks(data);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const deleteTask = async (taskId: number): Promise<void> => {
     await deleteTaskById(taskId);
@@ -92,8 +118,11 @@ export function TaskProvider({
         tasks,
         allTasks,
         currentTask,
+        myCreatedTasks,
         loading,
         fetchAllTasks,
+        fetchMyTasks,
+        fetchMyAssignedTasks,
         fetchTasksByProject,
         fetchTaskById,
         deleteTask,

@@ -26,23 +26,31 @@ import { useNavigate } from "react-router-dom";
 import { useProjects } from "../../context/ProjectContext";
 import SelectWorkspaceDialog from "../../components/common/SelectWorkspaceDialog";
 import type { ProjectStatus } from "../../utils/ProjectStatus";
+import { useAuth } from "../../context/AuthContext";
 
 export default function ProjectList(): React.JSX.Element {
   const navigate = useNavigate();
 
-  const { allProjects, fetchAllProjects, loading } = useProjects();
-
+  const { allProjects, fetchAllProjects,fetchMyProjects, loading } = useProjects();
+  const {user} = useAuth();
   const [search, setSearch] = useState<string>("");
   const [workspaceDialogOpen, setWorkspaceDialogOpen] =
     useState<boolean>(false);
 
-  useEffect(() => {
-    fetchAllProjects();
-  }, []);
+   useEffect(() => {
+    if (!user) return;
+
+    if (user.role === "ADMIN") {
+      fetchAllProjects();
+    } else {
+      console.log("mounted")
+      fetchMyProjects();
+    }
+  }, [user]);
 
   const filteredProjects = useMemo(() => {
     const query = search.toLowerCase();
-
+   
     return allProjects.filter((project) => {
       const name = project.name.toLowerCase();
       const description = project.description?.toLowerCase() ?? "";

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext,  useState } from "react";
 
 import {
   getAllWorkspaces,
@@ -76,10 +76,7 @@ export function WorkspaceProvider({
       setLoading(false);
     }
   };
-  useEffect(() => {
-    fetchWorkspaces();
-  }, []);
-
+  
   const deleteWorkspace = async (id: number): Promise<void> => {
     await deleteWorkspacesById(id);
 

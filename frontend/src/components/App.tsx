@@ -18,7 +18,7 @@ import EditTask from '../pages/tasks/EditTask.tsx'
 import ProjectList from '../pages/projects/ProjectList.tsx'
 import TaskList from '../pages/tasks/TaskList.tsx'
 function App() {
- 
+
   return (
     <>
     <Routes>
@@ -31,6 +31,8 @@ function App() {
   <Route path="/dashboard/users" element={<UsersList/>}/>
   <Route path="/dashboard/projects" element={<ProjectList/>}/>
   <Route path="/dashboard/tasks" element={<TaskList/>}/>
+  <Route path="/dashboard/my-tasks" element={<TaskList mode="assignedToMe"/>}/>
+  <Route path="/dashboard/my-assigned-tasks" element={<TaskList mode="createdByMe"/>}/>
   <Route path="/dashboard/users/create" element={<Register/>}/>
   <Route path="/dashboard/workspaces/create" element={<WorkspaceForm/>}/>
   <Route path="/dashboard/workspaces/:id" element={<WorkspaceDetails/>}/>

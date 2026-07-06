@@ -38,20 +38,31 @@ export default function AdminWorkspaces(): React.JSX.Element {
 
   const {
     workspaces,
+    fetchWorkspaces,
+    fetchMyWorkspaces,
     loading,
     deleteWorkspace,
     membersByWorkspaceId,
     fetchWorkspaceMembers,
   } = useWorkspaces();
 
-  const { allProjects, fetchAllProjects } = useProjects();
-
+  const { allProjects, fetchAllProjects,fetchMyProjects } = useProjects();
   const [search, setSearch] = useState<string>("");
 
   const isAdmin = user?.role === "ADMIN";
 
   useEffect(() => {
+    if(!user) return;
+    if(isAdmin){
+      console.log("Admin")
+    fetchWorkspaces();
     fetchAllProjects();
+    }
+    else{
+      console.log("pm")
+     fetchMyWorkspaces();
+     fetchMyProjects(); 
+    }
   }, []);
 
   useEffect(() => {

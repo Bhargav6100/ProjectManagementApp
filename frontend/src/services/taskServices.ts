@@ -31,7 +31,7 @@ export async function createTask(projectId: number,request: TaskRequest):Promise
 }
 
 export async function getAllTasks():Promise<TaskResponse[]>{
-  const response = await api.get("api/tasks")
+  const response = await api.get("/api/tasks")
 
   return response.data;
 }
@@ -45,7 +45,14 @@ export async function getTaskById(id: number): Promise<TaskResponse> {
   const response = await api.get<TaskResponse>(`/api/tasks/${id}`);
   return response.data;
 }
-
+export async function getMyTasks():Promise<TaskResponse[]>{
+  const response = await api.get("/api/tasks/my-tasks");
+  return response.data;
+}
+export async function getTasksCreatedByMe():Promise<TaskResponse[]>{
+  const response = await api.get("/api/tasks/my-assigned-tasks");
+  return response.data;
+}
 export async function updateTask(taskId: number,request: TaskRequest): Promise<TaskResponse> {
   const response = await api.put<TaskResponse>(`/api/tasks/${taskId}`,request);
   return response.data;

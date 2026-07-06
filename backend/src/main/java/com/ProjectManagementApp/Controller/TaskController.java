@@ -61,6 +61,12 @@ public class TaskController {
         User currentUser = getCurrentUser(authentication);
         return ResponseEntity.ok(taskService.getMyAssignedTasks(currentUser));
     }
+    @GetMapping("/tasks/my-assigned-tasks")
+    public ResponseEntity<List<TaskResponse>> getMyAssignedTasks(Authentication authentication) {
+
+        User currentUser = getCurrentUser(authentication);
+        return ResponseEntity.ok(taskService.getAllTasksAssignedByMe(currentUser));
+    }
 
     @PutMapping("/tasks/{taskId}")
     public ResponseEntity<TaskResponse> updateTask(

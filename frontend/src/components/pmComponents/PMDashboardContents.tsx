@@ -24,7 +24,7 @@ export default function PMDashboardContents(): React.JSX.Element {
   const { users } = useUsers();
   const { workspaces, fetchMyWorkspaces } = useWorkspaces();
   const { allProjects, fetchMyProjects } = useProjects();
-  const { allTasks, fetchAllTasks } = useTasks();
+  const { allTasks, myCreatedTasks, fetchMyTasks,fetchMyAssignedTasks } = useTasks();
 
   const [projectDialogOpen, setProjectDialogOpen] = useState<boolean>(false);
   const [taskDialogOpen, setTaskDialogOpen] = useState<boolean>(false);
@@ -32,13 +32,14 @@ export default function PMDashboardContents(): React.JSX.Element {
   useEffect(() => {
     fetchMyWorkspaces();
     fetchMyProjects();
-    fetchAllTasks();
+    fetchMyTasks();
+    fetchMyAssignedTasks();
   }, []);
 
   const myWorkspaces = useMemo(() => {
     return workspaces;
   }, [workspaces]);
-
+ console.log(myCreatedTasks)
  const myWorkspaceIds = new Set(workspaces.map((workspace) => workspace.id));
 
 const myProjects = allProjects.filter((project) =>
@@ -51,41 +52,18 @@ const myProjects = allProjects.filter((project) =>
 
   const myTasks = useMemo(() => {
     const currentUserId = user?.id;
-    const currentUserEmail = user?.email;
-
-    const currentUserFullName = `${user?.firstName ?? ""} ${
-      user?.lastName ?? ""
-    }`.trim();
 
     return allTasks.filter((task) => {
       const taskBelongsToMyProject = myProjectIds.has(task.projectId);
 
       const assignedToMe = task.assignedToUserId === currentUserId;
 
-      const createdByMe =
-        task.createdBy === currentUserEmail ||
-        task.createdBy === currentUserFullName;
-
-      return taskBelongsToMyProject && (assignedToMe || createdByMe);
+      return taskBelongsToMyProject && (assignedToMe);
     });
   }, [allTasks, myProjectIds, user]);
 
   const assignedToMeTasks = useMemo(() => {
     return myTasks.filter((task) => task.assignedToUserId === user?.id);
-  }, [myTasks, user]);
-
-  const createdByMeTasks = useMemo(() => {
-    const currentUserEmail = user?.email;
-
-    const currentUserFullName = `${user?.firstName ?? ""} ${
-      user?.lastName ?? ""
-    }`.trim();
-
-    return myTasks.filter(
-      (task) =>
-        task.createdBy === currentUserEmail ||
-        task.createdBy === currentUserFullName
-    );
   }, [myTasks, user]);
 
   return (
@@ -199,7 +177,7 @@ const myProjects = allProjects.filter((project) =>
             mb: 3,
           }}
         >
-          <Paper sx={{ p: 3, borderRadius: 3 }}>
+          <Paper onClick={()=>navigate("/dashboard/my-tasks")}sx={{ p: 3, borderRadius: 3 }}>
             <Typography color="text.secondary">Tasks Assigned To Me</Typography>
 
             <Typography variant="h4" sx={{ fontWeight: 700 }}>
@@ -207,11 +185,11 @@ const myProjects = allProjects.filter((project) =>
             </Typography>
           </Paper>
 
-          <Paper sx={{ p: 3, borderRadius: 3 }}>
+          <Paper onClick={()=>navigate("/dashboard/my-assigned-tasks")} sx={{ p: 3, borderRadius: 3 }}>
             <Typography color="text.secondary">Tasks Created By Me</Typography>
 
             <Typography variant="h4" sx={{ fontWeight: 700 }}>
-              {createdByMeTasks.length}
+              {myCreatedTasks.length}
             </Typography>
           </Paper>
         </Box>

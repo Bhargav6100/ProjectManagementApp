@@ -29,31 +29,63 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 
 import { useNavigate } from "react-router-dom";
-
+import {useAuth} from "../../context/AuthContext";
 import { useTasks } from "../../context/TaskContext";
 import { useProjects } from "../../context/ProjectContext";
 
 import type { TaskStatus } from "../../utils/TaskStatus";
 import type { TaskPriority } from "../../utils/TaskPriority";
 
-export default function TaskList(): React.JSX.Element {
+type TaskListMode = "all" | "createdByMe" | "assignedToMe";
+
+interface TaskListProps {
+  mode?: TaskListMode;
+}
+export default function TaskList({
+   mode = "all",
+}: TaskListProps): React.JSX.Element {
   const navigate = useNavigate();
 
-  const { allTasks, fetchAllTasks, loading } = useTasks();
-  const { allProjects, fetchAllProjects } = useProjects();
-
+  const { allTasks, fetchAllTasks,fetchMyTasks,fetchMyAssignedTasks,myCreatedTasks, loading } = useTasks();
+  const { allProjects } = useProjects();
+  const {user} = useAuth();
   const [search, setSearch] = useState<string>("");
   const [projectDialogOpen, setProjectDialogOpen] = useState<boolean>(false);
 
   useEffect(() => {
+    if(!user){
+      return;
+    }
+    if(user.role=="ADMIN"){
     fetchAllTasks();
-    fetchAllProjects();
-  }, []);
+    }
+    else{
+       if (mode === "all") {
+      fetchAllTasks();
+    }
+
+    if (mode === "createdByMe") {
+      fetchMyAssignedTasks();
+    }
+
+    if (mode === "assignedToMe") {
+      fetchMyTasks();
+    }
+    }
+  }, [mode]);
+
+   const displayedTasks = useMemo(() => {
+    if (mode === "createdByMe") {
+      return myCreatedTasks;
+    }
+    return allTasks;
+  }, [mode, allTasks, myCreatedTasks]);
+
 
   const filteredTasks = useMemo(() => {
     const query = search.toLowerCase();
 
-    return allTasks.filter((task) => {
+    return displayedTasks.filter((task) => {
       const title = task.title.toLowerCase();
       const description = task.description?.toLowerCase() ?? "";
       const assignedToName = task.assignedToName?.toLowerCase() ?? "";

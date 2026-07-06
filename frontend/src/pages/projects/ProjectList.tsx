@@ -129,7 +129,7 @@ export default function ProjectList(): React.JSX.Element {
           </Typography>
 
           <Typography color="text.secondary">
-            View all projects across all workspaces.
+            {user?.role=="ADMIN"?"View all projects across all workspaces.":"View all projects across your workspaces"}
           </Typography>
         </Box>
 

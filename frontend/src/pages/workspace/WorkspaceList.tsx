@@ -54,12 +54,10 @@ export default function AdminWorkspaces(): React.JSX.Element {
   useEffect(() => {
     if(!user) return;
     if(isAdmin){
-      console.log("Admin")
     fetchWorkspaces();
     fetchAllProjects();
     }
     else{
-      console.log("pm")
      fetchMyWorkspaces();
      fetchMyProjects(); 
     }
@@ -132,7 +130,7 @@ export default function AdminWorkspaces(): React.JSX.Element {
           </Typography>
 
           <Typography color="text.secondary">
-            View and manage all project workspaces.
+            {user?.role=="ADMIN" ? "View and manage all project workspaces." : "View Your Workspaces"}
           </Typography>
         </Box>
 

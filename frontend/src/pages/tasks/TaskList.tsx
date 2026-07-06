@@ -42,7 +42,7 @@ interface TaskListProps {
   mode?: TaskListMode;
 }
 export default function TaskList({
-   mode = "all",
+   mode,
 }: TaskListProps): React.JSX.Element {
   const navigate = useNavigate();
 
@@ -225,7 +225,7 @@ export default function TaskList({
           </Typography>
 
           <Typography color="text.secondary">
-            View all tasks across all projects.
+            {mode=="assignedToMe" ? "View all tasks Assigned to you.":"View all tasks you assigned"}
           </Typography>
         </Box>
 

@@ -39,8 +39,7 @@ export default function UsersList(): React.JSX.Element {
     fetchUsers,
     fetchInactiveUsers,
     loading,
-    // deactivateUser,
-    // activateUser,
+    updateUserStatus,
   } = useUsers();
 
   const [search, setSearch] = useState<string>("");
@@ -131,25 +130,6 @@ export default function UsersList(): React.JSX.Element {
     return "default";
   };
 
-  // const handleDeactivateUser = async (userId: number): Promise<void> => {
-  //   const confirmed = window.confirm(
-  //     "Are you sure you want to deactivate this user?"
-  //   );
-
-  //   if (!confirmed) return;
-
-  //   await deactivateUser(userId);
-
-  //   await fetchUsers();
-  //   await fetchInactiveUsers();
-  // };
-
-  // const handleActivateUser = async (userId: number): Promise<void> => {
-  //   await activateUser(userId);
-
-  //   await fetchUsers();
-  //   await fetchInactiveUsers();
-  // };
 
   const renderUsersTable = (
     listTitle: string,
@@ -294,7 +274,7 @@ export default function UsersList(): React.JSX.Element {
                                 color="error"
                                 onClick={(e): void => {
                                   e.stopPropagation();
-                                  // handleDeactivateUser(member.id);
+                                  updateUserStatus(member.id);
                                 }}
                               >
                                 <BlockIcon fontSize="small" />
@@ -307,7 +287,7 @@ export default function UsersList(): React.JSX.Element {
                                 color="success"
                                 onClick={(e): void => {
                                   e.stopPropagation();
-                                  // handleActivateUser(member.id);
+                                   updateUserStatus(member.id);
                                 }}
                               >
                                 <CheckCircleIcon fontSize="small" />

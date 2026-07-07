@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect,useState } from "react";
 import type { Roles } from "../utils/Roles";
-import { getAllUsers,getUserById,deleteUserById,getAllInactiveUsers} from "../services/userServices";
+import { getAllUsers,getUserById,deleteUserById,getAllInactiveUsers,changeUserStatus} from "../services/userServices";
 
 export interface AppUser {
   id:number, 
@@ -21,6 +21,7 @@ export interface UsersContextType {
   fetchInactiveUsers:() => Promise<void>;
   fetchUserById: (id : number) => Promise<void>;
   deleteUser: (id: number) => Promise<void>;
+  updateUserStatus: (id: number) => Promise<void>;
 }
 
 const UsersContext = createContext<UsersContextType | null>(null);
@@ -60,6 +61,11 @@ export function UsersProvider({
       prevUsers.filter((user) => user.id!== id)
     );
   };
+  const updateUserStatus = async (id:number): Promise<void> =>{
+    await changeUserStatus(id);
+    await fetchUsers(),
+    await fetchInactiveUsers()
+  }
   useEffect(()=>{
    fetchUsers(),
    fetchInactiveUsers()
@@ -76,7 +82,8 @@ export function UsersProvider({
         fetchUsers,
         fetchInactiveUsers,
         fetchUserById,
-        deleteUser
+        deleteUser,
+        updateUserStatus
       }}
     >
       {children}

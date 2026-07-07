@@ -24,6 +24,10 @@ export async function getAllInactiveUsers():Promise<UserResponse[]>{
     const response = await api.get("/api/users/inactive")
     return response.data;
 }
+export async function changeUserStatus(id:number){
+   const response = await api.patch(`/api/users/${id}`)
+   return response.data;
+}
 export async function getUserById(id:number):Promise<UserResponse>{
     const response = await api.get(`/api/users/${id}`)
     return response.data;  

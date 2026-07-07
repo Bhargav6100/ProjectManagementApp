@@ -233,7 +233,7 @@ const formatRole = (role: string): string => {
       </Typography>
     </Box>
 
-    {isAdmin && isPM && <Button
+    {(isAdmin || isPM) && (<Button
       variant="outlined"
       startIcon={<FolderIcon />}
       sx={{ textTransform: "none", borderRadius: 2 }}
@@ -242,7 +242,7 @@ const formatRole = (role: string): string => {
       }
     >
       Create Project
-    </Button>}
+    </Button>)}
   </Box>
 
   {projects.length === 0 ? (
@@ -383,7 +383,7 @@ const formatRole = (role: string): string => {
         Members available to work on projects in this workspace.
       </Typography>
     </Box>
-   {isAdmin && isPM && <Paper sx={{ p: 4, borderRadius: 3, mb: 3 }}>
+   {(isAdmin || isPM)  && (<Paper sx={{ p: 4, borderRadius: 3, mb: 3 }}>
   <Box
     sx={{
       display: "flex",
@@ -447,7 +447,7 @@ const formatRole = (role: string): string => {
       No users available. Create users first before adding members to a workspace.
     </Typography>
   )}
-</Paper>}
+</Paper>)}
     <Chip
       icon={<GroupsIcon />}
       label={`${members.length} Members`}

@@ -78,6 +78,7 @@ public class UsersController {
     public String changeStatusOfUser(@PathVariable Long id){
         User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         user.setActive(!user.isActive());
+        userRepository.save(user);
         return "Selected User has status of " + user.isActive() + "now";
     }
     @GetMapping("/{id}")

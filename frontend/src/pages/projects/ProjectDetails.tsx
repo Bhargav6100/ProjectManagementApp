@@ -4,15 +4,18 @@ import {
   Avatar,
   Box,
   Button,
+  IconButton,
   Chip,
   Divider,
   Paper,
+  Tooltip,
   Typography,
 } from "@mui/material";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import FolderIcon from "@mui/icons-material/Folder";
 import PersonIcon from "@mui/icons-material/Person";
+import DeleteIcon from "@mui/icons-material/Delete";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import EditIcon from "@mui/icons-material/Edit";
@@ -26,8 +29,8 @@ export default function ProjectDetails(): React.JSX.Element {
   const { workspaceId, projectId } = useParams();
   const navigate = useNavigate();
 
-  const { currentProject, fetchProjectById, loading } = useProjects();
-  const {tasks,fetchTasksByProject} = useTasks();
+  const { currentProject, fetchProjectById, loading ,deleteProject} = useProjects();
+  const {tasks,fetchTasksByProject,deleteTask} = useTasks();
   const {user} = useAuth();
   const isAdmin = user?.role === "ADMIN";
   const isPM = user?.role ==="PROJECT_MANAGER";
@@ -39,6 +42,41 @@ export default function ProjectDetails(): React.JSX.Element {
     }
   }, [projectId]);
 
+  const handleDeleteProject = async (): Promise<void> => {
+  if (!projectId) return;
+
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this project?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+    await deleteProject(Number(projectId));
+    navigate("/dashboard/projects", { replace: true });
+  } catch (error) {
+    alert("Failed to delete project.");
+  }
+};
+
+const handleDeleteTask = async (
+  e: React.MouseEvent<HTMLButtonElement>,
+  taskId: number
+): Promise<void> => {
+  e.stopPropagation();
+
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this task?"
+  );
+
+  if (!confirmed) return;
+
+  await deleteTask(taskId);
+
+  if (projectId) {
+    await fetchTasksByProject(Number(projectId));
+  }
+};
   const formatStatus = (status: ProjectStatus): string => {
     if (status === "ACTIVE") {
       return "active";
@@ -166,7 +204,7 @@ const getPriorityColor = (
         </Box>
 
         <Box sx={{ display: "flex", gap: 1.5 }}>
-         {isAdmin && isPM &&<Button
+         {(isAdmin || isPM) &&(<Button
             variant="outlined"
             startIcon={<EditIcon />}
             sx={{ borderRadius: 2, textTransform: "none", px: 3 }}
@@ -177,9 +215,18 @@ const getPriorityColor = (
             }
           >
             Edit Project
-          </Button>}
+          </Button>)}
+          {(isAdmin || isPM) && (<Button
+           variant="outlined"
+           color="error"
+           startIcon={<DeleteIcon />}
+           sx={{ borderRadius: 2, textTransform: "none", px: 3 }}
+           onClick={handleDeleteProject}>
+            Delete Project
+            </Button>
+)}
 
-         {isAdmin && isPM && <Button
+         {(isAdmin || isPM) && (<Button
             variant="contained"
             startIcon={<TaskAltIcon />}
             sx={{ borderRadius: 2, textTransform: "none", px: 3 }}
@@ -190,7 +237,7 @@ const getPriorityColor = (
             }
           >
             Create Task
-          </Button>}
+          </Button>)}
         </Box>
       </Box>
 
@@ -305,7 +352,7 @@ const getPriorityColor = (
       </Typography>
     </Box>
 
-    {isAdmin && isPM && <Button
+    {(isAdmin || isPM) && (<Button
       variant="contained"
       startIcon={<TaskAltIcon />}
       sx={{ textTransform: "none", borderRadius: 2 }}
@@ -316,7 +363,7 @@ const getPriorityColor = (
       }
     >
       Create Task
-    </Button>}
+    </Button>)}
   </Box>
 
   {tasks.length === 0 ? (
@@ -334,11 +381,11 @@ const getPriorityColor = (
         No tasks found
       </Typography>
 
-      {isAdmin && isPM && <Typography color="text.secondary" sx={{ mb: 2 }}>
+      {(isAdmin || isPM) && (<Typography color="text.secondary" sx={{ mb: 2 }}>
         Create your first task inside this project.
-      </Typography>}
+      </Typography>)}
 
-      {isAdmin && isPM &&<Button
+      {(isAdmin || isPM) && (<Button
         variant="outlined"
         startIcon={<TaskAltIcon />}
         sx={{ textTransform: "none", borderRadius: 2 }}
@@ -349,7 +396,7 @@ const getPriorityColor = (
         }
       >
         Create Task
-      </Button>}
+      </Button>)}
     </Box>
   ) : (
     <Box
@@ -383,24 +430,46 @@ const getPriorityColor = (
             )
           }
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-            <Avatar sx={{ width: 42, height: 42 }}>
-              <TaskAltIcon />
-            </Avatar>
+          <Box
+  sx={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    gap: 1.5,
+    mb: 2,
+  }}
+>
+  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+    <Avatar sx={{ width: 42, height: 42 }}>
+      <TaskAltIcon />
+    </Avatar>
 
-            <Box>
-              <Typography sx={{ fontWeight: 700 }}>
-                {task.title}
-              </Typography>
+    <Box>
+      <Typography sx={{ fontWeight: 700 }}>
+        {task.title}
+      </Typography>
 
-              <Typography color="text.secondary" sx={{ fontSize: 13 }}>
-                Assigned to{" "}
-                {task.assignedToName
-                  ? task.assignedToName
-                  : `User ID: ${task.assignedToUserId}`}
-              </Typography>
-            </Box>
-          </Box>
+      <Typography color="text.secondary" sx={{ fontSize: 13 }}>
+        Assigned to{" "}
+        {task.assignedToName
+          ? task.assignedToName
+          : `User ID: ${task.assignedToUserId}`}
+         </Typography>
+      </Box>
+     </Box>
+
+      {(isAdmin || isPM) && (
+       <Tooltip title="Delete task">
+          <IconButton
+        size="small"
+        color="error"
+        onClick={(e) => handleDeleteTask(e, task.id)}
+      >
+             <DeleteIcon fontSize="small" />
+           </IconButton>
+          </Tooltip>
+        )}
+         </Box>
 
           <Typography color="text.secondary" sx={{ mb: 2 }}>
             {task.description || "No description provided."}

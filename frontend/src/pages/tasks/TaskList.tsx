@@ -25,11 +25,12 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 
 import { useNavigate } from "react-router-dom";
-import {useAuth} from "../../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { useTasks } from "../../context/TaskContext";
 import { useProjects } from "../../context/ProjectContext";
 
@@ -41,29 +42,42 @@ type TaskListMode = "all" | "createdByMe" | "assignedToMe";
 interface TaskListProps {
   mode?: TaskListMode;
 }
+
 export default function TaskList({
-   mode,
+  mode = "all",
 }: TaskListProps): React.JSX.Element {
   const navigate = useNavigate();
 
-  const { allTasks, fetchAllTasks,fetchMyTasks,fetchMyAssignedTasks,myCreatedTasks, loading } = useTasks();
+  const {
+    allTasks,
+    fetchAllTasks,
+    fetchMyTasks,
+    fetchMyAssignedTasks,
+    myCreatedTasks,
+    deleteTask,
+    loading,
+  } = useTasks();
+
   const { allProjects } = useProjects();
-  const {user} = useAuth();
+  const { user } = useAuth();
+
   const [search, setSearch] = useState<string>("");
   const [projectDialogOpen, setProjectDialogOpen] = useState<boolean>(false);
- 
-  const isAdmin = user?.role=="ADMIN";
-  const isPM = user?.role=="PROJECT_MANAGER";
-  
+
+  const isAdmin = user?.role === "ADMIN";
+  const isPM = user?.role === "PROJECT_MANAGER";
+
   useEffect(() => {
-    if(!user){
+    if (!user) {
       return;
     }
-    if(user.role=="ADMIN"){
-    fetchAllTasks();
+
+    if (user.role === "ADMIN") {
+      fetchAllTasks();
+      return;
     }
-    else{
-       if (mode === "all") {
+
+    if (mode === "all") {
       fetchAllTasks();
     }
 
@@ -74,16 +88,15 @@ export default function TaskList({
     if (mode === "assignedToMe") {
       fetchMyTasks();
     }
-    }
-  }, [mode]);
+  }, [user, mode]);
 
-   const displayedTasks = useMemo(() => {
+  const displayedTasks = useMemo(() => {
     if (mode === "createdByMe") {
       return myCreatedTasks;
     }
+
     return allTasks;
   }, [mode, allTasks, myCreatedTasks]);
-
 
   const filteredTasks = useMemo(() => {
     const query = search.toLowerCase();
@@ -105,21 +118,21 @@ export default function TaskList({
         createdBy.includes(query)
       );
     });
-  }, [allTasks, search]);
+  }, [displayedTasks, search]);
 
-  const pendingTasks = allTasks.filter(
+  const pendingTasks = displayedTasks.filter(
     (task) => task.taskStatus === "TO_DO"
   ).length;
 
-  const inProgressTasks = allTasks.filter(
+  const inProgressTasks = displayedTasks.filter(
     (task) => task.taskStatus === "IN_PROGRESS"
   ).length;
 
-  const completedTasks = allTasks.filter(
+  const completedTasks = displayedTasks.filter(
     (task) => task.taskStatus === "DONE"
   ).length;
 
-  const highPriorityTasks = allTasks.filter(
+  const highPriorityTasks = displayedTasks.filter(
     (task) => task.taskPriority === "HIGH"
   ).length;
 
@@ -212,6 +225,44 @@ export default function TaskList({
     return new Date(date).toLocaleDateString();
   };
 
+  const handleDeleteTask = async (
+    e: React.MouseEvent<HTMLButtonElement>,
+    taskId: number
+  ): Promise<void> => {
+    e.stopPropagation();
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this task?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    await deleteTask(taskId);
+
+    if (!user) {
+      return;
+    }
+
+    if (user.role === "ADMIN") {
+      await fetchAllTasks();
+      return;
+    }
+
+    if (mode === "createdByMe") {
+      await fetchMyAssignedTasks();
+      return;
+    }
+
+    if (mode === "assignedToMe") {
+      await fetchMyTasks();
+      return;
+    }
+
+    await fetchAllTasks();
+  };
+
   return (
     <Box>
       <Box
@@ -228,18 +279,24 @@ export default function TaskList({
           </Typography>
 
           <Typography color="text.secondary">
-            {mode=="assignedToMe" ? "View all tasks Assigned to you.":"View all tasks you assigned"}
+            {mode === "assignedToMe"
+              ? "View all tasks assigned to you."
+              : mode === "createdByMe"
+              ? "View all tasks you assigned."
+              : "View all tasks."}
           </Typography>
         </Box>
 
-        {(isAdmin || isPM) && (<Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setProjectDialogOpen(true)}
-          sx={{ borderRadius: 2, textTransform: "none", px: 3 }}
-        >
-          Create Task
-        </Button>)}
+        {(isAdmin || isPM) && (
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setProjectDialogOpen(true)}
+            sx={{ borderRadius: 2, textTransform: "none", px: 3 }}
+          >
+            Create Task
+          </Button>
+        )}
       </Box>
 
       <Box
@@ -257,7 +314,7 @@ export default function TaskList({
         <Paper sx={{ p: 2.5, borderRadius: 3 }}>
           <Typography color="text.secondary">Total Tasks</Typography>
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
-            {allTasks.length}
+            {displayedTasks.length}
           </Typography>
         </Paper>
 
@@ -464,6 +521,18 @@ export default function TaskList({
                             <EditIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
+
+                        {(isAdmin || isPM) && (
+                          <Tooltip title="Delete task">
+                            <IconButton
+                              size="small"
+                              color="error"
+                              onClick={(e) => handleDeleteTask(e, task.id)}
+                            >
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        )}
                       </TableCell>
                     </TableRow>
                   );

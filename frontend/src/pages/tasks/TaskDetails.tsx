@@ -17,8 +17,10 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import EditIcon from "@mui/icons-material/Edit";
 import FolderIcon from "@mui/icons-material/Folder";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import { useTasks } from "../../context/TaskContext";
+import { useAuth } from "../../context/AuthContext";
 import type { TaskStatus } from "../../utils/TaskStatus";
 import type { TaskPriority } from "../../utils/TaskPriority";
 
@@ -26,13 +28,31 @@ export default function TaskDetails(): React.JSX.Element {
   const { workspaceId, projectId, taskId } = useParams();
   const navigate = useNavigate();
 
-  const { currentTask, fetchTaskById, loading } = useTasks();
+  const { user } = useAuth();
+  const { currentTask, fetchTaskById, deleteTask, loading } = useTasks();
+
+  const isAdmin = user?.role === "ADMIN";
+  const isPM = user?.role === "PROJECT_MANAGER";
 
   useEffect(() => {
     if (taskId) {
       fetchTaskById(Number(taskId));
     }
   }, [taskId]);
+
+  const handleDeleteTask = async (): Promise<void> => {
+    if (!currentTask) return;
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this task?"
+    );
+
+    if (!confirmed) return;
+
+    await deleteTask(currentTask.id);
+
+    navigate(`/dashboard/workspaces/${workspaceId}/projects/${projectId}`);
+  };
 
   const formatStatus = (status: TaskStatus): string => {
     if (status === "TO_DO") {
@@ -139,18 +159,32 @@ export default function TaskDetails(): React.JSX.Element {
           </Typography>
         </Box>
 
-        <Button
-          variant="outlined"
-          startIcon={<EditIcon />}
-          sx={{ borderRadius: 2, textTransform: "none", px: 3 }}
-          onClick={() =>
-            navigate(
-              `/dashboard/workspaces/${workspaceId}/projects/${projectId}/tasks/${currentTask.id}/edit`
-            )
-          }
-        >
-          Edit Task
-        </Button>
+        <Box sx={{ display: "flex", gap: 1.5 }}>
+          <Button
+            variant="outlined"
+            startIcon={<EditIcon />}
+            sx={{ borderRadius: 2, textTransform: "none", px: 3 }}
+            onClick={() =>
+              navigate(
+                `/dashboard/workspaces/${workspaceId}/projects/${projectId}/tasks/${currentTask.id}/edit`
+              )
+            }
+          >
+            Edit Task
+          </Button>
+
+          {(isAdmin || isPM) && (
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              sx={{ borderRadius: 2, textTransform: "none", px: 3 }}
+              onClick={handleDeleteTask}
+            >
+              Delete Task
+            </Button>
+          )}
+        </Box>
       </Box>
 
       <Paper sx={{ p: 4, borderRadius: 3, mb: 3 }}>

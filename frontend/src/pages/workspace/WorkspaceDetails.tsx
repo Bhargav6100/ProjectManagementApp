@@ -151,17 +151,6 @@ const formatRole = (role: string): string => {
             View workspace information and related project activity.
           </Typography>
         </Box>
-
-        <Button
-          variant="contained"
-          startIcon={<FolderIcon />}
-          sx={{ borderRadius: 2, textTransform: "none", px: 3 }}
-          onClick={() =>
-            navigate(`/dashboard/workspaces/${currentWorkspace.id}/projects`)
-          }
-        >
-          View Projects
-        </Button>
       </Box>
 
       <Paper sx={{ p: 4, borderRadius: 3, mb: 3 }}>

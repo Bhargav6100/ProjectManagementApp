@@ -12,4 +12,6 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
     List<Task> findByAssignedById(Long userId);
     boolean existsByIdAndAssignedById(Long taskId, Long userId);
     boolean existsByIdAndAssignedToId(Long taskId, Long userId);
+
+    void deleteByProjectId(Long projectId);
 }

@@ -8,11 +8,13 @@ import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.entity.Workspace;
 import com.ProjectManagementApp.exception.ResourceNotFoundException;
 import com.ProjectManagementApp.repository.ProjectRepository;
+import com.ProjectManagementApp.repository.TaskRepository;
 import com.ProjectManagementApp.repository.WorkSpaceRepository;
 import com.ProjectManagementApp.repository.WorkspaceMemberRepository;
 import com.ProjectManagementApp.entity.Roles;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDateTime;
@@ -23,10 +25,12 @@ public class ProjectService {
  private final ProjectRepository projectRepository;
  private final WorkSpaceRepository workSpaceRepository;
  private final WorkspaceMemberRepository workspaceMemberRepository;
- public ProjectService(ProjectRepository projectRepository, WorkSpaceRepository workSpaceRepository,WorkspaceMemberRepository workspaceMemberRepository){
+ private final TaskRepository taskRepository;
+ public ProjectService(ProjectRepository projectRepository, WorkSpaceRepository workSpaceRepository, WorkspaceMemberRepository workspaceMemberRepository, TaskRepository taskRepository){
      this.projectRepository=projectRepository;
      this.workSpaceRepository = workSpaceRepository;
      this.workspaceMemberRepository = workspaceMemberRepository;
+     this.taskRepository = taskRepository;
  }
 
     public List<ProjectResponse> getAllProjectsbyWorkspaceId(Long workspaceId, User currentUser)
@@ -206,6 +210,7 @@ public ProjectResponse updateProject(ProjectRequest request,Long projectId, User
                 patched.getCreatedAt()
         );
     }
+    @Transactional
     public String deleteProject(Long projectId,User currentUser) throws AccessDeniedException {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
@@ -221,6 +226,7 @@ public ProjectResponse updateProject(ProjectRequest request,Long projectId, User
         } else if (!currentUser.getRole().equals(Roles.ADMIN)) {
             throw new AccessDeniedException("Only admin or creator of this project can delete the projects");
         }
+        taskRepository.deleteByProjectId(projectId);
         projectRepository.delete(project);
         return "Project deleted successfully";
     }

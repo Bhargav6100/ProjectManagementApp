@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import GroupsIcon from "@mui/icons-material/Groups";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import WorkspacesIcon from "@mui/icons-material/Workspaces";
 import FolderIcon from "@mui/icons-material/Folder";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
@@ -52,6 +53,15 @@ export default function AdminSideBar(): React.JSX.Element {
       <Divider />
 
       <List sx={{ px: 2, py: 3 }}>
+         <ListItemButton
+            sx={{ borderRadius: 2, mb: 1 }}
+            onClick={() => navigate("/dashboard")}
+          >
+            <ListItemIcon>
+              <DashboardIcon />
+            </ListItemIcon>
+            <ListItemText primary="Dashboard" />
+          </ListItemButton>
         <ListItemButton sx={{ borderRadius: 2, mb: 1 }} onClick={()=>navigate("/dashboard/users")}>
           <ListItemIcon>
             <GroupsIcon />

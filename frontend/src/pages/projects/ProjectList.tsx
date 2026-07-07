@@ -21,7 +21,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
 import { useProjects } from "../../context/ProjectContext";
 import SelectWorkspaceDialog from "../../components/common/SelectWorkspaceDialog";
@@ -31,7 +31,7 @@ import { useAuth } from "../../context/AuthContext";
 export default function ProjectList(): React.JSX.Element {
   const navigate = useNavigate();
 
-  const { allProjects, fetchAllProjects,fetchMyProjects, loading } = useProjects();
+  const { allProjects, fetchAllProjects,fetchMyProjects, loading,deleteProject } = useProjects();
   const {user} = useAuth();
   const [search, setSearch] = useState<string>("");
   const [workspaceDialogOpen, setWorkspaceDialogOpen] =
@@ -46,9 +46,30 @@ export default function ProjectList(): React.JSX.Element {
       fetchMyProjects();
     }
   }, [user]);
-
+  
    const isAdmin = user?.role=="ADMIN";
    const isPM = user?.role=="PROJECT_MANAGER";
+
+   const handleDeleteProject = async (
+  e: React.MouseEvent<HTMLButtonElement>,
+  projectId: number
+): Promise<void> => {
+  e.stopPropagation();
+
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this project?"
+  );
+
+  if (!confirmed) return;
+
+  await deleteProject(projectId);
+
+  if (isAdmin) {
+    await fetchAllProjects();
+  } else {
+    await fetchMyProjects();
+  }
+};
   const filteredProjects = useMemo(() => {
     const query = search.toLowerCase();
    
@@ -325,6 +346,17 @@ export default function ProjectList(): React.JSX.Element {
                           <EditIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>)}
+                     {(isAdmin || isPM) && (
+                     <Tooltip title="Delete project">
+                      <IconButton
+                      size="small"
+                        color="error"
+                       onClick={(e) => handleDeleteProject(e, project.id)}
+               >
+                      <DeleteIcon fontSize="small" />
+                      </IconButton>
+                      </Tooltip>
+                     )}
                     </TableCell>
                   </TableRow>
                 ))}

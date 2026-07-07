@@ -4,7 +4,7 @@ import { Container, Paper, TextField, Button, Typography, Box } from '@mui/mater
 import MenuItem from "@mui/material/MenuItem";
 import { useUsers} from '../../context/UsersContext';
 import { updateUser } from '../../services/userServices';
-// import {useAuth} from '../../context/AuthContext';
+
 const EditUser = () => {
     const navigate = useNavigate();
     type UserRole = "ADMIN" | "PROJECT_MANAGER" | "MEMBER";

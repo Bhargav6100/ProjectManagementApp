@@ -12,7 +12,7 @@ import { useTasks } from "../../context/TaskContext";
 import SelectWorkspaceDialog from "../../components/common/SelectWorkspaceDialog";
 import SelectProjectDialog from "../../components/common/SelectProjectDialog";
 export default function DashboardContents(): React.JSX.Element {
-  const {users} = useUsers();
+  const {users,inActiveUsers} = useUsers();
   const {workspaces,fetchWorkspaces} = useWorkspaces();
   const {allProjects,fetchAllProjects} = useProjects();
   const {allTasks,fetchAllTasks}=useTasks();
@@ -47,7 +47,13 @@ export default function DashboardContents(): React.JSX.Element {
         <Paper onClick={(()=>navigate("/dashboard/users"))} sx={{ p: 3, borderRadius: 3 }}>
           <Typography color="text.secondary">Total Users</Typography>
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
-            {users.length}
+            {users?.length}
+          </Typography>
+        </Paper>
+          <Paper onClick={(()=>navigate("/dashboard/users"))} sx={{ p: 3, borderRadius: 3 }}>
+          <Typography color="text.secondary">Total Inactive Users</Typography>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+            {inActiveUsers?.length}
           </Typography>
         </Paper>
 

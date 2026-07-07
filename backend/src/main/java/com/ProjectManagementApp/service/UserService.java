@@ -28,7 +28,9 @@ public class UserService {
                  user.getFirstName(),
                  user.getLastName(),
                  user.getEmail(),
-                 user.getRole()
+                 user.getRole(),
+                 user.getCreatedAt(),
+                 user.isActive()
          );
     }
     @PutMapping("/{id}")
@@ -37,16 +39,16 @@ public class UserService {
                 user.setFirstName(request.getFirstName());
                 user.setLastName(request.getLastName());
                 user.setEmail(request.getEmail());
-                user.getPassword();
                 user.setRole(request.getRole());
-                user.getCreatedAt();
           User updated = userRepository.save(user);
         return new UserResponse(
                 updated.getId(),
                 updated.getFirstName(),
                 updated.getLastName(),
                 updated.getEmail(),
-                updated.getRole()
+                updated.getRole(),
+                updated.getCreatedAt(),
+                updated.isActive()
         );
     }
 }

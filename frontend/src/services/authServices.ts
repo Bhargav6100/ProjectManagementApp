@@ -12,11 +12,12 @@ interface LoginResponse {
 }
 
 interface UserResponse {
-  id: Number,
+  id: number,
   firstName: string;
   lastName: string;
   email: string;
   role: Roles;
+  isActive:boolean;
 }
 interface RegisterRequest{
   firstName: string,

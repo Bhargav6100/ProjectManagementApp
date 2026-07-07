@@ -56,6 +56,9 @@ public class AuthController {
         if (user == null) {
             return ResponseEntity.badRequest().body("Invalid email or password");
         }
+        if (!user.isActive()) {
+            throw new RuntimeException("User account is deactivated");
+        }
         boolean matches = passwordEncoder.matches(request.getPassword(), user.getPassword());
         if (!matches) {
             return ResponseEntity.badRequest().body("Invalid email or password");

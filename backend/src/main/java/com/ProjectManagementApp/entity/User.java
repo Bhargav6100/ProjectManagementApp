@@ -27,17 +27,21 @@ public class User {
 
     @Column(name = "created_at", nullable = false, length = 100)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private boolean active = true;
     public User(){
 
     }
 
-    public User(long id,String firstName, String lastName, String email,String password,Roles role){
+    public User(long id,String firstName, String lastName, String email,String password,Roles role,boolean active){
         this.id=id;
         this.firstName=firstName;
         this.lastName=lastName;
         this.email=email;
         this.password=password;
         this.role=role;
+        this.active=active;
     }
 
     public Long getId() {
@@ -96,12 +100,25 @@ public class User {
         this.createdAt = createdAt;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     @Override
     public String toString() {
         return "User{" +
-                "firstName='" + firstName + '\'' +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", role=" + role +
+                ", createdAt=" + createdAt +
+                ", active=" + active +
                 '}';
     }
 }

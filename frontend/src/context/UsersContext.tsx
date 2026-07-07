@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect,useState } from "react";
 import type { Roles } from "../utils/Roles";
-import { getAllUsers,getUserById,deleteUserById} from "../services/userServices";
+import { getAllUsers,getUserById,deleteUserById,getAllInactiveUsers} from "../services/userServices";
 
 export interface AppUser {
   id:number, 
@@ -8,13 +8,17 @@ export interface AppUser {
   lastName: string;
   email: string;
   role: Roles;
+  createdAt :string;
+  active: boolean
 }
 
 export interface UsersContextType {
   users: AppUser[];
+  inActiveUsers:AppUser[];
   currentUser: AppUser | null;
   loading: boolean;
   fetchUsers: () => Promise<void>;
+  fetchInactiveUsers:() => Promise<void>;
   fetchUserById: (id : number) => Promise<void>;
   deleteUser: (id: number) => Promise<void>;
 }
@@ -27,6 +31,7 @@ export function UsersProvider({
   children: React.ReactNode;
 }): React.JSX.Element {
   const [users, setUsers] = useState<AppUser[]>([]);
+  const [inActiveUsers,setInActiveUsers]=useState<AppUser[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [currentUser,setCurrentuser] = useState<AppUser | null>(null);
   const fetchUsers = async (): Promise<void> => {
@@ -44,6 +49,10 @@ export function UsersProvider({
 
     setCurrentuser(data);
   }
+  const fetchInactiveUsers = async():Promise<void> =>{
+    const data = await getAllInactiveUsers();
+    setInActiveUsers(data);
+  }
   const deleteUser = async (id: number): Promise<void> => {
     await deleteUserById(id);
 
@@ -51,18 +60,21 @@ export function UsersProvider({
       prevUsers.filter((user) => user.id!== id)
     );
   };
+  useEffect(()=>{
+   fetchUsers(),
+   fetchInactiveUsers()
+  },[])
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
 
   return (
     <UsersContext.Provider
       value={{
         users,
+        inActiveUsers,
         currentUser,
         loading,
         fetchUsers,
+        fetchInactiveUsers,
         fetchUserById,
         deleteUser
       }}

@@ -12,11 +12,17 @@ export interface UserResponse {
   lastName: string;
   email: string;
   role: Roles;
+  createdAt: string;
+  active: boolean;
 }
 
 export async function getAllUsers():Promise<UserResponse[]>{
-    const response = await api.get("/api/users")
+    const response = await api.get("/api/users/active")
     return response.data;   
+}
+export async function getAllInactiveUsers():Promise<UserResponse[]>{
+    const response = await api.get("/api/users/inactive")
+    return response.data;
 }
 export async function getUserById(id:number):Promise<UserResponse>{
     const response = await api.get(`/api/users/${id}`)

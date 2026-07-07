@@ -8,6 +8,7 @@ import ProtectedRoute from "./ProtectedRoute";
 
 import UsersList from "../pages/users/UsersList";
 import EditUser from "../pages/users/EditUser";
+import UserDetails from "../pages/users/UserDetails";
 
 import WorkspaceList from "../pages/workspace/WorkspaceList";
 import WorkspaceForm from "../pages/workspace/WorkspaceForm";
@@ -35,9 +36,10 @@ function App(): React.JSX.Element {
         <Route path="/dashboard" element={<Dashboard />}>
           <Route index element={<DashboardHome />} />
 
-          <Route path="users" element={<UsersList />} />
+          <Route path="users" element={<UsersList/>} />
           <Route path="users/create" element={<Register />} />
           <Route path="users/:id/edit" element={<EditUser />} />
+          <Route path="users/:id" element={<UserDetails/>}/>
 
           <Route path="workspaces" element={<WorkspaceList />} />
           <Route path="workspaces/create" element={<WorkspaceForm />} />

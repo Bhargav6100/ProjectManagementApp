@@ -252,7 +252,9 @@ export default function AdminUsers(): React.JSX.Element {
                       {isAdmin ? (
                         <>
                           <Tooltip title="Edit user">
-                            <IconButton size="small">
+                            <IconButton size="small"
+                            onClick={() => navigate(`/dashboard/users/${member.id}/edit`)}
+                            >
                               <EditIcon fontSize="small" />
                             </IconButton>
                           </Tooltip>

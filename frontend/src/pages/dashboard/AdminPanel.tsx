@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
+import { Outlet } from "react-router-dom";
 import LeftAside from "../../components/adminComponents/LeftAside";
-import DashboardContents from "../../components/adminComponents/DashboardContents";
 import { useAuth } from "../../context/AuthContext";
 
 export default function AdminPanel(): React.JSX.Element {
@@ -27,7 +27,7 @@ export default function AdminPanel(): React.JSX.Element {
         </Box>
 
         <Box sx={{ p: 4 }}>
-          <DashboardContents />
+          <Outlet />
         </Box>
       </Box>
     </Box>

@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
+import { Outlet } from "react-router-dom";
 import PMLeftAside from "../../components/pmComponents/PMLeftAside";
-import PMDashboardContents from "../../components/pmComponents/PMDashboardContents";
 import { useAuth } from "../../context/AuthContext";
 
 export default function ProjectManagerPanel(): React.JSX.Element {
@@ -27,7 +27,7 @@ export default function ProjectManagerPanel(): React.JSX.Element {
         </Box>
 
         <Box sx={{ p: 4 }}>
-          <PMDashboardContents />
+          <Outlet />
         </Box>
       </Box>
     </Box>

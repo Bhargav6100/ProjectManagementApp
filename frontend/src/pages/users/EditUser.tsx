@@ -1,34 +1,45 @@
-import React,{useState} from 'react'
-import { useNavigate } from 'react-router-dom';
+import React,{useState,useEffect} from 'react'
+import { useNavigate,useParams} from 'react-router-dom';
 import { Container, Paper, TextField, Button, Typography, Box } from '@mui/material';
 import MenuItem from "@mui/material/MenuItem";
-import { registerUser } from '../../services/authServices';
-import { useUsers } from '../../context/UsersContext';
-const Register = () => {
+import { useUsers} from '../../context/UsersContext';
+import { updateUser } from '../../services/userServices';
+// import {useAuth} from '../../context/AuthContext';
+const EditUser = () => {
     const navigate = useNavigate();
     type UserRole = "ADMIN" | "PROJECT_MANAGER" | "MEMBER";
      const [firstName, setFirstName] = useState<string>('');
      const [lastName, setLastName] = useState<string>('');
      const [email, setEmail] = useState<string>('');
-     const [password, setPassword] = useState<string>('');  
      const [role, setRole] = useState<UserRole>("MEMBER");
-     
-     const {fetchUsers}=useUsers();
+     const {id} = useParams();
+     const {fetchUsers,fetchUserById,currentUser}=useUsers();
 
+     useEffect(()=>{
+      fetchUserById(Number(id));
+     },[id])
+
+     useEffect(() => {
+         if (currentUser) {
+           setFirstName(currentUser.firstName);
+           setLastName(currentUser.lastName);
+           setEmail(currentUser.email);
+           setRole(currentUser.role);
+         }
+       }, [currentUser]);
      const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
      e.preventDefault();
 
-     await registerUser({
-     firstName,
-     lastName,
-     email,
-     password,
-     role,
-    });
+     await updateUser(Number(id), {
+           firstName,
+           lastName,
+           email,
+           role,
+         });
 
   await fetchUsers();
 
-  alert("User created successfully");
+  alert("User Updated successfully");
   navigate("/dashboard/users")
 };
       
@@ -37,7 +48,7 @@ const Register = () => {
     <Container maxWidth="xs">
       <Paper elevation={3} sx={{ padding: 4, marginTop: 8 }}>
         <Typography variant="h5" align="center" gutterBottom>
-          Register
+          Edit User
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField
@@ -70,16 +81,7 @@ const Register = () => {
             value={email}
             onChange={(e: React.ChangeEvent<HTMLInputElement>): void => setEmail(e.target.value)}
           />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            label="Password"
-            type="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>): void => setPassword(e.target.value)}
-          />
+      
           <TextField
               margin="normal"
               required
@@ -101,7 +103,7 @@ const Register = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Add User
+            Edit
           </Button>
         </Box>
       </Paper>
@@ -110,4 +112,4 @@ const Register = () => {
   )
 }
 
-export default Register
+export default EditUser;

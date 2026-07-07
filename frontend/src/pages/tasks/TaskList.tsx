@@ -232,14 +232,14 @@ export default function TaskList({
           </Typography>
         </Box>
 
-        {isAdmin && isPM && <Button
+        {(isAdmin || isPM) && (<Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={() => setProjectDialogOpen(true)}
           sx={{ borderRadius: 2, textTransform: "none", px: 3 }}
         >
           Create Task
-        </Button>}
+        </Button>)}
       </Box>
 
       <Box

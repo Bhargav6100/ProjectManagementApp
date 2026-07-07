@@ -44,7 +44,7 @@ export default function DashboardContents(): React.JSX.Element {
           mb: 3,
         }}
       >
-        <Paper sx={{ p: 3, borderRadius: 3 }}>
+        <Paper onClick={(()=>navigate("/dashboard/users"))} sx={{ p: 3, borderRadius: 3 }}>
           <Typography color="text.secondary">Total Users</Typography>
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
             {users.length}

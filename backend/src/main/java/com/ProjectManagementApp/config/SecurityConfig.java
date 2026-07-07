@@ -42,6 +42,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/workspaces/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/projects").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/tasks").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/api/users/edit").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/workspaces/**").hasAnyRole("ADMIN", "PROJECT_MANAGER")
                         .requestMatchers(HttpMethod.POST, "/api/workspaces/*/projects").hasAnyRole("ADMIN", "PROJECT_MANAGER")
                         .requestMatchers(HttpMethod.POST, "/api/projects/*/tasks").hasAnyRole("ADMIN", "PROJECT_MANAGER")

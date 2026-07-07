@@ -1,8 +1,11 @@
 package com.ProjectManagementApp.Controller;
 
+import com.ProjectManagementApp.dto.UserRequest;
 import com.ProjectManagementApp.dto.UserResponse;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.repository.UserRepository;
+import com.ProjectManagementApp.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +17,12 @@ import java.util.List;
 public class UsersController {
 
     private UserRepository userRepository;
+    
+    private UserService userService;
 
-    public  UsersController(UserRepository userRepository){
+    public  UsersController(UserRepository userRepository, UserService userService){
         this.userRepository=userRepository;
+        this.userService = userService;
     }
     @GetMapping("/me")
     public ResponseEntity<UserResponse> me(Authentication authentication) {
@@ -41,9 +47,12 @@ public class UsersController {
         return userRepository.findAll();
     }
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public UserResponse getUserById(@PathVariable Long id) {
+        return userService.findUserById(id);
+    }
+    @PutMapping("/{id}")
+    public UserResponse updateUser(@PathVariable Long id,@Valid @RequestBody UserRequest request){
+        return userService.updateUser(request,id);
     }
     @DeleteMapping("/{id}")
     public String deleteUsersById(@PathVariable Long id){

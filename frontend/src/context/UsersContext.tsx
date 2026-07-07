@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { Roles } from "../utils/Roles";
-import { getAllUsers,deleteUserById} from "../services/userServices";
+import { getAllUsers,getUserById,deleteUserById} from "../services/userServices";
 
 export interface AppUser {
   id:number, 
@@ -10,10 +10,12 @@ export interface AppUser {
   role: Roles;
 }
 
-interface UsersContextType {
+export interface UsersContextType {
   users: AppUser[];
+  currentUser: AppUser | null;
   loading: boolean;
   fetchUsers: () => Promise<void>;
+  fetchUserById: (id : number) => Promise<void>;
   deleteUser: (id: number) => Promise<void>;
 }
 
@@ -26,7 +28,7 @@ export function UsersProvider({
 }): React.JSX.Element {
   const [users, setUsers] = useState<AppUser[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-
+  const [currentUser,setCurrentuser] = useState<AppUser | null>(null);
   const fetchUsers = async (): Promise<void> => {
     setLoading(true);
 
@@ -37,7 +39,11 @@ export function UsersProvider({
       setLoading(false);
     }
   };
+  const fetchUserById = async(id: number): Promise<void> =>{
+    const data = await getUserById(id);
 
+    setCurrentuser(data);
+  }
   const deleteUser = async (id: number): Promise<void> => {
     await deleteUserById(id);
 
@@ -54,8 +60,10 @@ export function UsersProvider({
     <UsersContext.Provider
       value={{
         users,
+        currentUser,
         loading,
         fetchUsers,
+        fetchUserById,
         deleteUser
       }}
     >

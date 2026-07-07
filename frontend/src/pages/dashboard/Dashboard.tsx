@@ -25,7 +25,6 @@ export default function Dashboard(): React.JSX.Element {
 
   if (user.role === "MEMBER") {
     return <div><MemberPanel/></div>;
-    // later: return <MemberPanel />;
   }
 
   return <div>Unauthorized role</div>;

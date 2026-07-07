@@ -44,7 +44,7 @@ export default function MemberSideBar(): React.JSX.Element {
     >
       <Box sx={{ height: 80, display: "flex", alignItems: "center", px: 3 }}>
         <Typography variant="h5" sx={{ fontWeight: 700 }}>
-          ProjectManager
+           WorkSync
         </Typography>
       </Box>
 

@@ -134,14 +134,14 @@ export default function ProjectList(): React.JSX.Element {
           </Typography>
         </Box>
 
-        {isAdmin && isPM && <Button
+        {(isAdmin || isPM) && (<Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={() => setWorkspaceDialogOpen(true)}
           sx={{ borderRadius: 2, textTransform: "none", px: 3 }}
         >
           Create Project
-        </Button>}
+        </Button>)}
       </Box>
 
       <Box
@@ -312,7 +312,7 @@ export default function ProjectList(): React.JSX.Element {
                         </IconButton>
                       </Tooltip>
 
-                      {isAdmin && isPM && <Tooltip title="Edit project">
+                      {(isAdmin || isPM) && (<Tooltip title="Edit project">
                         <IconButton
                           size="small"
                           onClick={(e): void => {
@@ -324,7 +324,7 @@ export default function ProjectList(): React.JSX.Element {
                         >
                           <EditIcon fontSize="small" />
                         </IconButton>
-                      </Tooltip>}
+                      </Tooltip>)}
                     </TableCell>
                   </TableRow>
                 ))}

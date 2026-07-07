@@ -3,11 +3,14 @@ package com.ProjectManagementApp.Controller;
 import com.ProjectManagementApp.dto.AuthResponse;
 import com.ProjectManagementApp.dto.LoginRequest;
 import com.ProjectManagementApp.dto.RegisterRequest;
+import com.ProjectManagementApp.dto.ResetPasswordRequest;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.repository.UserRepository;
 import com.ProjectManagementApp.security.JwtService;
+import com.ProjectManagementApp.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,13 +22,13 @@ public class AuthController {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
     private final JwtService jwtService;
-
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    private final UserService userService;
+    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, UserService userService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.userService = userService;
     }
 
     @PostMapping("/register")
@@ -66,5 +69,14 @@ public class AuthController {
         String token=jwtService.generateToken(user);
 
         return ResponseEntity.ok(new AuthResponse(token));
+    }
+    @PatchMapping("/users/{userId}/reset-password")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> resetPassword(
+            @PathVariable Long userId,
+            @RequestBody ResetPasswordRequest request
+    ) {
+        userService.resetPasswordByAdmin(userId, request);
+        return ResponseEntity.ok("Password reset successfully");
     }
 }

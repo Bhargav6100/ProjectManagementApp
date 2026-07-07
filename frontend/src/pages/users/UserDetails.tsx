@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect,useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
+import { resetUserPassword } from "../../services/userServices";
 import {
   Avatar,
   Box,
@@ -9,9 +9,15 @@ import {
   Divider,
   Paper,
   Typography,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
 } from "@mui/material";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import LockResetIcon from "@mui/icons-material/LockReset";  
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EmailIcon from "@mui/icons-material/Email";
@@ -26,6 +32,43 @@ export default function UserDetails(): React.JSX.Element {
   const navigate = useNavigate();
   const { id } = useParams();
 
+  const [resetDialogOpen, setResetDialogOpen] = useState<boolean>(false);
+  const [newPassword, setNewPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [resettingPassword, setResettingPassword] = useState<boolean>(false);
+
+  const handleResetPassword = async (): Promise<void> => {
+  if (!id) return;
+
+  if (!newPassword.trim() || !confirmPassword.trim()) {
+    alert("Please enter and confirm the new password");
+    return;
+  }
+
+  if (newPassword.length < 6) {
+    alert("Password must be at least 6 characters");
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
+
+  try {
+    setResettingPassword(true);
+
+    await resetUserPassword(Number(id), newPassword);
+
+    alert("Password reset successfully");
+
+    setResetDialogOpen(false);
+    setNewPassword("");
+    setConfirmPassword("");
+  } finally {
+    setResettingPassword(false);
+  }
+};
   const { user: loggedInUser } = useAuth();
 
   const {
@@ -42,8 +85,6 @@ export default function UserDetails(): React.JSX.Element {
 
     fetchUserById(Number(id));
   }, [id]);
-
-  console.log(currentUser)
 
   const getInitials = (firstName?: string, lastName?: string): string => {
     const first = firstName?.charAt(0) ?? "";
@@ -183,7 +224,15 @@ export default function UserDetails(): React.JSX.Element {
               >
                 Edit
               </Button>
-
+                <Button
+               variant="outlined"
+               color="secondary"
+                 startIcon={<LockResetIcon />}
+                 onClick={() => setResetDialogOpen(true)}
+                 sx={{ textTransform: "none", borderRadius: 2 }}
+                 >
+                   Reset Password
+                </Button>
               <Button 
                 variant="contained"
                 color="error"
@@ -323,6 +372,69 @@ export default function UserDetails(): React.JSX.Element {
           </Box>
         </Box>
       </Paper>
+      <Dialog
+  open={resetDialogOpen}
+  onClose={() => setResetDialogOpen(false)}
+  fullWidth
+  maxWidth="xs"
+>
+  <DialogTitle sx={{ fontWeight: 700 }}>
+    Reset Password
+  </DialogTitle>
+
+  <DialogContent>
+    <Typography color="text.secondary" sx={{ mb: 2 }}>
+      Set a new temporary password for {currentUser.firstName}{" "}
+      {currentUser.lastName}.
+    </Typography>
+
+    <TextField
+      margin="normal"
+      fullWidth
+      required
+      type="password"
+      label="New Password"
+      value={newPassword}
+      onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+        setNewPassword(e.target.value)
+      }
+    />
+
+    <TextField
+      margin="normal"
+      fullWidth
+      required
+      type="password"
+      label="Confirm Password"
+      value={confirmPassword}
+      onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+        setConfirmPassword(e.target.value)
+      }
+    />
+  </DialogContent>
+
+  <DialogActions sx={{ px: 3, pb: 3 }}>
+    <Button
+      onClick={() => {
+        setResetDialogOpen(false);
+        setNewPassword("");
+        setConfirmPassword("");
+      }}
+      sx={{ textTransform: "none" }}
+    >
+      Cancel
+    </Button>
+
+    <Button
+      variant="contained"
+      onClick={handleResetPassword}
+      disabled={resettingPassword}
+      sx={{ textTransform: "none", borderRadius: 2 }}
+    >
+      {resettingPassword ? "Resetting..." : "Reset Password"}
+    </Button>
+  </DialogActions>
+</Dialog>
     </Box>
   );
 }

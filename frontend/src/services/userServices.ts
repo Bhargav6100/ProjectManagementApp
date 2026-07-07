@@ -40,3 +40,7 @@ export async function deleteUserById(id:number){
   const response = await api.delete(`/api/users/${id}`);
    return  response.data;
 }
+export const resetUserPassword = async (userId: number,newPassword: string): Promise<void> => {
+  const response =await api.patch(`api/auth/users/${userId}/reset-password`, {newPassword,});
+  return response.data;
+};

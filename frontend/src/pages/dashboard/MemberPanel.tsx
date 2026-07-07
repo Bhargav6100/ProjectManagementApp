@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import MemberLeftAside from "../../components/adminComponents/LeftAside";
+import MemberLeftAside from "../../components/memberComponents/MemberLeftAside";
 import { Outlet } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 

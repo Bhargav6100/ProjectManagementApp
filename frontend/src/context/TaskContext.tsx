@@ -7,7 +7,7 @@ import {
   getTaskById,
   getTasksByProject,
   getMyTasks,
-  getTasksCreatedByMe
+  getTasksCreatedByMe,
 } from "../services/taskServices";
 
 export interface AppTask {

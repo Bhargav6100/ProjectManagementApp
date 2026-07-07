@@ -10,6 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 
+// import updateTaskStatus from "../../services/taskServices";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import PersonIcon from "@mui/icons-material/Person";
@@ -33,13 +34,14 @@ export default function TaskDetails(): React.JSX.Element {
 
   const isAdmin = user?.role === "ADMIN";
   const isPM = user?.role === "PROJECT_MANAGER";
+  const isMember = user?.role ==="MEMBER";
 
   useEffect(() => {
     if (taskId) {
       fetchTaskById(Number(taskId));
     }
   }, [taskId]);
-
+ 
   const handleDeleteTask = async (): Promise<void> => {
     if (!currentTask) return;
 
@@ -160,7 +162,8 @@ export default function TaskDetails(): React.JSX.Element {
         </Box>
 
         <Box sx={{ display: "flex", gap: 1.5 }}>
-          <Button
+          
+          {(isAdmin || isPM) && (<Button
             variant="outlined"
             startIcon={<EditIcon />}
             sx={{ borderRadius: 2, textTransform: "none", px: 3 }}
@@ -171,7 +174,19 @@ export default function TaskDetails(): React.JSX.Element {
             }
           >
             Edit Task
-          </Button>
+          </Button>)}
+          {(isMember) && (<Button
+            variant="outlined"
+            startIcon={<EditIcon />}
+            sx={{ borderRadius: 2, textTransform: "none", px: 3 }}
+            onClick={() =>
+              navigate(
+                `/dashboard/workspaces/${workspaceId}/projects/${projectId}/tasks/${currentTask.id}/edit`
+              )
+            }
+          >
+            Edit Task Status
+          </Button>)}
 
           {(isAdmin || isPM) && (
             <Button

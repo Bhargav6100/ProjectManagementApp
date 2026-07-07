@@ -68,6 +68,13 @@ export default function MemberDashboardContents(): React.JSX.Element {
 
     return "default";
   };
+  const findWorkspaceId = (projectId: number): number | undefined => {
+  const project = allProjects.find(
+    (project) => project.id === projectId
+  );
+
+  return project?.workspaceId;
+};
 
   return (
     <Box>
@@ -233,50 +240,59 @@ export default function MemberDashboardContents(): React.JSX.Element {
           </Typography>
         )}
 
-        {recentTasks.map((task) => (
-          <Paper
-            key={task.id}
-            variant="outlined"
-            onClick={() =>
-              navigate(
-                `/dashboard/projects/${task.projectId}/tasks/${task.id}`
-              )
-            }
-            sx={{
-              p: 2,
-              borderRadius: 2,
-              mb: 1.5,
-              cursor: "pointer",
-              "&:hover": {
-                bgcolor: "#f9fafb",
-              },
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: 2,
-              }}
-            >
-              <Box>
-                <Typography sx={{ fontWeight: 700 }}>{task.title}</Typography>
+        {recentTasks.map((task) => {
+   const workspaceId = findWorkspaceId(task.projectId);
 
-                <Typography color="text.secondary" sx={{ fontSize: 13 }}>
-                  {task.description || "No description provided"}
-                </Typography>
-              </Box>
+   return (
+    <Paper
+      key={task.id}
+      variant="outlined"
+      onClick={() => {
+        if (!workspaceId) {
+          alert("Workspace not found for this task");
+          return;
+        }
 
-              <Chip
-                label={formatStatus(task.taskStatus)}
-                color={getStatusColor(task.taskStatus)}
-                size="small"
-                sx={{ fontWeight: 600 }}
-              />
-            </Box>
-          </Paper>
-        ))}
+        navigate(
+          `/dashboard/workspaces/${workspaceId}/projects/${task.projectId}/tasks/${task.id}`
+        );
+      }}
+      sx={{
+        p: 2,
+        borderRadius: 2,
+        mb: 1.5,
+        cursor: "pointer",
+        "&:hover": {
+          bgcolor: "#f9fafb",
+        },
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 2,
+        }}
+      >
+        <Box>
+          <Typography sx={{ fontWeight: 700 }}>{task.title}</Typography>
+
+          <Typography color="text.secondary" sx={{ fontSize: 13 }}>
+            {task.description || "No description provided"}
+          </Typography>
+        </Box>
+
+        <Chip
+          label={formatStatus(task.taskStatus)}
+          color={getStatusColor(task.taskStatus)}
+          size="small"
+          sx={{ fontWeight: 600 }}
+        />
+      </Box>
+    </Paper>
+  );
+})}
       </Paper>
     </Box>
   );

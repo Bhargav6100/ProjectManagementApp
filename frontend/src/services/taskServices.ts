@@ -10,7 +10,9 @@ export interface TaskRequest {
   taskStatus: TaskStatus;
   taskPriority: TaskPriority;
 }
-
+export interface TaskStatusRequest{
+  taskStatus: TaskStatus;
+}
 export interface TaskResponse {
   id: number;
   title: string;
@@ -55,6 +57,10 @@ export async function getTasksCreatedByMe():Promise<TaskResponse[]>{
 }
 export async function updateTask(taskId: number,request: TaskRequest): Promise<TaskResponse> {
   const response = await api.put<TaskResponse>(`/api/tasks/${taskId}`,request);
+  return response.data;
+}
+export async function updateTaskStatus(taskId:number,request : TaskStatusRequest): Promise<TaskResponse>{
+  const response = await api.patch<TaskResponse>(`/api/tasks/${taskId}/status`,request);
   return response.data;
 }
 

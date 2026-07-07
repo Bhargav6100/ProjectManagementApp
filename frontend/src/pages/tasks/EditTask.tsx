@@ -14,15 +14,15 @@ import TaskAltIcon from "@mui/icons-material/TaskAlt";
 
 import { useTasks } from "../../context/TaskContext";
 import { useWorkspaces } from "../../context/WorkspaceContext";
-import { updateTask } from "../../services/taskServices";
-
+import { updateTask,updateTaskStatus } from "../../services/taskServices";
+import {useAuth} from "../../context/AuthContext";
 import type { TaskStatus } from "../../utils/TaskStatus";
 import type { TaskPriority } from "../../utils/TaskPriority";
 
 export default function EditTask(): React.JSX.Element {
   const navigate = useNavigate();
   const { workspaceId, projectId, taskId } = useParams();
-
+  const {user} = useAuth();
   const { currentTask, fetchTaskById, fetchTasksByProject, loading } =
     useTasks();
 
@@ -34,6 +34,8 @@ export default function EditTask(): React.JSX.Element {
   const [assignedToUserId, setAssignedToUserId] = useState<string>("");
   const [taskStatus, setStatus] = useState<TaskStatus>("TO_DO");
   const [taskPriority, setPriority] = useState<TaskPriority>("MEDIUM");
+ 
+  const isMember = user?.role==="MEMBER"; 
 
   useEffect(() => {
     if (taskId) {
@@ -88,6 +90,28 @@ export default function EditTask(): React.JSX.Element {
       `/dashboard/workspaces/${workspaceId}/projects/${projectId}/tasks/${taskId}`
     );
   };
+   const handleTaskStatus = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
+    e.preventDefault();
+
+    if (!taskId || !projectId || !workspaceId) {
+      alert("Task, project, or workspace id is missing");
+      return;
+    }
+
+    await updateTaskStatus(Number(taskId), {
+      taskStatus
+    });
+
+    await fetchTasksByProject(Number(projectId));
+
+    alert("Task updated successfully");
+
+    navigate(
+      `/dashboard/workspaces/${workspaceId}/projects/${projectId}/tasks/${taskId}`
+    );
+  };
 
   if (loading) {
     return <Typography>Loading task...</Typography>;
@@ -104,11 +128,12 @@ export default function EditTask(): React.JSX.Element {
           </Typography>
         </Box>
 
-        <Box component="form" onSubmit={handleSubmit}>
+        <Box component="form" onSubmit={isMember ? handleTaskStatus : handleSubmit}>
           <TextField
             margin="normal"
             required
             fullWidth
+            disabled={isMember}
             label="Task Title"
             value={title}
             onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
@@ -120,6 +145,7 @@ export default function EditTask(): React.JSX.Element {
             margin="normal"
             required
             fullWidth
+            disabled={isMember}
             multiline
             rows={4}
             label="Description"
@@ -133,6 +159,7 @@ export default function EditTask(): React.JSX.Element {
             margin="normal"
             required
             fullWidth
+            disabled={isMember} 
             type="date"
             label="Due Date"
             value={dueDate}
@@ -150,6 +177,7 @@ export default function EditTask(): React.JSX.Element {
             margin="normal"
             required
             fullWidth
+            disabled={isMember} 
             select
             label="Assign To"
             value={assignedToUserId}
@@ -159,7 +187,7 @@ export default function EditTask(): React.JSX.Element {
           >
             {members.map((member) => (
               <MenuItem key={member.id} value={String(member.id)}>
-                {member.firstName}{member.lastName} - {member.email}
+                {member.firstName} {member.lastName} - {member.email}
               </MenuItem>
             ))}
           </TextField>
@@ -184,6 +212,7 @@ export default function EditTask(): React.JSX.Element {
             margin="normal"
             required
             fullWidth
+            disabled={isMember} 
             select
             label="Priority"
             value={taskPriority}
@@ -208,7 +237,7 @@ export default function EditTask(): React.JSX.Element {
               textTransform: "none",
             }}
           >
-            Update Task
+           {isMember ? "Update Status" : "Update Task"}
           </Button>
 
           <Button

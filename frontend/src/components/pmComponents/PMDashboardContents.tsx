@@ -24,7 +24,12 @@ export default function PMDashboardContents(): React.JSX.Element {
   const { users } = useUsers();
   const { workspaces, fetchMyWorkspaces } = useWorkspaces();
   const { allProjects, fetchMyProjects } = useProjects();
-  const { allTasks, myCreatedTasks, fetchMyTasks,fetchMyAssignedTasks } = useTasks();
+  const {
+    allTasks,
+    myCreatedTasks,
+    fetchMyTasks,
+    fetchMyAssignedTasks,
+  } = useTasks();
 
   const [projectDialogOpen, setProjectDialogOpen] = useState<boolean>(false);
   const [taskDialogOpen, setTaskDialogOpen] = useState<boolean>(false);
@@ -39,12 +44,14 @@ export default function PMDashboardContents(): React.JSX.Element {
   const myWorkspaces = useMemo(() => {
     return workspaces;
   }, [workspaces]);
- console.log(myCreatedTasks)
- const myWorkspaceIds = new Set(workspaces.map((workspace) => workspace.id));
 
-const myProjects = allProjects.filter((project) =>
-  myWorkspaceIds.has(project.workspaceId)
-);
+  console.log(myCreatedTasks);
+
+  const myWorkspaceIds = new Set(workspaces.map((workspace) => workspace.id));
+
+  const myProjects = allProjects.filter((project) =>
+    myWorkspaceIds.has(project.workspaceId)
+  );
 
   const myProjectIds = useMemo(() => {
     return new Set(myProjects.map((project) => project.id));
@@ -58,7 +65,7 @@ const myProjects = allProjects.filter((project) =>
 
       const assignedToMe = task.assignedToUserId === currentUserId;
 
-      return taskBelongsToMyProject && (assignedToMe);
+      return taskBelongsToMyProject && assignedToMe;
     });
   }, [allTasks, myProjectIds, user]);
 
@@ -66,12 +73,48 @@ const myProjects = allProjects.filter((project) =>
     return myTasks.filter((task) => task.assignedToUserId === user?.id);
   }, [myTasks, user]);
 
+  const statCardSx = {
+    p: 3,
+    borderRadius: 3,
+    cursor: "pointer",
+    border: "1px solid #e5e7eb",
+    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.04)",
+    transition: "all 0.2s ease",
+    "&:hover": {
+      transform: "translateY(-3px)",
+      boxShadow: "0 16px 40px rgba(15, 23, 42, 0.08)",
+      borderColor: "rgba(25, 118, 210, 0.35)",
+    },
+  };
+
+  const iconBoxSx = {
+    width: 48,
+    height: 48,
+    borderRadius: 2.5,
+    bgcolor: "rgba(25, 118, 210, 0.08)",
+    color: "primary.main",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+    "& svg": {
+      fontSize: 26,
+    },
+  };
+
   return (
     <>
       <Box>
-        <Typography variant="h4" sx={{ fontWeight: 700, mb: 3 }}>
-          Project Manager Dashboard
-        </Typography>
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.5 }}>
+            Project Manager Dashboard
+          </Typography>
+
+          <Typography color="text.secondary" sx={{ fontSize: 15 }}>
+            Welcome back, {user?.firstName}. Manage your workspaces, projects,
+            and tasks from here.
+          </Typography>
+        </Box>
 
         <Box
           sx={{
@@ -85,20 +128,18 @@ const myProjects = allProjects.filter((project) =>
             mb: 3,
           }}
         >
-          <Paper
-            onClick={() => navigate("/dashboard/users")}
-            sx={{
-              p: 3,
-              borderRadius: 3,
-              cursor: "pointer",
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-              <PersonIcon color="primary" />
+          <Paper onClick={() => navigate("/dashboard/users")} sx={statCardSx}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Box sx={iconBoxSx}>
+                <PersonIcon />
+              </Box>
 
               <Box>
-                <Typography color="text.secondary">Users</Typography>
-                <Typography variant="h4" sx={{ fontWeight: 700 }}>
+                <Typography color="text.secondary" sx={{ fontSize: 14 }}>
+                  Users
+                </Typography>
+
+                <Typography variant="h4" sx={{ fontWeight: 800 }}>
                   {users.length}
                 </Typography>
               </Box>
@@ -107,18 +148,19 @@ const myProjects = allProjects.filter((project) =>
 
           <Paper
             onClick={() => navigate("/dashboard/workspaces")}
-            sx={{
-              p: 3,
-              borderRadius: 3,
-              cursor: "pointer",
-            }}
+            sx={statCardSx}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-              <WorkspacesIcon color="primary" />
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Box sx={iconBoxSx}>
+                <WorkspacesIcon />
+              </Box>
 
               <Box>
-                <Typography color="text.secondary">My Workspaces</Typography>
-                <Typography variant="h4" sx={{ fontWeight: 700 }}>
+                <Typography color="text.secondary" sx={{ fontSize: 14 }}>
+                  My Workspaces
+                </Typography>
+
+                <Typography variant="h4" sx={{ fontWeight: 800 }}>
                   {myWorkspaces.length}
                 </Typography>
               </Box>
@@ -127,38 +169,37 @@ const myProjects = allProjects.filter((project) =>
 
           <Paper
             onClick={() => navigate("/dashboard/projects")}
-            sx={{
-              p: 3,
-              borderRadius: 3,
-              cursor: "pointer",
-            }}
+            sx={statCardSx}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-              <FolderIcon color="primary" />
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Box sx={iconBoxSx}>
+                <FolderIcon />
+              </Box>
 
               <Box>
-                <Typography color="text.secondary">My Projects</Typography>
-                <Typography variant="h4" sx={{ fontWeight: 700 }}>
+                <Typography color="text.secondary" sx={{ fontSize: 14 }}>
+                  My Projects
+                </Typography>
+
+                <Typography variant="h4" sx={{ fontWeight: 800 }}>
                   {myProjects.length}
                 </Typography>
               </Box>
             </Box>
           </Paper>
 
-          <Paper
-            onClick={() => navigate("/dashboard/tasks")}
-            sx={{
-              p: 3,
-              borderRadius: 3,
-              cursor: "pointer",
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-              <TaskAltIcon color="primary" />
+          <Paper onClick={() => navigate("/dashboard/tasks")} sx={statCardSx}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Box sx={iconBoxSx}>
+                <TaskAltIcon />
+              </Box>
 
               <Box>
-                <Typography color="text.secondary">My Tasks</Typography>
-                <Typography variant="h4" sx={{ fontWeight: 700 }}>
+                <Typography color="text.secondary" sx={{ fontSize: 14 }}>
+                  My Tasks
+                </Typography>
+
+                <Typography variant="h4" sx={{ fontWeight: 800 }}>
                   {myTasks.length}
                 </Typography>
               </Box>
@@ -177,26 +218,63 @@ const myProjects = allProjects.filter((project) =>
             mb: 3,
           }}
         >
-          <Paper onClick={()=>navigate("/dashboard/my-tasks")}sx={{ p: 3, borderRadius: 3 }}>
-            <Typography color="text.secondary">Tasks Assigned To Me</Typography>
+          <Paper
+            onClick={() => navigate("/dashboard/my-tasks")}
+            sx={statCardSx}
+          >
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Box sx={iconBoxSx}>
+                <TaskAltIcon />
+              </Box>
 
-            <Typography variant="h4" sx={{ fontWeight: 700 }}>
-              {assignedToMeTasks.length}
-            </Typography>
+              <Box>
+                <Typography color="text.secondary" sx={{ fontSize: 14 }}>
+                  Tasks Assigned To Me
+                </Typography>
+
+                <Typography variant="h4" sx={{ fontWeight: 800 }}>
+                  {assignedToMeTasks.length}
+                </Typography>
+              </Box>
+            </Box>
           </Paper>
 
-          <Paper onClick={()=>navigate("/dashboard/my-assigned-tasks")} sx={{ p: 3, borderRadius: 3 }}>
-            <Typography color="text.secondary">Tasks Created By Me</Typography>
+          <Paper
+            onClick={() => navigate("/dashboard/my-assigned-tasks")}
+            sx={statCardSx}
+          >
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Box sx={iconBoxSx}>
+                <TaskAltIcon />
+              </Box>
 
-            <Typography variant="h4" sx={{ fontWeight: 700 }}>
-              {myCreatedTasks.length}
-            </Typography>
+              <Box>
+                <Typography color="text.secondary" sx={{ fontSize: 14 }}>
+                  Tasks Created By Me
+                </Typography>
+
+                <Typography variant="h4" sx={{ fontWeight: 800 }}>
+                  {myCreatedTasks.length}
+                </Typography>
+              </Box>
+            </Box>
           </Paper>
         </Box>
 
-        <Paper sx={{ p: 3, borderRadius: 3 }}>
-          <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+        <Paper
+          sx={{
+            p: 3,
+            borderRadius: 3,
+            border: "1px solid #e5e7eb",
+            boxShadow: "0 10px 30px rgba(15, 23, 42, 0.04)",
+          }}
+        >
+          <Typography variant="h6" sx={{ fontWeight: 800, mb: 0.5 }}>
             Quick Actions
+          </Typography>
+
+          <Typography color="text.secondary" sx={{ fontSize: 14, mb: 2.5 }}>
+            Start new project work from your assigned resources.
           </Typography>
 
           <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
@@ -204,6 +282,13 @@ const myProjects = allProjects.filter((project) =>
               variant="outlined"
               startIcon={<FolderIcon />}
               onClick={() => setProjectDialogOpen(true)}
+              sx={{
+                borderRadius: 2.5,
+                px: 2.5,
+                py: 1,
+                fontWeight: 700,
+                textTransform: "none",
+              }}
             >
               Create Project
             </Button>
@@ -212,6 +297,13 @@ const myProjects = allProjects.filter((project) =>
               variant="outlined"
               startIcon={<TaskAltIcon />}
               onClick={() => setTaskDialogOpen(true)}
+              sx={{
+                borderRadius: 2.5,
+                px: 2.5,
+                py: 1,
+                fontWeight: 700,
+                textTransform: "none",
+              }}
             >
               Create Task
             </Button>

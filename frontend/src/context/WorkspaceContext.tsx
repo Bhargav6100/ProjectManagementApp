@@ -10,6 +10,7 @@ import {
 import {
   addMemberToTheWorkspace,
   getMembersOfWorkspace,
+  removeMemberFromTheWorkspace
 } from "../services/workspaceMembers";
 
 import type { Roles } from "../utils/Roles";
@@ -45,6 +46,7 @@ interface WorkspaceContextType {
   fetchWorkspaceById: (id: number) => Promise<void>;
   addMemberToWorkspace: (workspaceId: number,userId: number) => Promise<void>;
   fetchWorkspaceMembers: (workspaceId: number) => Promise<void>;
+  deleteWorkspaceMember: (workspaceId: number,userId: number) => Promise<void>;
 }
 
 const WorkspaceContext = createContext<WorkspaceContextType | null>(null);
@@ -128,7 +130,16 @@ export function WorkspaceProvider({
     await fetchWorkspaceMembers(workspaceId);
     await fetchWorkspaceById(workspaceId);
   };
+  const deleteWorkspaceMember = async (
+    workspaceId: number,
+    userId: number
+  ): Promise<void> =>{
+   await removeMemberFromTheWorkspace(workspaceId, userId);
 
+    await fetchWorkspaceMembers(workspaceId);
+    await fetchWorkspaceById(workspaceId);
+  };
+  
   const fetchMyWorkspaces = async (): Promise<void> => {
   setLoading(true);
 
@@ -155,6 +166,7 @@ export function WorkspaceProvider({
         deleteWorkspace,
         addMemberToWorkspace,
         fetchWorkspaceMembers,
+        deleteWorkspaceMember
       }}
     >
       {children}

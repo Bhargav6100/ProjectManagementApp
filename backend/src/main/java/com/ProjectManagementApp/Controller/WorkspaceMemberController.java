@@ -4,10 +4,7 @@ import com.ProjectManagementApp.dto.UserResponse;
 import com.ProjectManagementApp.dto.WorkspaceMemberResponse;
 import com.ProjectManagementApp.service.WorkspaceMemberService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,5 +33,14 @@ public class WorkspaceMemberController {
         List<UserResponse> members = workspaceMemberService.getWorkspaceMembers(workspaceId);
 
         return ResponseEntity.ok(members);
+    }
+    @DeleteMapping("/api/workspaces/{workspaceId}/members/{userId}")
+    public ResponseEntity<String> removeMember(
+            @PathVariable Long workspaceId,
+            @PathVariable Long userId
+    ) {
+        workspaceMemberService.removeMember(workspaceId, userId);
+
+        return ResponseEntity.ok("User removed from workspace successfully");
     }
 }

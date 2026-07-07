@@ -1,14 +1,16 @@
 import { useEffect,useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  Avatar,
+ Avatar,
   Box,
   Button,
   Chip,
   Divider,
+  IconButton,
   MenuItem,
   Paper,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 
@@ -18,6 +20,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import FolderIcon from "@mui/icons-material/Folder";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
+import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import { useWorkspaces} from "../../context/WorkspaceContext";
 import { useProjects } from "../../context/ProjectContext";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -29,7 +32,7 @@ export default function WorkspaceDetails(): React.JSX.Element {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { currentWorkspace, fetchWorkspaceById,addMemberToWorkspace,loading,fetchWorkspaceMembers,members } = useWorkspaces();
+  const { currentWorkspace, fetchWorkspaceById,addMemberToWorkspace,loading,fetchWorkspaceMembers,members,deleteWorkspaceMember} = useWorkspaces();
   const { projects, fetchProjectsByWorkspace } = useProjects();
   const { users } = useUsers();
   const {user} = useAuth();
@@ -56,6 +59,29 @@ const handleAddMember = async (): Promise<void> => {
 
   alert("Member added to workspace successfully");
   setSelectedUserId("");
+};
+
+const handleDeleteMember = async (
+  userId: number,
+  memberName: string
+): Promise<void> => {
+  if (!currentWorkspace) {
+    return;
+  }
+
+  const confirmed = window.confirm(
+    `Are you sure you want to remove ${memberName} from this workspace?`
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  await deleteWorkspaceMember(currentWorkspace.id, userId);
+
+  await fetchWorkspaceMembers(currentWorkspace.id);
+
+  alert("Member removed from workspace successfully");
 };
 
 const formatRole = (role: string): string => {
@@ -495,33 +521,60 @@ const formatRole = (role: string): string => {
             borderRadius: 3,
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-            <Avatar sx={{ width: 44, height: 44 }}>
-              {getInitials(member.firstName,member.lastName)}
-            </Avatar>
+          <Box
+  sx={{
+    display: "flex",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    gap: 1.5,
+  }}
+>
+  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, minWidth: 0 }}>
+    <Avatar sx={{ width: 44, height: 44 }}>
+      {getInitials(member.firstName, member.lastName)}
+    </Avatar>
 
-            <Box sx={{ minWidth: 0 }}>
-              <Typography sx={{ fontWeight: 700 }}>
-                {member.firstName} {member.lastName}
-              </Typography>
+    <Box sx={{ minWidth: 0 }}>
+      <Typography sx={{ fontWeight: 700 }}>
+        {member.firstName} {member.lastName}
+      </Typography>
 
-              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                <EmailIcon sx={{ fontSize: 15 }} color="disabled" />
-                <Typography
-                  color="text.secondary"
-                  sx={{
-                    fontSize: 13,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    maxWidth: 220,
-                  }}
-                >
-                  {member.email}
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+        <EmailIcon sx={{ fontSize: 15 }} color="disabled" />
+
+        <Typography
+          color="text.secondary"
+          sx={{
+            fontSize: 13,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            maxWidth: 180,
+          }}
+        >
+          {member.email}
+        </Typography>
+      </Box>
+    </Box>
+  </Box>
+
+  {(isAdmin || isPM) && (
+    <Tooltip title="Remove member">
+      <IconButton
+        size="small"
+        color="error"
+        onClick={() =>
+          handleDeleteMember(
+            member.id,
+            `${member.firstName} ${member.lastName}`
+          )
+        }
+      >
+        <PersonRemoveIcon fontSize="small" />
+      </IconButton>
+    </Tooltip>
+  )}
+</Box>
 
           <Box sx={{ mt: 2 }}>
             <Chip

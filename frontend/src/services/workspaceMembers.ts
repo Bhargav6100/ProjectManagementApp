@@ -26,3 +26,7 @@ export async function getMembersOfWorkspace(workspaceId:number):Promise<Workspac
     const response = await api.get(`/api/workspaces/${workspaceId}/members`)
     return response.data;
 }
+export async function removeMemberFromTheWorkspace(workspaceId:number,userId:number):Promise<void>{
+    const response = await api.delete(`/api/workspaces/${workspaceId}/members/${userId}`)
+    return response.data;
+}

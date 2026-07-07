@@ -10,6 +10,7 @@ import com.ProjectManagementApp.exception.ResourceNotFoundException;
 import com.ProjectManagementApp.repository.UserRepository;
 import com.ProjectManagementApp.repository.WorkSpaceRepository;
 import com.ProjectManagementApp.repository.WorkspaceMemberRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -73,5 +74,21 @@ public class WorkspaceMemberService {
                         user.isActive()
                 ))
                 .toList();
+    }
+
+    @Transactional
+    public void removeMember(Long workspaceId, Long userId) {
+
+        Workspace workspace = workSpaceRepository.findById(workspaceId)
+                .orElseThrow(() -> new ResourceNotFoundException("Workspace not found"));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        WorkspaceMember member = workspaceMemberRepository
+                .findByWorkspaceIdAndUserId(workspaceId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User is not a member of this workspace"));
+
+        workspaceMemberRepository.delete(member);
     }
 }

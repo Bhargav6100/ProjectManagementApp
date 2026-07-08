@@ -43,7 +43,7 @@ public class TaskService {
                 task.getTaskStatus(),
                 task.getTaskPriority(),
                 task.getCreatedAt(),
-                task.getAssignedBy().getEmail(),
+                task.getAssignedBy().getFirstName() + " " + task.getAssignedBy().getLastName(),
                 task.getProject().getId()
         );
     }
@@ -105,11 +105,13 @@ public class TaskService {
 
         if (currentUser.getRole().equals(Roles.PROJECT_MANAGER)) {
 
-            boolean isProjectCreator = projectRepository
-                    .existsByIdAndCreatedById(project.getId(),currentUser.getId());
+            boolean isWorkspaceMember = workspaceMemberRepository
+                    .existsByWorkspaceIdAndUserId(workspaceId, currentUser.getId());
 
-            if (!isProjectCreator) {
-                throw new AccessDeniedException("only project creater can create task");
+            if (!isWorkspaceMember) {
+                throw new AccessDeniedException(
+                        "You are not allowed to manage projects in this workspace"
+                );
             }
 
         } else if (!currentUser.getRole().equals(Roles.ADMIN)) {
@@ -149,7 +151,7 @@ public class TaskService {
                 saved.getTaskStatus(),
                 saved.getTaskPriority(),
                 saved.getCreatedAt(),
-                saved.getAssignedBy().getEmail(),
+                saved.getAssignedBy().getFirstName() + " " + saved.getAssignedBy().getLastName(),
                 saved.getProject().getId()
         );
     }
@@ -190,7 +192,7 @@ public class TaskService {
                 update.getTaskStatus(),
                 update.getTaskPriority(),
                 update.getCreatedAt(),
-                update.getAssignedBy().getEmail(),
+                update.getAssignedBy().getFirstName() + " " + update.getAssignedBy().getLastName(),
                 update.getProject().getId()
         );
     }
@@ -228,7 +230,7 @@ public class TaskService {
                 patched.getTaskStatus(),
                 patched.getTaskPriority(),
                 patched.getCreatedAt(),
-                patched.getAssignedBy().getEmail(),
+                patched.getAssignedBy().getFirstName() + " " + patched.getAssignedBy().getLastName(),
                 patched.getProject().getId()
         );
     }
@@ -260,7 +262,7 @@ public class TaskService {
                 patched.getTaskStatus(),
                 patched.getTaskPriority(),
                 patched.getCreatedAt(),
-                patched.getAssignedBy().getEmail(),
+                patched.getAssignedBy().getFirstName() + " " + patched.getAssignedBy().getLastName(),
                 patched.getProject().getId()
         );
     }
@@ -297,7 +299,7 @@ public class TaskService {
                         task.getTaskStatus(),
                         task.getTaskPriority(),
                         task.getCreatedAt(),
-                        task.getAssignedBy().getEmail(),
+                        task.getAssignedBy().getFirstName() + " " + task.getAssignedBy().getLastName(),
                         task.getProject().getId()
                 ))
                 .toList();

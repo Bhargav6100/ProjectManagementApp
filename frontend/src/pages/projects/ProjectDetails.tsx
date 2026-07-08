@@ -69,23 +69,37 @@ export default function ProjectDetails(): React.JSX.Element {
   };
 
   const handleDeleteTask = async (
-    e: React.MouseEvent<HTMLButtonElement>,
-    taskId: number
-  ): Promise<void> => {
-    e.stopPropagation();
+  e: React.MouseEvent<HTMLButtonElement>,
+  task: (typeof tasks)[number]
+): Promise<void> => {
+  e.stopPropagation();
 
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this task?"
-    );
+  const isTaskCreator =
+    task.createdBy?.toLowerCase() === user?.email?.toLowerCase();
 
-    if (!confirmed) return;
+  if (!isAdmin && !isTaskCreator) {
+    showSnackbar("Only the task creator can delete this task.", "warning");
+    return;
+  }
 
-    await deleteTask(taskId);
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this task?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+    await deleteTask(task.id);
 
     if (projectId) {
       await fetchTasksByProject(Number(projectId));
     }
-  };
+
+    showSnackbar("Task deleted successfully.", "success");
+  } catch (error) {
+    showSnackbar("You are not allowed to delete this task.", "error");
+  }
+};
 
   const formatStatus = (status: ProjectStatus): string => {
     if (status === "ACTIVE") {
@@ -869,6 +883,12 @@ export default function ProjectDetails(): React.JSX.Element {
                             ? task.assignedToName
                             : `User ID: ${task.assignedToUserId}`}
                         </Typography>
+                        <Typography color="text.secondary" sx={{ fontSize: 13 }}>
+                          Assigned By{" "}
+                          {task.createdBy
+                            ? task.createdBy
+                            : `User ID: ${task.createdBy}`}
+                        </Typography>
                       </Box>
                     </Box>
 
@@ -878,7 +898,7 @@ export default function ProjectDetails(): React.JSX.Element {
                           size="small"
                           color="error"
                           onClick={(e): void => {
-                            void handleDeleteTask(e, task.id);
+                            void handleDeleteTask(e, task);
                           }}
                           sx={{
                             bgcolor: "#fef2f2",

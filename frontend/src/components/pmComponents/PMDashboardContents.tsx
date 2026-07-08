@@ -45,7 +45,6 @@ export default function PMDashboardContents(): React.JSX.Element {
     return workspaces;
   }, [workspaces]);
 
-  console.log(myCreatedTasks);
 
   const myWorkspaceIds = new Set(workspaces.map((workspace) => workspace.id));
 

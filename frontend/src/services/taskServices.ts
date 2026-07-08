@@ -29,6 +29,7 @@ export interface TaskResponse {
 
 export async function createTask(projectId: number,request: TaskRequest):Promise<TaskResponse> {
   const response = await api.post<TaskResponse>(`/api/projects/${projectId}/tasks`,request);
+  console.log(response.data);
   return response.data;
 }
 

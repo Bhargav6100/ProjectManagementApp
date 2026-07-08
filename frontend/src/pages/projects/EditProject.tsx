@@ -59,7 +59,7 @@ export default function EditProject(): React.JSX.Element {
       showSnackbar("Project updated successfully");
       navigate(`/dashboard/workspaces/${workspaceId}/projects/${projectId}`);
     } catch (error) {
-      showSnackbar("Failed to update project");
+      showSnackbar("Failed to update project because only the project creator or admin can update");
     } finally {
       setSubmitting(false);
     }

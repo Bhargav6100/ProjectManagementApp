@@ -146,35 +146,51 @@ public class ProjectService {
                 saved.getCreatedAt()
         );
     }
-public ProjectResponse updateProject(ProjectRequest request,Long projectId, User currentUser) throws AccessDeniedException {
-     Project project = projectRepository.findById(projectId)
-             .orElseThrow(()->new ResourceNotFoundException("Project not found"));
-    if (currentUser.getRole().equals(Roles.PROJECT_MANAGER)) {
+    public ProjectResponse updateProject(ProjectRequest request, Long projectId, User currentUser
+    ) throws AccessDeniedException {
 
-        boolean isProjectCreator = projectRepository
-                .existsByIdAndCreatedById(project.getId(),currentUser.getId());
-        if (!isProjectCreator) {
-            throw new AccessDeniedException("You are not allowed to manage this project");
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
+
+        Long workspaceId = project.getWorkspace().getId();
+
+
+          if (currentUser.getRole().equals(Roles.PROJECT_MANAGER)) {
+
+            boolean isWorkspaceMember = workspaceMemberRepository
+                    .existsByWorkspaceIdAndUserId(workspaceId, currentUser.getId());
+
+            if (!isWorkspaceMember) {
+                throw new AccessDeniedException(
+                        "You are not allowed to manage projects in this workspace"
+                );
+            }
+
+        }else if (!currentUser.getRole().equals(Roles.ADMIN)) {
+              throw new AccessDeniedException("Only admin or creator of this project can update status of the projects");
+          }
+          else {
+            throw new AccessDeniedException(
+                    "Only admin or assigned project manager can update projects"
+            );
         }
 
+        project.setName(request.getName());
+        project.setDescription(request.getDescription());
+        project.setStatus(request.getStatus());
+
+        Project updated = projectRepository.save(project);
+
+        return new ProjectResponse(
+                updated.getId(),
+                updated.getName(),
+                updated.getDescription(),
+                updated.getStatus(),
+                updated.getWorkspace().getId(),
+                updated.getCreatedBy().getEmail(),
+                updated.getCreatedAt()
+        );
     }
-    else if (!currentUser.getRole().equals(Roles.ADMIN)) {
-        throw new AccessDeniedException("Only admin or creator of this project can update projects");
-    }
-         project.setName(request.getName());
-         project.setDescription(request.getDescription());
-         project.setStatus(request.getStatus());
-         Project update = projectRepository.save(project);
-         return new ProjectResponse(
-                 update.getId(),
-                 update.getName(),
-                 update.getDescription(),
-                 update.getStatus(),
-                 update.getWorkspace().getId(),
-                 update.getCreatedBy().getEmail(),
-                 update.getCreatedAt()
-         );
- }
     public ProjectResponse updateProjectStatus(
             ProjectStatusPatch request,
             Long projectId,
@@ -184,13 +200,18 @@ public ProjectResponse updateProject(ProjectRequest request,Long projectId, User
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
 
+        Long workspaceId = project.getWorkspace().getId();
+
+
         if (currentUser.getRole().equals(Roles.PROJECT_MANAGER)) {
 
-            boolean isProjectCreator = projectRepository
-                    .existsByIdAndCreatedById(project.getId(),currentUser.getId());
+            boolean isWorkspaceMember = workspaceMemberRepository
+                    .existsByWorkspaceIdAndUserId(workspaceId, currentUser.getId());
 
-            if (!isProjectCreator) {
-                throw new AccessDeniedException("You are not allowed to manage this project");
+            if (!isWorkspaceMember) {
+                throw new AccessDeniedException(
+                        "You are not allowed to manage projects in this workspace"
+                );
             }
 
         } else if (!currentUser.getRole().equals(Roles.ADMIN)) {

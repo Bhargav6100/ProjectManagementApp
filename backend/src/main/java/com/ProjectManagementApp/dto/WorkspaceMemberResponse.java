@@ -1,10 +1,6 @@
 package com.ProjectManagementApp.dto;
 
 import com.ProjectManagementApp.entity.Roles;
-import com.ProjectManagementApp.entity.User;
-import com.ProjectManagementApp.entity.Workspace;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class WorkspaceMemberResponse {

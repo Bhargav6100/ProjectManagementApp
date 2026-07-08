@@ -31,7 +31,6 @@ import { useUsers } from "../../context/UsersContext";
 import { useAuth } from "../../context/AuthContext";
 import { useSnackbar } from "../../context/SnackbarContext";
 
-
 export default function WorkspaceDetails(): React.JSX.Element {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -49,12 +48,19 @@ export default function WorkspaceDetails(): React.JSX.Element {
   const { projects, fetchProjectsByWorkspace } = useProjects();
   const { users } = useUsers();
   const { user } = useAuth();
-  const {showSnackbar} = useSnackbar();
+  const { showSnackbar } = useSnackbar();
 
   const [selectedUserId, setSelectedUserId] = useState<string>("");
 
-  const assignableUsers = users.filter((member) => member.role !== "ADMIN");
-  
+  const existingMemberIds = new Set(members.map((member) => member.id));
+
+  const availableUsers = users.filter((member) => {
+    const isAlreadyMember = existingMemberIds.has(member.id);
+    const isAdminUser = member.role === "ADMIN";
+
+    return !isAlreadyMember && !isAdminUser;
+  });
+
   const isAdmin = user?.role === "ADMIN";
   const isPM = user?.role === "PROJECT_MANAGER";
 
@@ -90,14 +96,14 @@ export default function WorkspaceDetails(): React.JSX.Element {
 
   const handleDeleteMember = async (
     userId: number,
-    memberName: string
+    memberName: string,
   ): Promise<void> => {
     if (!currentWorkspace) {
       return;
     }
 
     const confirmed = window.confirm(
-      `Are you sure you want to remove ${memberName} from this workspace?`
+      `Are you sure you want to remove ${memberName} from this workspace?`,
     );
 
     if (!confirmed) {
@@ -136,7 +142,7 @@ export default function WorkspaceDetails(): React.JSX.Element {
   };
 
   const getProjectStatusColor = (
-    status: string
+    status: string,
   ): "warning" | "success" | "default" => {
     if (status === "COMPLETE") {
       return "success";
@@ -293,7 +299,7 @@ export default function WorkspaceDetails(): React.JSX.Element {
             startIcon={<FolderIcon />}
             onClick={() =>
               navigate(
-                `/dashboard/workspaces/${currentWorkspace.id}/projects/create`
+                `/dashboard/workspaces/${currentWorkspace.id}/projects/create`,
               )
             }
             sx={{
@@ -597,7 +603,7 @@ export default function WorkspaceDetails(): React.JSX.Element {
                 }}
                 onClick={() =>
                   navigate(
-                    `/dashboard/workspaces/${currentWorkspace.id}/projects/create`
+                    `/dashboard/workspaces/${currentWorkspace.id}/projects/create`,
                   )
                 }
               >
@@ -650,7 +656,7 @@ export default function WorkspaceDetails(): React.JSX.Element {
                   }}
                   onClick={() =>
                     navigate(
-                      `/dashboard/workspaces/${currentWorkspace.id}/projects/create`
+                      `/dashboard/workspaces/${currentWorkspace.id}/projects/create`,
                     )
                   }
                 >
@@ -689,7 +695,7 @@ export default function WorkspaceDetails(): React.JSX.Element {
                   }}
                   onClick={() =>
                     navigate(
-                      `/dashboard/workspaces/${currentWorkspace.id}/projects/${project.id}`
+                      `/dashboard/workspaces/${currentWorkspace.id}/projects/${project.id}`,
                     )
                   }
                 >
@@ -852,18 +858,129 @@ export default function WorkspaceDetails(): React.JSX.Element {
                 select
                 label="Select Member"
                 value={selectedUserId}
-                onChange={(e) => setSelectedUserId(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+                  setSelectedUserId(e.target.value)
+                }
                 sx={{
-                  minWidth: { xs: "100%", sm: 360 },
+                  minWidth: { xs: "100%", sm: 420 },
                   "& .MuiOutlinedInput-root": {
                     borderRadius: 2,
                     bgcolor: "#ffffff",
                   },
                 }}
+                slotProps={{
+                  select: {
+                    displayEmpty: true,
+                    renderValue: (selected: unknown): React.ReactNode => {
+                      const selectedUser = availableUsers.find(
+                        (member) => member.id === Number(selected),
+                      );
+
+                      if (!selectedUser) {
+                        return "Select Member";
+                      }
+
+                      return `${selectedUser.firstName} ${selectedUser.lastName}`;
+                    },
+                    MenuProps: {
+                      slotProps: {
+                        paper: {
+                          sx: {
+                            mt: 1,
+                            borderRadius: 3,
+                            border: "1px solid #e5e7eb",
+                            boxShadow: "0 18px 40px rgba(15, 23, 42, 0.16)",
+                            maxHeight: 320,
+                          },
+                        },
+                        list: {
+                          sx: {
+                            p: 1,
+                          },
+                        },
+                      },
+                    },
+                  },
+                }}
               >
-                {assignableUsers.map((member) => (
-                  <MenuItem key={member.id} value={String(member.id)}>
-                    {member.firstName} {member.lastName} - {member.email}
+                {availableUsers.map((member) => (
+                  <MenuItem
+                    key={member.id}
+                    value={String(member.id)}
+                    sx={{
+                      borderRadius: 2,
+                      mb: 0.5,
+                      py: 1.2,
+                      "&:hover": {
+                        bgcolor: "#f8fafc",
+                      },
+                      "&.Mui-selected": {
+                        bgcolor: "#eef2ff",
+                        "&:hover": {
+                          bgcolor: "#e0e7ff",
+                        },
+                      },
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1.5,
+                        width: "100%",
+                      }}
+                    >
+                      <Avatar
+                        sx={{
+                          width: 36,
+                          height: 36,
+                          fontSize: 14,
+                          fontWeight: 800,
+                          bgcolor: "#e0e7ff",
+                          color: "#3730a3",
+                        }}
+                      >
+                        {member.firstName.charAt(0)}
+                        {member.lastName.charAt(0)}
+                      </Avatar>
+
+                      <Box sx={{ minWidth: 0, flex: 1 }}>
+                        <Typography sx={{ fontWeight: 800, fontSize: 14 }}>
+                          {member.firstName} {member.lastName}
+                        </Typography>
+
+                        <Typography
+                          color="text.secondary"
+                          sx={{
+                            fontSize: 12,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {member.email}
+                        </Typography>
+                      </Box>
+
+                      <Chip
+                        label={
+                          member.role === "PROJECT_MANAGER"
+                            ? "Project Manager"
+                            : member.role.charAt(0) +
+                              member.role.slice(1).toLowerCase()
+                        }
+                        size="small"
+                        color={
+                          member.role === "PROJECT_MANAGER"
+                            ? "success"
+                            : "default"
+                        }
+                        sx={{
+                          fontWeight: 700,
+                          borderRadius: 2,
+                        }}
+                      />
+                    </Box>
                   </MenuItem>
                 ))}
               </TextField>
@@ -1021,7 +1138,7 @@ export default function WorkspaceDetails(): React.JSX.Element {
                           onClick={() => {
                             void handleDeleteMember(
                               member.id,
-                              `${member.firstName} ${member.lastName}`
+                              `${member.firstName} ${member.lastName}`,
                             );
                           }}
                           sx={{
@@ -1045,8 +1162,8 @@ export default function WorkspaceDetails(): React.JSX.Element {
                         member.role === "ADMIN"
                           ? "primary"
                           : member.role === "PROJECT_MANAGER"
-                          ? "success"
-                          : "default"
+                            ? "success"
+                            : "default"
                       }
                       sx={{
                         fontWeight: 700,

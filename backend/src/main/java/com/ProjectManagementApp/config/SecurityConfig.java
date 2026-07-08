@@ -10,7 +10,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.config.Customizer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -39,10 +38,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/auth/register").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST,"/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/workspaces").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/workspaces/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/projects").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/api/tasks").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/api/users/edit").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/workspaces/**").hasAnyRole("ADMIN","PROJECT_MANAGER")
                         .requestMatchers(HttpMethod.PUT, "/api/workspaces/**").hasAnyRole("ADMIN", "PROJECT_MANAGER")
                         .requestMatchers(HttpMethod.POST, "/api/workspaces/*/projects").hasAnyRole("ADMIN", "PROJECT_MANAGER")
                         .requestMatchers(HttpMethod.POST, "/api/projects/*/tasks").hasAnyRole("ADMIN", "PROJECT_MANAGER")

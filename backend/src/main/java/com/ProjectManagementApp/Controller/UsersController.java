@@ -1,13 +1,10 @@
 package com.ProjectManagementApp.Controller;
 
-import com.ProjectManagementApp.dto.ProjectResponse;
 import com.ProjectManagementApp.dto.UserRequest;
 import com.ProjectManagementApp.dto.UserResponse;
-import com.ProjectManagementApp.entity.Project;
 import com.ProjectManagementApp.entity.User;
 import com.ProjectManagementApp.exception.ResourceNotFoundException;
 import com.ProjectManagementApp.repository.UserRepository;
-import com.ProjectManagementApp.repository.WorkspaceMemberRepository;
 import com.ProjectManagementApp.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +17,11 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UsersController {
 
-    private UserRepository userRepository;
-    private UserService userService;
-
-    private WorkspaceMemberRepository workspaceMemberRepository;
-    public  UsersController(UserRepository userRepository, UserService userService,WorkspaceMemberRepository workspaceMemberRepository){
+    private final UserRepository userRepository;
+    private final UserService userService;
+    public  UsersController(UserRepository userRepository, UserService userService){
         this.userRepository=userRepository;
         this.userService = userService;
-        this.workspaceMemberRepository = workspaceMemberRepository;
     }
     @GetMapping("/me")
     public ResponseEntity<UserResponse> me(Authentication authentication) {

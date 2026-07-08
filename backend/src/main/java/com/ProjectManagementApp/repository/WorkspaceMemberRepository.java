@@ -1,7 +1,5 @@
 package com.ProjectManagementApp.repository;
 
-import com.ProjectManagementApp.entity.User;
-import com.ProjectManagementApp.entity.Workspace;
 import com.ProjectManagementApp.entity.WorkspaceMember;
 import org.springframework.data.jpa.repository.JpaRepository;
 

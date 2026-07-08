@@ -53,6 +53,8 @@ export default function WorkspaceDetails(): React.JSX.Element {
 
   const [selectedUserId, setSelectedUserId] = useState<string>("");
 
+  const assignableUsers = users.filter((member) => member.role !== "ADMIN");
+  
   const isAdmin = user?.role === "ADMIN";
   const isPM = user?.role === "PROJECT_MANAGER";
 
@@ -859,7 +861,7 @@ export default function WorkspaceDetails(): React.JSX.Element {
                   },
                 }}
               >
-                {users.map((member) => (
+                {assignableUsers.map((member) => (
                   <MenuItem key={member.id} value={String(member.id)}>
                     {member.firstName} {member.lastName} - {member.email}
                   </MenuItem>

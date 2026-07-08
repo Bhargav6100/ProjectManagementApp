@@ -118,7 +118,7 @@ export default function MemberSideBar(): React.JSX.Element {
           <ListItemText
             primary={
               <Typography sx={{ fontWeight: 600 }}>
-                Members
+                Users
               </Typography>
             }
           />
@@ -175,7 +175,10 @@ export default function MemberSideBar(): React.JSX.Element {
           />
         </ListItemButton>
 
-        <ListItemButton sx={menuItemSx(false)}>
+        <ListItemButton
+         sx={menuItemSx(isActive("/dashboard/settings"))}
+            onClick={() => navigate("/dashboard/settings")}
+        >
           <ListItemIcon sx={iconSx(false)}>
             <SettingsIcon />
           </ListItemIcon>

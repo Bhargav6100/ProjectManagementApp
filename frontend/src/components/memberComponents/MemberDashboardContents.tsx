@@ -145,7 +145,7 @@ export default function MemberDashboardContents(): React.JSX.Element {
 
             <Box>
               <Typography color="text.secondary" sx={{ fontSize: 14 }}>
-                Members
+                Users
               </Typography>
 
               <Typography variant="h4" sx={{ fontWeight: 800 }}>

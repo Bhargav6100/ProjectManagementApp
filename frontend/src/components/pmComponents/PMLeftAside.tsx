@@ -184,7 +184,10 @@ export default function PMLeftAside(): React.JSX.Element {
             />
           </ListItemButton>
 
-          <ListItemButton sx={menuItemSx(false)}>
+          <ListItemButton 
+           sx={menuItemSx(isActive("/dashboard/settings"))}
+            onClick={() => navigate("/dashboard/settings")}
+          >
             <ListItemIcon sx={iconSx(false)}>
               <SettingsIcon />
             </ListItemIcon>

@@ -6,6 +6,8 @@ import Dashboard from "../pages/dashboard/Dashboard";
 import { Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 
+import Settings from "../pages/settings/Settings";
+
 import UsersList from "../pages/users/UsersList";
 import EditUser from "../pages/users/EditUser";
 import UserDetails from "../pages/users/UserDetails";
@@ -35,7 +37,7 @@ function App(): React.JSX.Element {
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<Dashboard />}>
           <Route index element={<DashboardHome />} />
-
+          <Route path="/dashboard/settings" element={<Settings/>}/>
           <Route path="users" element={<UsersList/>} />
           <Route path="users/create" element={<Register />} />
           <Route path="users/:id/edit" element={<EditUser />} />

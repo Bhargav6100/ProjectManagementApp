@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
+  Avatar,
   Box,
   Button,
   Container,
@@ -9,7 +10,9 @@ import {
   Typography,
 } from "@mui/material";
 
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import WorkspacesIcon from "@mui/icons-material/Workspaces";
+
 import { createWorkspace } from "../../services/workspaceServices";
 import { useWorkspaces } from "../../context/WorkspaceContext";
 
@@ -18,80 +21,181 @@ export default function WorkspaceForm(): React.JSX.Element {
 
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [submitting, setSubmitting] = useState<boolean>(false);
 
-  const {fetchWorkspaces} = useWorkspaces();
+  const { fetchWorkspaces } = useWorkspaces();
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ): Promise<void> => {
     e.preventDefault();
 
-    await createWorkspace({
-      name,
-      description,
-    });
-   
-    await fetchWorkspaces();
-    alert("Workspace created successfully");
-    navigate("/dashboard");
+    try {
+      setSubmitting(true);
+
+      await createWorkspace({
+        name,
+        description,
+      });
+
+      await fetchWorkspaces();
+
+      alert("Workspace created successfully");
+      navigate("/dashboard/workspaces");
+    } catch (error) {
+      alert("Failed to create workspace");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <Container maxWidth="sm">
-      <Paper elevation={3} sx={{ padding: 4, marginTop: 8, borderRadius: 3 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
-          <WorkspacesIcon color="primary" />
-          <Typography variant="h5" sx={{ fontWeight: 700 }}>
-            Create Workspace
-          </Typography>
-        </Box>
+    <Box>
+      <Box sx={{ mb: 3 }}>
+        <Button
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate("/dashboard/workspaces")}
+          sx={{
+            mb: 1,
+            textTransform: "none",
+            borderRadius: 2,
+            fontWeight: 700,
+          }}
+        >
+          Back to Workspaces
+        </Button>
 
-        <Box component="form" onSubmit={handleSubmit}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            label="Workspace Name"
-            autoComplete="off"
-            autoFocus
-            value={name}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-              setName(e.target.value)
-            }
-          />
+        <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.5 }}>
+          Create Workspace
+        </Typography>
 
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            multiline
-            rows={4}
-            label="Description"
-            value={description}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-              setDescription(e.target.value)
-            }
-          />
+        <Typography color="text.secondary">
+          Create a workspace to organize projects, members, and tasks.
+        </Typography>
+      </Box>
 
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2, py: 1.2, borderRadius: 2, textTransform: "none" }}
+      <Container maxWidth="md" disableGutters>
+        <Paper
+          sx={{
+            borderRadius: 3,
+            border: "1px solid #e5e7eb",
+            boxShadow: "0 10px 30px rgba(15, 23, 42, 0.06)",
+            overflow: "hidden",
+          }}
+        >
+          <Box
+            sx={{
+              p: 2.5,
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              borderBottom: "1px solid #e5e7eb",
+              bgcolor: "#ffffff",
+            }}
           >
-            Create Workspace
-          </Button>
+            <Avatar
+              sx={{
+                bgcolor: "#e0e7ff",
+                color: "#3730a3",
+              }}
+            >
+              <WorkspacesIcon />
+            </Avatar>
 
-          <Button
-            fullWidth
-            variant="outlined"
-            sx={{ borderRadius: 2, textTransform: "none" }}
-            onClick={() => navigate("/dashboard")}
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 800 }}>
+                Workspace Information
+              </Typography>
+
+              <Typography color="text.secondary" sx={{ fontSize: 13 }}>
+                Enter the basic details for your new workspace.
+              </Typography>
+            </Box>
+          </Box>
+
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{
+              p: 3,
+              display: "flex",
+              flexDirection: "column",
+              gap: 2.5,
+            }}
           >
-            Cancel
-          </Button>
-        </Box>
-      </Paper>
-    </Container>
+            <TextField
+              required
+              fullWidth
+              label="Workspace Name"
+              autoComplete="off"
+              autoFocus
+              value={name}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+                setName(e.target.value)
+              }
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2,
+                },
+              }}
+            />
+
+            <TextField
+              required
+              fullWidth
+              multiline
+              rows={5}
+              label="Description"
+              value={description}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+                setDescription(e.target.value)
+              }
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2,
+                },
+              }}
+            />
+
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 1.5,
+                mt: 1,
+              }}
+            >
+              <Button
+                variant="outlined"
+                onClick={() => navigate("/dashboard/workspaces")}
+                sx={{
+                  textTransform: "none",
+                  borderRadius: 2,
+                  fontWeight: 700,
+                  px: 3,
+                }}
+              >
+                Cancel
+              </Button>
+
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={submitting}
+                sx={{
+                  textTransform: "none",
+                  borderRadius: 2,
+                  fontWeight: 700,
+                  px: 3,
+                  boxShadow: "0 10px 25px rgba(37, 99, 235, 0.25)",
+                }}
+              >
+                {submitting ? "Creating..." : "Create Workspace"}
+              </Button>
+            </Box>
+          </Box>
+        </Paper>
+      </Container>
+    </Box>
   );
 }

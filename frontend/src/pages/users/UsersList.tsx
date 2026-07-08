@@ -116,9 +116,7 @@ export default function UsersList(): React.JSX.Element {
     return "Project member";
   };
 
-  const getRoleColor = (
-    role: string
-  ): "primary" | "success" | "default" => {
+  const getRoleColor = (role: string): "primary" | "success" | "default" => {
     if (role === "ADMIN") {
       return "primary";
     }
@@ -130,6 +128,19 @@ export default function UsersList(): React.JSX.Element {
     return "default";
   };
 
+  const summaryCardSx = {
+    p: 2.5,
+    borderRadius: 3,
+    border: "1px solid #e5e7eb",
+    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.04)",
+    transition: "all 0.2s ease",
+
+    "&:hover": {
+      transform: "translateY(-2px)",
+      boxShadow: "0 16px 36px rgba(15, 23, 42, 0.07)",
+      borderColor: "rgba(25, 118, 210, 0.25)",
+    },
+  };
 
   const renderUsersTable = (
     listTitle: string,
@@ -138,18 +149,35 @@ export default function UsersList(): React.JSX.Element {
     status: "ACTIVE" | "INACTIVE"
   ): React.JSX.Element => {
     return (
-      <Paper sx={{ borderRadius: 3, overflow: "hidden", mb: 3 }}>
+      <Paper
+        sx={{
+          borderRadius: 3,
+          overflow: "hidden",
+          mb: 3,
+          border: "1px solid #e5e7eb",
+          boxShadow: "0 10px 30px rgba(15, 23, 42, 0.04)",
+        }}
+      >
         <Box
           sx={{
             p: 2.5,
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: {
+              xs: "flex-start",
+              sm: "center",
+            },
+            flexDirection: {
+              xs: "column",
+              sm: "row",
+            },
+            gap: 2,
             borderBottom: "1px solid #e5e7eb",
+            bgcolor: "#ffffff",
           }}
         >
           <Box>
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>
+            <Typography variant="h6" sx={{ fontWeight: 800, mb: 0.3 }}>
               {listTitle}
             </Typography>
 
@@ -161,7 +189,7 @@ export default function UsersList(): React.JSX.Element {
           <Chip
             label={`${usersList.length} users`}
             color={status === "ACTIVE" ? "success" : "default"}
-            sx={{ fontWeight: 600 }}
+            sx={{ fontWeight: 700 }}
           />
         </Box>
 
@@ -169,11 +197,26 @@ export default function UsersList(): React.JSX.Element {
           <Table>
             <TableHead>
               <TableRow sx={{ bgcolor: "#f9fafb" }}>
-                <TableCell sx={{ fontWeight: 700 }}>User</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Email</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Role</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 700 }}>
+                <TableCell sx={{ fontWeight: 800, color: "text.secondary" }}>
+                  User
+                </TableCell>
+
+                <TableCell sx={{ fontWeight: 800, color: "text.secondary" }}>
+                  Email
+                </TableCell>
+
+                <TableCell sx={{ fontWeight: 800, color: "text.secondary" }}>
+                  Role
+                </TableCell>
+
+                <TableCell sx={{ fontWeight: 800, color: "text.secondary" }}>
+                  Status
+                </TableCell>
+
+                <TableCell
+                  align="right"
+                  sx={{ fontWeight: 800, color: "text.secondary" }}
+                >
                   Actions
                 </TableCell>
               </TableRow>
@@ -182,7 +225,7 @@ export default function UsersList(): React.JSX.Element {
             <TableBody>
               {loading && (
                 <TableRow>
-                  <TableCell colSpan={5}>
+                  <TableCell colSpan={5} sx={{ py: 4 }}>
                     <Typography color="text.secondary">
                       Loading users...
                     </Typography>
@@ -198,12 +241,18 @@ export default function UsersList(): React.JSX.Element {
                     onClick={() => navigate(`/dashboard/users/${member.id}`)}
                     sx={{
                       cursor: "pointer",
+                      transition: "all 0.2s ease",
+
+                      "&:hover": {
+                        bgcolor: "#f9fafb",
+                      },
+
                       "&:last-child td": {
                         borderBottom: 0,
                       },
                     }}
                   >
-                    <TableCell>
+                    <TableCell sx={{ py: 2 }}>
                       <Box
                         sx={{
                           display: "flex",
@@ -211,12 +260,20 @@ export default function UsersList(): React.JSX.Element {
                           gap: 1.5,
                         }}
                       >
-                        <Avatar sx={{ width: 40, height: 40 }}>
+                        <Avatar
+                          sx={{
+                            width: 42,
+                            height: 42,
+                            bgcolor: "primary.main",
+                            fontWeight: 700,
+                            fontSize: 14,
+                          }}
+                        >
                           {getInitials(member.firstName, member.lastName)}
                         </Avatar>
 
-                        <Box>
-                          <Typography sx={{ fontWeight: 600 }}>
+                        <Box sx={{ minWidth: 0 }}>
+                          <Typography sx={{ fontWeight: 700 }}>
                             {member.firstName} {member.lastName}
                           </Typography>
 
@@ -230,14 +287,18 @@ export default function UsersList(): React.JSX.Element {
                       </Box>
                     </TableCell>
 
-                    <TableCell>{member.email}</TableCell>
+                    <TableCell>
+                      <Typography sx={{ fontSize: 14 }}>
+                        {member.email}
+                      </Typography>
+                    </TableCell>
 
                     <TableCell>
                       <Chip
                         label={formatRole(member.role)}
                         size="small"
                         color={getRoleColor(member.role)}
-                        sx={{ fontWeight: 600 }}
+                        sx={{ fontWeight: 700 }}
                       />
                     </TableCell>
 
@@ -246,20 +307,35 @@ export default function UsersList(): React.JSX.Element {
                         label={status === "ACTIVE" ? "Active" : "Inactive"}
                         size="small"
                         color={status === "ACTIVE" ? "success" : "default"}
-                        sx={{ fontWeight: 600 }}
+                        sx={{ fontWeight: 700 }}
                       />
                     </TableCell>
 
                     <TableCell align="right">
                       {isAdmin ? (
-                        <>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            gap: 0.5,
+                          }}
+                        >
                           {status === "ACTIVE" && (
                             <Tooltip title="Edit user">
                               <IconButton
                                 size="small"
                                 onClick={(e): void => {
                                   e.stopPropagation();
-                                  navigate(`/dashboard/users/${member.id}/edit`);
+                                  navigate(
+                                    `/dashboard/users/${member.id}/edit`
+                                  );
+                                }}
+                                sx={{
+                                  bgcolor: "#f9fafb",
+
+                                  "&:hover": {
+                                    bgcolor: "rgba(25, 118, 210, 0.08)",
+                                  },
                                 }}
                               >
                                 <EditIcon fontSize="small" />
@@ -276,6 +352,13 @@ export default function UsersList(): React.JSX.Element {
                                   e.stopPropagation();
                                   updateUserStatus(member.id);
                                 }}
+                                sx={{
+                                  bgcolor: "#fff5f5",
+
+                                  "&:hover": {
+                                    bgcolor: "rgba(211, 47, 47, 0.08)",
+                                  },
+                                }}
                               >
                                 <BlockIcon fontSize="small" />
                               </IconButton>
@@ -287,14 +370,21 @@ export default function UsersList(): React.JSX.Element {
                                 color="success"
                                 onClick={(e): void => {
                                   e.stopPropagation();
-                                   updateUserStatus(member.id);
+                                  updateUserStatus(member.id);
+                                }}
+                                sx={{
+                                  bgcolor: "#f0fdf4",
+
+                                  "&:hover": {
+                                    bgcolor: "rgba(46, 125, 50, 0.08)",
+                                  },
                                 }}
                               >
                                 <CheckCircleIcon fontSize="small" />
                               </IconButton>
                             </Tooltip>
                           )}
-                        </>
+                        </Box>
                       ) : (
                         <Typography color="text.secondary" sx={{ fontSize: 13 }}>
                           View only
@@ -306,7 +396,7 @@ export default function UsersList(): React.JSX.Element {
 
               {!loading && usersList.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5}>
+                  <TableCell colSpan={5} sx={{ py: 4 }}>
                     <Typography color="text.secondary">
                       No users found.
                     </Typography>
@@ -326,16 +416,24 @@ export default function UsersList(): React.JSX.Element {
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: {
+            xs: "flex-start",
+            sm: "center",
+          },
+          flexDirection: {
+            xs: "column",
+            sm: "row",
+          },
+          gap: 2,
           mb: 3,
         }}
       >
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.5 }}>
             Users
           </Typography>
 
-          <Typography color="text.secondary">
+          <Typography color="text.secondary" sx={{ fontSize: 15 }}>
             View users and manage active/inactive system access.
           </Typography>
         </Box>
@@ -345,7 +443,14 @@ export default function UsersList(): React.JSX.Element {
             variant="contained"
             startIcon={<PersonAddIcon />}
             onClick={() => navigate("/dashboard/users/create")}
-            sx={{ borderRadius: 2, textTransform: "none", px: 3 }}
+            sx={{
+              borderRadius: 2.5,
+              textTransform: "none",
+              px: 3,
+              py: 1,
+              fontWeight: 700,
+              boxShadow: "none",
+            }}
           >
             Add User
           </Button>
@@ -364,43 +469,66 @@ export default function UsersList(): React.JSX.Element {
           mb: 3,
         }}
       >
-        <Paper sx={{ p: 2.5, borderRadius: 3 }}>
-          <Typography color="text.secondary">Active Users</Typography>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+        <Paper sx={summaryCardSx}>
+          <Typography color="text.secondary" sx={{ fontSize: 14 }}>
+            Active Users
+          </Typography>
+
+          <Typography variant="h4" sx={{ fontWeight: 800 }}>
             {users.length}
           </Typography>
         </Paper>
 
-        <Paper sx={{ p: 2.5, borderRadius: 3 }}>
-          <Typography color="text.secondary">Inactive Users</Typography>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+        <Paper sx={summaryCardSx}>
+          <Typography color="text.secondary" sx={{ fontSize: 14 }}>
+            Inactive Users
+          </Typography>
+
+          <Typography variant="h4" sx={{ fontWeight: 800 }}>
             {inActiveUsers.length}
           </Typography>
         </Paper>
 
-        <Paper sx={{ p: 2.5, borderRadius: 3 }}>
-          <Typography color="text.secondary">Admins</Typography>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+        <Paper sx={summaryCardSx}>
+          <Typography color="text.secondary" sx={{ fontSize: 14 }}>
+            Admins
+          </Typography>
+
+          <Typography variant="h4" sx={{ fontWeight: 800 }}>
             {totalAdmins}
           </Typography>
         </Paper>
 
-        <Paper sx={{ p: 2.5, borderRadius: 3 }}>
-          <Typography color="text.secondary">Project Managers</Typography>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+        <Paper sx={summaryCardSx}>
+          <Typography color="text.secondary" sx={{ fontSize: 14 }}>
+            Project Managers
+          </Typography>
+
+          <Typography variant="h4" sx={{ fontWeight: 800 }}>
             {totalProjectManagers}
           </Typography>
         </Paper>
 
-        <Paper sx={{ p: 2.5, borderRadius: 3 }}>
-          <Typography color="text.secondary">Members</Typography>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+        <Paper sx={summaryCardSx}>
+          <Typography color="text.secondary" sx={{ fontSize: 14 }}>
+            Members
+          </Typography>
+
+          <Typography variant="h4" sx={{ fontWeight: 800 }}>
             {totalMembers}
           </Typography>
         </Paper>
       </Box>
 
-      <Paper sx={{ borderRadius: 3, p: 2.5, mb: 3 }}>
+      <Paper
+        sx={{
+          borderRadius: 3,
+          p: 2.5,
+          mb: 3,
+          border: "1px solid #e5e7eb",
+          boxShadow: "0 10px 30px rgba(15, 23, 42, 0.04)",
+        }}
+      >
         <TextField
           size="small"
           fullWidth
@@ -416,6 +544,10 @@ export default function UsersList(): React.JSX.Element {
                   <SearchIcon fontSize="small" />
                 </InputAdornment>
               ),
+              sx: {
+                borderRadius: 2,
+                bgcolor: "#f9fafb",
+              },
             },
           }}
         />

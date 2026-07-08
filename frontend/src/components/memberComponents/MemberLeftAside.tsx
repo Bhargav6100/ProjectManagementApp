@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -23,6 +23,7 @@ import { useAuth } from "../../context/AuthContext";
 
 export default function MemberSideBar(): React.JSX.Element {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { user, logout } = useAuth();
 
@@ -30,6 +31,31 @@ export default function MemberSideBar(): React.JSX.Element {
     logout();
     navigate("/login");
   };
+
+  const isActive = (path: string): boolean => {
+    if (path === "/dashboard") {
+      return location.pathname === "/dashboard";
+    }
+
+    return location.pathname.startsWith(path);
+  };
+
+  const menuItemSx = (active: boolean) => ({
+    borderRadius: 2.5,
+    mb: 1,
+    px: 2,
+    py: 1.2,
+    color: active ? "primary.main" : "text.primary",
+    bgcolor: active ? "rgba(25, 118, 210, 0.08)" : "transparent",
+    "&:hover": {
+      bgcolor: active ? "rgba(25, 118, 210, 0.12)" : "#f3f4f6",
+    },
+  });
+
+  const iconSx = (active: boolean) => ({
+    color: active ? "primary.main" : "text.secondary",
+    minWidth: 42,
+  });
 
   return (
     <Box
@@ -42,85 +68,155 @@ export default function MemberSideBar(): React.JSX.Element {
         flexDirection: "column",
       }}
     >
-      <Box sx={{ height: 80, display: "flex", alignItems: "center", px: 3 }}>
-        <Typography variant="h5" sx={{ fontWeight: 700 }}>
-           WorkSync
-        </Typography>
+      <Box
+        sx={{
+          height: 80,
+          display: "flex",
+          alignItems: "center",
+          px: 3,
+        }}
+      >
+        <Box>
+          <Typography variant="h5" sx={{ fontWeight: 800 }}>
+            WorkSync
+          </Typography>
+
+          <Typography color="text.secondary" sx={{ fontSize: 13 }}>
+            Project Management
+          </Typography>
+        </Box>
       </Box>
 
       <Divider />
 
       <List sx={{ px: 2, py: 3 }}>
         <ListItemButton
-          sx={{ borderRadius: 2, mb: 1 }}
+          sx={menuItemSx(isActive("/dashboard"))}
           onClick={() => navigate("/dashboard")}
         >
-          <ListItemIcon>
+          <ListItemIcon sx={iconSx(isActive("/dashboard"))}>
             <DashboardIcon />
           </ListItemIcon>
-          <ListItemText primary="Dashboard" />
+
+          <ListItemText
+            primary={
+              <Typography sx={{ fontWeight: 600 }}>
+                Dashboard
+              </Typography>
+            }
+          />
         </ListItemButton>
 
         <ListItemButton
-          sx={{ borderRadius: 2, mb: 1 }}
+          sx={menuItemSx(isActive("/dashboard/users"))}
           onClick={() => navigate("/dashboard/users")}
         >
-          <ListItemIcon>
+          <ListItemIcon sx={iconSx(isActive("/dashboard/users"))}>
             <GroupsIcon />
           </ListItemIcon>
-          <ListItemText primary="Members" />
+
+          <ListItemText
+            primary={
+              <Typography sx={{ fontWeight: 600 }}>
+                Members
+              </Typography>
+            }
+          />
         </ListItemButton>
 
         <ListItemButton
-          sx={{ borderRadius: 2, mb: 1 }}
+          sx={menuItemSx(isActive("/dashboard/workspaces"))}
           onClick={() => navigate("/dashboard/workspaces")}
         >
-          <ListItemIcon>
+          <ListItemIcon sx={iconSx(isActive("/dashboard/workspaces"))}>
             <WorkspacesIcon />
           </ListItemIcon>
-          <ListItemText primary="My Workspaces" />
+
+          <ListItemText
+            primary={
+              <Typography sx={{ fontWeight: 600 }}>
+                My Workspaces
+              </Typography>
+            }
+          />
         </ListItemButton>
 
         <ListItemButton
-          sx={{ borderRadius: 2, mb: 1 }}
+          sx={menuItemSx(isActive("/dashboard/projects"))}
           onClick={() => navigate("/dashboard/projects")}
         >
-          <ListItemIcon>
+          <ListItemIcon sx={iconSx(isActive("/dashboard/projects"))}>
             <FolderIcon />
           </ListItemIcon>
-          <ListItemText primary="My Projects" />
+
+          <ListItemText
+            primary={
+              <Typography sx={{ fontWeight: 600 }}>
+                My Projects
+              </Typography>
+            }
+          />
         </ListItemButton>
 
         <ListItemButton
-          sx={{ borderRadius: 2, mb: 1 }}
+          sx={menuItemSx(isActive("/dashboard/tasks"))}
           onClick={() => navigate("/dashboard/tasks")}
         >
-          <ListItemIcon>
+          <ListItemIcon sx={iconSx(isActive("/dashboard/tasks"))}>
             <TaskAltIcon />
           </ListItemIcon>
-          <ListItemText primary="My Tasks" />
+
+          <ListItemText
+            primary={
+              <Typography sx={{ fontWeight: 600 }}>
+                My Tasks
+              </Typography>
+            }
+          />
         </ListItemButton>
 
-        <ListItemButton sx={{ borderRadius: 2, mb: 1 }}>
-          <ListItemIcon>
+        <ListItemButton sx={menuItemSx(false)}>
+          <ListItemIcon sx={iconSx(false)}>
             <SettingsIcon />
           </ListItemIcon>
-          <ListItemText primary="Settings" />
+
+          <ListItemText
+            primary={
+              <Typography sx={{ fontWeight: 600 }}>
+                Settings
+              </Typography>
+            }
+          />
         </ListItemButton>
       </List>
 
       <Box sx={{ mt: "auto", p: 2 }}>
         <Divider sx={{ mb: 2 }} />
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-          <Avatar>{user?.firstName?.charAt(0) ?? "U"}</Avatar>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1.5,
+            mb: 2,
+            p: 1.5,
+            borderRadius: 2,
+            bgcolor: "#f9fafb",
+          }}
+        >
+          <Avatar sx={{ bgcolor: "primary.main", fontWeight: 700 }}>
+            {user?.firstName?.charAt(0) ?? "U"}
+          </Avatar>
 
-          <Box>
-            <Typography sx={{ fontWeight: 600, fontSize: 14 }}>
+          <Box sx={{ minWidth: 0 }}>
+            <Typography sx={{ fontWeight: 700, fontSize: 14 }}>
               {user?.firstName} {user?.lastName}
             </Typography>
 
-            <Typography color="text.secondary" sx={{ fontSize: 13 }}>
+            <Typography
+              color="text.secondary"
+              sx={{ fontSize: 12, letterSpacing: 0.4 }}
+            >
               {user?.role}
             </Typography>
           </Box>
@@ -128,13 +224,25 @@ export default function MemberSideBar(): React.JSX.Element {
 
         <ListItemButton
           onClick={handleLogout}
-          sx={{ borderRadius: 2, color: "error.main" }}
+          sx={{
+            borderRadius: 2.5,
+            color: "error.main",
+            "&:hover": {
+              bgcolor: "rgba(211, 47, 47, 0.08)",
+            },
+          }}
         >
-          <ListItemIcon sx={{ color: "error.main" }}>
+          <ListItemIcon sx={{ color: "error.main", minWidth: 42 }}>
             <LogoutIcon />
           </ListItemIcon>
 
-          <ListItemText primary="Logout" />
+          <ListItemText
+            primary={
+              <Typography sx={{ fontWeight: 600 }}>
+                Log Out
+              </Typography>
+            }
+          />
         </ListItemButton>
       </Box>
     </Box>

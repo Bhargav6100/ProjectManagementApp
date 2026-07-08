@@ -197,29 +197,30 @@ public class TaskService {
         );
     }
 
-    public TaskResponse updateTaskStatus(TaskStatusPatch request, Long taskId, User currentUser) throws AccessDeniedException {
+    public TaskResponse updateTaskStatus(TaskStatusPatch request, Long taskId, User currentUser
+    ) throws AccessDeniedException {
+
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
-        if (currentUser.getRole().equals(Roles.PROJECT_MANAGER)) {
 
-            boolean isTaskAssigner = taskRepository
-                    .existsByIdAndAssignedById(task.getId(),currentUser.getId());
+        boolean isAdmin = currentUser.getRole().equals(Roles.ADMIN);
 
-            if (!isTaskAssigner) {
-                throw new AccessDeniedException("Only the user who assigned this or a user who its assigned to can update status");
-            }
+        boolean isTaskAssigner = task.getAssignedBy() != null &&
+                task.getAssignedBy().getId().equals(currentUser.getId());
 
-        } else if (currentUser.getRole().equals(Roles.MEMBER)) {
-             boolean isTaskAssignedTo=taskRepository.existsByIdAndAssignedToId(task.getId(),currentUser.getId());
-            if (!isTaskAssignedTo) {
-                throw new AccessDeniedException("Only the user who assigned this or a user who its assigned to can update status");
-            }
-        }else if (!currentUser.getRole().equals(Roles.ADMIN)) {
-            throw new AccessDeniedException(" Only admin, task assigner, or task assignee can update task status");
+        boolean isTaskAssignee = task.getAssignedTo() != null &&
+                task.getAssignedTo().getId().equals(currentUser.getId());
+
+        if (!isAdmin && !isTaskAssigner && !isTaskAssignee) {
+            throw new AccessDeniedException(
+                    "Only admin, task assigner, or task assignee can update task status"
+            );
         }
 
         task.setTaskStatus(request.getTaskStatus());
+
         Task patched = taskRepository.save(task);
+
         return new TaskResponse(
                 patched.getId(),
                 patched.getTitle(),

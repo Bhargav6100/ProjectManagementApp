@@ -56,6 +56,7 @@ export default function TaskList({
   const [projectDialogOpen, setProjectDialogOpen] = useState<boolean>(false);
   const isAdmin = user?.role === "ADMIN";
   const isPM = user?.role === "PROJECT_MANAGER";
+  
   useEffect(() => {
     if (!user) {
       return;
@@ -74,12 +75,14 @@ export default function TaskList({
       fetchMyTasks();
     }
   }, [user, mode]);
+
   const displayedTasks = useMemo(() => {
     if (mode === "createdByMe") {
       return myCreatedTasks;
     }
     return allTasks;
   }, [mode, allTasks, myCreatedTasks]);
+
   const filteredTasks = useMemo(() => {
     const query = search.toLowerCase();
     return displayedTasks.filter((task) => {
@@ -531,7 +534,7 @@ export default function TaskList({
                               </IconButton>
                             </span>
                           </Tooltip>
-                          <Tooltip title="Edit task">
+                          {(isAdmin || mode === "createdByMe") && <Tooltip title="Edit task">
                             <span>
                               <IconButton
                                 size="small"
@@ -551,8 +554,8 @@ export default function TaskList({
                                 <EditIcon fontSize="small" />
                               </IconButton>
                             </span>
-                          </Tooltip>
-                          {(isAdmin || isPM) && (
+                          </Tooltip>}
+                          {(isAdmin || mode === "createdByMe") && (
                             <Tooltip title="Delete task">
                               <IconButton
                                 size="small"

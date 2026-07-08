@@ -36,6 +36,8 @@ export default function EditTask(): React.JSX.Element {
   const {showSnackbar} = useSnackbar();
 
   const isMember = user?.role === "MEMBER";
+  const isPM = user?.role === "PROJECT_MANAGER";
+  const isTaskCreator = currentTask?.createdBy?.toLowerCase() === user?.firstName?.toLowerCase() + " " + user?.lastName?.toLowerCase();
   useEffect(() => {
     if (taskId) {
       fetchTaskById(Number(taskId));
@@ -60,6 +62,10 @@ export default function EditTask(): React.JSX.Element {
     e.preventDefault();
     if (!taskId || !projectId || !workspaceId) {
       showSnackbar("Task, project, or workspace id is missing");
+      return;
+    }
+    if(!isTaskCreator){
+      showSnackbar("Only admin or task creator can edir tasks");
       return;
     }
     if (!assignedToUserId) {
@@ -151,11 +157,11 @@ export default function EditTask(): React.JSX.Element {
         </Button>
         <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.5 }}>
           
-          {isMember ? "Update Task Status" : "Edit Task"}
+          {(isMember || (isPM && !isTaskCreator)) ? "Update Task Status" : "Edit Task"}
         </Typography>
         <Typography color="text.secondary">
           
-          {isMember
+          {(isMember || (isPM && !isTaskCreator))
             ? "Update the current progress status for this assigned task."
             : "Update task details, assignment, due date, status, and priority."}
         </Typography>
@@ -194,7 +200,7 @@ export default function EditTask(): React.JSX.Element {
               </Typography>
               <Typography color="text.secondary" sx={{ fontSize: 13 }}>
                 
-                {isMember
+                {(isMember || (isPM && !isTaskCreator))
                   ? "Only task status can be updated by members."
                   : "Edit the basic details for this task."}
               </Typography>
@@ -202,7 +208,7 @@ export default function EditTask(): React.JSX.Element {
           </Box>
           <Box
             component="form"
-            onSubmit={isMember ? handleTaskStatus : handleSubmit}
+            onSubmit={(isMember || (isPM && !isTaskCreator)) ? handleTaskStatus : handleSubmit}
             sx={{
               p: 3,
               display: "grid",
@@ -214,7 +220,7 @@ export default function EditTask(): React.JSX.Element {
             <TextField
               required
               fullWidth
-              disabled={isMember}
+              disabled={(isMember || (isPM && !isTaskCreator))}
               label="Task Title"
               value={title}
               onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
@@ -228,7 +234,7 @@ export default function EditTask(): React.JSX.Element {
             <TextField
               required
               fullWidth
-              disabled={isMember}
+              disabled={(isMember || (isPM && !isTaskCreator))}
               multiline
               rows={5}
               label="Description"
@@ -244,7 +250,7 @@ export default function EditTask(): React.JSX.Element {
             <TextField
               required
               fullWidth
-              disabled={isMember}
+              disabled={(isMember || (isPM && !isTaskCreator))}
               type="date"
               label="Due Date"
               value={dueDate}
@@ -257,7 +263,7 @@ export default function EditTask(): React.JSX.Element {
             <TextField
               required
               fullWidth
-              disabled={isMember}
+              disabled={(isMember || (isPM && !isTaskCreator))}
               select
               label="Assign To"
               value={assignedToUserId}
@@ -293,7 +299,7 @@ export default function EditTask(): React.JSX.Element {
             <TextField
               required
               fullWidth
-              disabled={isMember}
+              disabled={(isMember || (isPM && !isTaskCreator))}
               select
               label="Priority"
               value={taskPriority}
@@ -361,10 +367,10 @@ export default function EditTask(): React.JSX.Element {
               >
                 
                 {submitting
-                  ? isMember
+                  ? (isMember || (isPM && !isTaskCreator))
                     ? "Updating Status..."
                     : "Updating..."
-                  : isMember
+                  : (isMember || (isPM && !isTaskCreator))
                     ? "Update Status"
                     : "Update Task"}
               </Button>

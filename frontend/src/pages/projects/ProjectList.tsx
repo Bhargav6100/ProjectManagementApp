@@ -61,7 +61,7 @@ export default function ProjectList(): React.JSX.Element {
   const isProjectCreator =
     project.createdBy?.toLowerCase() === user?.email?.toLowerCase();
 
-  if (!isProjectCreator) {
+  if (!isProjectCreator && !isAdmin) {
     showSnackbar("Only the project creator can delete this project.", "warning");
     return;
   }

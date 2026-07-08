@@ -154,8 +154,9 @@ public class ProjectService {
 
         Long workspaceId = project.getWorkspace().getId();
 
-
-          if (currentUser.getRole().equals(Roles.PROJECT_MANAGER)) {
+        if (currentUser.getRole().equals(Roles.ADMIN)) {
+            // Admin allowed
+        }else if (currentUser.getRole().equals(Roles.PROJECT_MANAGER)) {
 
             boolean isWorkspaceMember = workspaceMemberRepository
                     .existsByWorkspaceIdAndUserId(workspaceId, currentUser.getId());
@@ -165,9 +166,6 @@ public class ProjectService {
                         "You are not allowed to manage projects in this workspace"
                 );
             }
-
-        }else if (!currentUser.getRole().equals(Roles.ADMIN)) {
-              throw new AccessDeniedException("Only admin or creator of this project can update status of the projects");
           }
           else {
             throw new AccessDeniedException(

@@ -11,6 +11,7 @@ import com.ProjectManagementApp.repository.WorkSpaceRepository;
 import com.ProjectManagementApp.repository.WorkspaceMemberRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -122,7 +123,7 @@ public class WorkspaceService {
                 updated.getCreatedBy().getEmail()
         );
     }
-
+    @Transactional
     public String deleteWorkspace(Long currentWorkspaceId, User currentUser) throws AccessDeniedException {
         Workspace workspace = workSpaceRepository.findById(currentWorkspaceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Workspace not found"));
@@ -130,6 +131,7 @@ public class WorkspaceService {
         if (!currentUser.getRole().equals(Roles.ADMIN)) {
             throw new AccessDeniedException("Only admin can delete workspaces");
         }
+        workspaceMemberRepository.deleteByWorkspaceId(currentWorkspaceId);
         workSpaceRepository.delete(workspace);
         return "Workspace deleted successfully";
     }

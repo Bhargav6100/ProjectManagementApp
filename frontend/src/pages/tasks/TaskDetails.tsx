@@ -21,6 +21,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import BadgeIcon from "@mui/icons-material/Badge";
 
+import { useSnackbar } from "../../context/SnackbarContext";
 import { useTasks } from "../../context/TaskContext";
 import { useAuth } from "../../context/AuthContext";
 import type { TaskStatus } from "../../utils/TaskStatus";
@@ -36,6 +37,9 @@ export default function TaskDetails(): React.JSX.Element {
   const isAdmin = user?.role === "ADMIN";
   const isPM = user?.role === "PROJECT_MANAGER";
   const isMember = user?.role === "MEMBER";
+  const isTaskCreator = currentTask?.createdBy?.toLowerCase() === user?.firstName?.toLowerCase() + " " + user?.lastName?.toLowerCase();
+  console.log(currentTask?.createdBy)
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (taskId) {
@@ -43,19 +47,44 @@ export default function TaskDetails(): React.JSX.Element {
     }
   }, [taskId]);
 
+  
+const handleEditTask = (): void => {
+  if (!currentTask) return;
+
+  if (!isAdmin && !isTaskCreator) {
+    showSnackbar("Only the task creator or admin can edit this task.", "warning");
+    return;
+  }
+
+  navigate(
+    `/dashboard/workspaces/${workspaceId}/projects/${projectId}/tasks/${currentTask.id}/edit`
+  );
+};
   const handleDeleteTask = async (): Promise<void> => {
-    if (!currentTask) return;
+  if (!currentTask) return;
 
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this task?"
-    );
 
-    if (!confirmed) return;
+  if (!isAdmin && !isTaskCreator) {
+    showSnackbar("Only the task creator or admin can delete this task.", "warning");
+    return;
+  }
 
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this task?"
+  );
+
+  if (!confirmed) return;
+
+  try {
     await deleteTask(currentTask.id);
 
+    showSnackbar("Task deleted successfully.", "success");
+
     navigate(`/dashboard/workspaces/${workspaceId}/projects/${projectId}`);
-  };
+  } catch (error) {
+    showSnackbar("You are not allowed to delete this task.", "error");
+  }
+};
 
   const formatStatus = (status: TaskStatus): string => {
     if (status === "TO_DO") {
@@ -302,27 +331,23 @@ export default function TaskDetails(): React.JSX.Element {
             flexWrap: "wrap",
           }}
         >
-          {(isAdmin || isPM) && (
-            <Button
-              variant="outlined"
-              startIcon={<EditIcon />}
-              sx={{
-                borderRadius: 2,
-                textTransform: "none",
-                px: 3,
-                fontWeight: 700,
-              }}
-              onClick={() =>
-                navigate(
-                  `/dashboard/workspaces/${workspaceId}/projects/${projectId}/tasks/${currentTask.id}/edit`
-                )
-              }
-            >
-              Edit Task
-            </Button>
-          )}
+          {(isAdmin || isPM || isTaskCreator) && (
+  <Button
+    variant="outlined"
+    startIcon={<EditIcon />}
+    sx={{
+      borderRadius: 2,
+      textTransform: "none",
+      px: 3,
+      fontWeight: 700,
+    }}
+    onClick={handleEditTask}
+  >
+    Edit Task
+  </Button>
+)}
 
-          {isMember && (
+          {(isMember || (isPM && !isTaskCreator)) && (
             <Button
               variant="outlined"
               startIcon={<EditIcon />}

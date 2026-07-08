@@ -57,7 +57,7 @@ export default function ProjectDetails(): React.JSX.Element {
     const isProjectCreator =
     currentProject?.createdBy?.toLowerCase() === user?.email?.toLowerCase();
 
-  if (!isProjectCreator) {
+  if (!isProjectCreator && !isAdmin) {
     showSnackbar("Only the project creator can delete this project.", "warning");
     return;
   }
@@ -82,7 +82,7 @@ export default function ProjectDetails(): React.JSX.Element {
   e.stopPropagation();
 
   const isTaskCreator =
-    task.createdBy?.toLowerCase() === user?.email?.toLowerCase();
+    task.createdBy?.toLowerCase() === user?.firstName?.toLowerCase() + " " + user?.lastName?.toLowerCase();
 
   if (!isAdmin && !isTaskCreator) {
     showSnackbar("Only the task creator can delete this task.", "warning");

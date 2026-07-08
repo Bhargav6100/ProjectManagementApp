@@ -16,6 +16,8 @@ import WorkspacesIcon from "@mui/icons-material/Workspaces";
 
 import { useWorkspaces } from "../../context/WorkspaceContext";
 
+import { useSnackbar } from "../../context/SnackbarContext";
+
 interface SelectWorkspaceDialogProps {
   open: boolean;
   title: string;
@@ -37,6 +39,8 @@ export default function SelectWorkspaceDialog({
 
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string>("");
 
+  const {showSnackbar} = useSnackbar();
+
   useEffect(() => {
     if (open) {
       fetchWorkspaces();
@@ -46,7 +50,7 @@ export default function SelectWorkspaceDialog({
 
   const handleContinue = (): void => {
     if (!selectedWorkspaceId) {
-      alert("Please select a workspace");
+      showSnackbar("Please select a workspace");
       return;
     }
 

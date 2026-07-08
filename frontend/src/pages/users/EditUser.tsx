@@ -16,6 +16,7 @@ import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 
 import { useUsers } from "../../context/UsersContext";
 import { updateUser } from "../../services/userServices";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 type UserRole = "ADMIN" | "PROJECT_MANAGER" | "MEMBER";
 
@@ -30,6 +31,7 @@ export default function EditUser(): React.JSX.Element {
   const [email, setEmail] = useState<string>("");
   const [role, setRole] = useState<UserRole>("MEMBER");
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const {showSnackbar} = useSnackbar();
 
   useEffect(() => {
     if (id) {
@@ -52,7 +54,7 @@ export default function EditUser(): React.JSX.Element {
     e.preventDefault();
 
     if (!id) {
-      alert("User id is missing");
+      showSnackbar("User id is missing");
       return;
     }
 
@@ -68,11 +70,11 @@ export default function EditUser(): React.JSX.Element {
 
       await fetchUsers();
 
-      alert("User updated successfully");
+      showSnackbar("User updated successfully");
 
       navigate(`/dashboard/users/${id}`);
     } catch (error) {
-      alert("Failed to update user");
+      showSnackbar("Failed to update user");
     } finally {
       setSubmitting(false);
     }

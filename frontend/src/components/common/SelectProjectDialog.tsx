@@ -16,6 +16,8 @@ import FolderIcon from "@mui/icons-material/Folder";
 
 import { useProjects } from "../../context/ProjectContext";
 
+import { useSnackbar } from "../../context/SnackbarContext";
+
 interface SelectProjectDialogProps {
   open: boolean;
   title: string;
@@ -37,6 +39,8 @@ export default function SelectProjectDialog({
 
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
 
+  const {showSnackbar}=useSnackbar();
+
   useEffect(() => {
     if (open) {
       fetchAllProjects();
@@ -54,14 +58,14 @@ export default function SelectProjectDialog({
 
   const handleContinue = (): void => {
     if (!selectedProjectId) {
-      alert("Please select a project");
+      showSnackbar("Please select a project");
       return;
     }
 
     const workspaceId = findWorkspaceId();
 
     if (!workspaceId) {
-      alert("Workspace id is missing for this project");
+      showSnackbar("Workspace id is missing for this project");
       return;
     }
 

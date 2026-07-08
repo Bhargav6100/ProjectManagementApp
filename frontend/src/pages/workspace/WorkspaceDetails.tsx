@@ -29,6 +29,8 @@ import { useWorkspaces } from "../../context/WorkspaceContext";
 import { useProjects } from "../../context/ProjectContext";
 import { useUsers } from "../../context/UsersContext";
 import { useAuth } from "../../context/AuthContext";
+import { useSnackbar } from "../../context/SnackbarContext";
+
 
 export default function WorkspaceDetails(): React.JSX.Element {
   const { id } = useParams();
@@ -47,6 +49,7 @@ export default function WorkspaceDetails(): React.JSX.Element {
   const { projects, fetchProjectsByWorkspace } = useProjects();
   const { users } = useUsers();
   const { user } = useAuth();
+  const {showSnackbar} = useSnackbar();
 
   const [selectedUserId, setSelectedUserId] = useState<string>("");
 
@@ -71,7 +74,7 @@ export default function WorkspaceDetails(): React.JSX.Element {
     }
 
     if (!selectedUserId) {
-      alert("Please select a member");
+      showSnackbar("Please select a member");
       return;
     }
 
@@ -79,7 +82,7 @@ export default function WorkspaceDetails(): React.JSX.Element {
 
     await fetchWorkspaceMembers(currentWorkspace.id);
 
-    alert("Member added to workspace successfully");
+    showSnackbar("Member added to workspace successfully");
     setSelectedUserId("");
   };
 
@@ -103,7 +106,7 @@ export default function WorkspaceDetails(): React.JSX.Element {
 
     await fetchWorkspaceMembers(currentWorkspace.id);
 
-    alert("Member removed from workspace successfully");
+    showSnackbar("Member removed from workspace successfully");
   };
 
   const formatRole = (role: string): string => {

@@ -16,14 +16,14 @@ import { useTasks } from "../../context/TaskContext";
 import { useWorkspaces } from "../../context/WorkspaceContext";
 import { updateTask, updateTaskStatus } from "../../services/taskServices";
 import { useAuth } from "../../context/AuthContext";
+import { useSnackbar } from "../../context/SnackbarContext";
 import type { TaskStatus } from "../../utils/TaskStatus";
 import type { TaskPriority } from "../../utils/TaskPriority";
 export default function EditTask(): React.JSX.Element {
   const navigate = useNavigate();
   const { workspaceId, projectId, taskId } = useParams();
   const { user } = useAuth();
-  const { currentTask, fetchTaskById, fetchTasksByProject, loading } =
-    useTasks();
+  const { currentTask, fetchTaskById, fetchTasksByProject, loading } = useTasks();
   const { members, fetchWorkspaceMembers } = useWorkspaces();
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -32,6 +32,9 @@ export default function EditTask(): React.JSX.Element {
   const [taskStatus, setStatus] = useState<TaskStatus>("TO_DO");
   const [taskPriority, setPriority] = useState<TaskPriority>("MEDIUM");
   const [submitting, setSubmitting] = useState<boolean>(false);
+
+  const {showSnackbar} = useSnackbar();
+
   const isMember = user?.role === "MEMBER";
   useEffect(() => {
     if (taskId) {
@@ -56,11 +59,11 @@ export default function EditTask(): React.JSX.Element {
   ): Promise<void> => {
     e.preventDefault();
     if (!taskId || !projectId || !workspaceId) {
-      alert("Task, project, or workspace id is missing");
+      showSnackbar("Task, project, or workspace id is missing");
       return;
     }
     if (!assignedToUserId) {
-      alert("Please assign this task to a member");
+      showSnackbar("Please assign this task to a member");
       return;
     }
     try {
@@ -74,12 +77,12 @@ export default function EditTask(): React.JSX.Element {
         taskPriority,
       });
       await fetchTasksByProject(Number(projectId));
-      alert("Task updated successfully");
+      showSnackbar("Task updated successfully");
       navigate(
         `/dashboard/workspaces/${workspaceId}/projects/${projectId}/tasks/${taskId}`,
       );
     } catch (error) {
-      alert("Failed to update task");
+      showSnackbar("Failed to update task");
     } finally {
       setSubmitting(false);
     }
@@ -89,19 +92,19 @@ export default function EditTask(): React.JSX.Element {
   ): Promise<void> => {
     e.preventDefault();
     if (!taskId || !projectId || !workspaceId) {
-      alert("Task, project, or workspace id is missing");
+      showSnackbar("Task, project, or workspace id is missing");
       return;
     }
     try {
       setSubmitting(true);
       await updateTaskStatus(Number(taskId), { taskStatus });
       await fetchTasksByProject(Number(projectId));
-      alert("Task status updated successfully");
+      showSnackbar("Task status updated successfully");
       navigate(
         `/dashboard/workspaces/${workspaceId}/projects/${projectId}/tasks/${taskId}`,
       );
     } catch (error) {
-      alert("Failed to update task status");
+      showSnackbar("Failed to update task status");
     } finally {
       setSubmitting(false);
     }

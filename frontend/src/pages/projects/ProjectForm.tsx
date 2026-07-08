@@ -17,6 +17,7 @@ import FolderIcon from "@mui/icons-material/Folder";
 import { createProject } from "../../services/projectServices";
 import type { ProjectStatus } from "../../utils/ProjectStatus";
 import { useProjects } from "../../context/ProjectContext";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 export default function ProjectForm(): React.JSX.Element {
   const navigate = useNavigate();
@@ -29,13 +30,15 @@ export default function ProjectForm(): React.JSX.Element {
 
   const { fetchProjectsByWorkspace } = useProjects();
 
+  const {showSnackbar} = useSnackbar();
+
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ): Promise<void> => {
     e.preventDefault();
 
     if (!workspaceId) {
-      alert("Workspace id is missing");
+      showSnackbar("Workspace id is missing");
       return;
     }
 
@@ -50,11 +53,11 @@ export default function ProjectForm(): React.JSX.Element {
 
       await fetchProjectsByWorkspace(Number(workspaceId));
 
-      alert("Project created successfully");
+      showSnackbar("Project created successfully");
 
       navigate(`/dashboard/workspaces/${workspaceId}`);
     } catch (error) {
-      alert("Failed to create project");
+      showSnackbar("Failed to create project");
     } finally {
       setSubmitting(false);
     }

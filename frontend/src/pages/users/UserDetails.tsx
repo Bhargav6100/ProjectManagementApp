@@ -26,6 +26,8 @@ import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import PersonIcon from "@mui/icons-material/Person";
 import { useAuth } from "../../context/AuthContext";
 import { useUsers } from "../../context/UsersContext";
+import { useSnackbar } from "../../context/SnackbarContext";
+
 export default function UserDetails(): React.JSX.Element {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -35,7 +37,10 @@ export default function UserDetails(): React.JSX.Element {
   const [resettingPassword, setResettingPassword] = useState<boolean>(false);
   const { user: loggedInUser } = useAuth();
   const { currentUser, fetchUserById, deleteUser, loading } = useUsers();
+  const {showSnackbar} = useSnackbar();
+
   const isAdmin = loggedInUser?.role === "ADMIN";
+
   useEffect(() => {
     if (!id) return;
     fetchUserById(Number(id));
@@ -80,21 +85,21 @@ export default function UserDetails(): React.JSX.Element {
   const handleResetPassword = async (): Promise<void> => {
     if (!id) return;
     if (!newPassword.trim() || !confirmPassword.trim()) {
-      alert("Please enter and confirm the new password");
+      showSnackbar("Please enter and confirm the new password");
       return;
     }
     if (newPassword.length < 6) {
-      alert("Password must be at least 6 characters");
+      showSnackbar("Password must be at least 6 characters");
       return;
     }
     if (newPassword !== confirmPassword) {
-      alert("Passwords do not match");
+      showSnackbar("Passwords do not match");
       return;
     }
     try {
       setResettingPassword(true);
       await resetUserPassword(Number(id), newPassword);
-      alert("Password reset successfully");
+      showSnackbar("Password reset successfully");
       setResetDialogOpen(false);
       setNewPassword("");
       setConfirmPassword("");

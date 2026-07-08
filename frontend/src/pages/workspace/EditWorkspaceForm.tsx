@@ -15,6 +15,8 @@ import WorkspacesIcon from "@mui/icons-material/Workspaces";
 
 import { useWorkspaces } from "../../context/WorkspaceContext";
 import { updateWorkspace } from "../../services/workspaceServices";
+import { useSnackbar } from "../../context/SnackbarContext";
+
 
 export default function EditWorkspace(): React.JSX.Element {
   const { id } = useParams();
@@ -26,6 +28,7 @@ export default function EditWorkspace(): React.JSX.Element {
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const {showSnackbar} = useSnackbar();
 
   useEffect(() => {
     if (id) {
@@ -59,11 +62,11 @@ export default function EditWorkspace(): React.JSX.Element {
 
       await fetchWorkspaces();
 
-      alert("Workspace updated successfully");
+      showSnackbar("Workspace updated successfully");
 
       navigate(`/dashboard/workspaces/${id}`);
     } catch (error) {
-      alert("Failed to update workspace");
+      showSnackbar("Failed to update workspace");
     } finally {
       setSubmitting(false);
     }

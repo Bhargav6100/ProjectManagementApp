@@ -42,7 +42,8 @@ export default function UsersList(): React.JSX.Element {
     updateUserStatus,
   } = useUsers();
 
-  const [search, setSearch] = useState<string>("");
+  const [activeSearch, setActiveSearch] = useState<string>("");
+  const [inactiveSearch, setInactiveSearch] = useState<string>("");
 
   const isAdmin = user?.role === "ADMIN";
 
@@ -51,7 +52,8 @@ export default function UsersList(): React.JSX.Element {
     fetchInactiveUsers();
   }, []);
 
-  const query = search.toLowerCase();
+  const activeQuery = activeSearch.toLowerCase();
+  const inactiveQuery = inactiveSearch.toLowerCase();
 
   const filteredActiveUsers = useMemo(() => {
     return users.filter((member) => {
@@ -60,12 +62,12 @@ export default function UsersList(): React.JSX.Element {
       const role = member.role.toLowerCase();
 
       return (
-        fullName.includes(query) ||
-        email.includes(query) ||
-        role.includes(query)
+        fullName.includes(activeQuery) ||
+        email.includes(activeQuery) ||
+        role.includes(activeQuery)
       );
     });
-  }, [users, query]);
+  }, [users, activeQuery]);
 
   const filteredInactiveUsers = useMemo(() => {
     return inActiveUsers.filter((member) => {
@@ -74,12 +76,12 @@ export default function UsersList(): React.JSX.Element {
       const role = member.role.toLowerCase();
 
       return (
-        fullName.includes(query) ||
-        email.includes(query) ||
-        role.includes(query)
+        fullName.includes(inactiveQuery) ||
+        email.includes(inactiveQuery) ||
+        role.includes(inactiveQuery)
       );
     });
-  }, [inActiveUsers, query]);
+  }, [inActiveUsers, inactiveQuery]);
 
   const totalAdmins = users.filter((member) => member.role === "ADMIN").length;
 
@@ -146,7 +148,9 @@ export default function UsersList(): React.JSX.Element {
     listTitle: string,
     listDescription: string,
     usersList: typeof users,
-    status: "ACTIVE" | "INACTIVE"
+    status: "ACTIVE" | "INACTIVE",
+    searchValue: string,
+    onSearchChange: (value: string) => void
   ): React.JSX.Element => {
     return (
       <Paper
@@ -190,6 +194,39 @@ export default function UsersList(): React.JSX.Element {
             label={`${usersList.length} users`}
             color={status === "ACTIVE" ? "success" : "default"}
             sx={{ fontWeight: 700 }}
+          />
+        </Box>
+
+        <Box
+          sx={{
+            p: 2,
+            borderBottom: "1px solid #e5e7eb",
+            bgcolor: "#f9fafb",
+          }}
+        >
+          <TextField
+            size="small"
+            fullWidth
+            placeholder={`Search ${
+              status === "ACTIVE" ? "active" : "inactive"
+            } users by name, email, or role...`}
+            value={searchValue}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+              onSearchChange(e.target.value)
+            }
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+                sx: {
+                  borderRadius: 2,
+                  bgcolor: "#ffffff",
+                },
+              },
+            }}
           />
         </Box>
 
@@ -350,7 +387,7 @@ export default function UsersList(): React.JSX.Element {
                                 color="error"
                                 onClick={(e): void => {
                                   e.stopPropagation();
-                                  updateUserStatus(member.id);
+                                  void updateUserStatus(member.id);
                                 }}
                                 sx={{
                                   bgcolor: "#fff5f5",
@@ -370,7 +407,7 @@ export default function UsersList(): React.JSX.Element {
                                 color="success"
                                 onClick={(e): void => {
                                   e.stopPropagation();
-                                  updateUserStatus(member.id);
+                                  void updateUserStatus(member.id);
                                 }}
                                 sx={{
                                   bgcolor: "#f0fdf4",
@@ -520,44 +557,13 @@ export default function UsersList(): React.JSX.Element {
         </Paper>
       </Box>
 
-      <Paper
-        sx={{
-          borderRadius: 3,
-          p: 2.5,
-          mb: 3,
-          border: "1px solid #e5e7eb",
-          boxShadow: "0 10px 30px rgba(15, 23, 42, 0.04)",
-        }}
-      >
-        <TextField
-          size="small"
-          fullWidth
-          placeholder="Search users by name, email, or role..."
-          value={search}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-            setSearch(e.target.value)
-          }
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon fontSize="small" />
-                </InputAdornment>
-              ),
-              sx: {
-                borderRadius: 2,
-                bgcolor: "#f9fafb",
-              },
-            },
-          }}
-        />
-      </Paper>
-
       {renderUsersTable(
         "Active Users",
         "Users who can currently access the system.",
         filteredActiveUsers,
-        "ACTIVE"
+        "ACTIVE",
+        activeSearch,
+        setActiveSearch
       )}
 
       {isAdmin &&
@@ -565,7 +571,9 @@ export default function UsersList(): React.JSX.Element {
           "Inactive Users",
           "Users who are deactivated and cannot log in until reactivated.",
           filteredInactiveUsers,
-          "INACTIVE"
+          "INACTIVE",
+          inactiveSearch,
+          setInactiveSearch
         )}
     </Box>
   );

@@ -8,9 +8,11 @@ import {UsersProvider} from './context/UsersContext.tsx'
 import { WorkspaceProvider } from './context/WorkspaceContext.tsx'
 import { ProjectProvider } from './context/ProjectContext.tsx'
 import { TaskProvider } from './context/TaskContext.tsx'
+import { SnackbarProvider } from './context/SnackbarContext.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
+  <SnackbarProvider>
   <AuthProvider>
   <UsersProvider>
   <WorkspaceProvider>
@@ -24,5 +26,6 @@ createRoot(document.getElementById('root')!).render(
   </WorkspaceProvider>
   </UsersProvider>
   </AuthProvider>
+  </SnackbarProvider>
   </BrowserRouter>
 )

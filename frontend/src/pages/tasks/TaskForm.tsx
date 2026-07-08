@@ -18,6 +18,7 @@ import { createTask } from "../../services/taskServices";
 import type { TaskStatus } from "../../utils/TaskStatus";
 import type { TaskPriority } from "../../utils/TaskPriority";
 import { useWorkspaces } from "../../context/WorkspaceContext";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 export default function TaskForm(): React.JSX.Element {
   const navigate = useNavigate();
@@ -33,18 +34,20 @@ export default function TaskForm(): React.JSX.Element {
   const [taskPriority, setTaskPriority] = useState<TaskPriority>("MEDIUM");
   const [submitting, setSubmitting] = useState<boolean>(false);
 
+  const {showSnackbar} = useSnackbar();
+
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ): Promise<void> => {
     e.preventDefault();
 
     if (!projectId) {
-      alert("Project id is missing");
+      showSnackbar("Project id is missing");
       return;
     }
 
     if (!assignedToUserId) {
-      alert("Please assign this task to a user");
+      showSnackbar("Please assign this task to a user");
       return;
     }
 
@@ -60,11 +63,11 @@ export default function TaskForm(): React.JSX.Element {
         taskPriority,
       });
 
-      alert("Task created successfully");
+      showSnackbar("Task created successfully");
 
       navigate(`/dashboard/workspaces/${workspaceId}/projects/${projectId}`);
     } catch (error) {
-      alert("Failed to create task");
+      showSnackbar("Failed to create task");
     } finally {
       setSubmitting(false);
     }

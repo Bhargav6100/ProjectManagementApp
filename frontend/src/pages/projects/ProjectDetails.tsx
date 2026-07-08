@@ -25,6 +25,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { useProjects } from "../../context/ProjectContext";
 import { useTasks } from "../../context/TaskContext";
 import { useAuth } from "../../context/AuthContext";
+import { useSnackbar } from "../../context/SnackbarContext";
 import type { ProjectStatus } from "../../utils/ProjectStatus";
 
 export default function ProjectDetails(): React.JSX.Element {
@@ -37,6 +38,8 @@ export default function ProjectDetails(): React.JSX.Element {
   const { tasks, fetchTasksByProject, deleteTask } = useTasks();
 
   const { user } = useAuth();
+
+  const {showSnackbar} = useSnackbar();
 
   const isAdmin = user?.role === "ADMIN";
   const isPM = user?.role === "PROJECT_MANAGER";
@@ -61,7 +64,7 @@ export default function ProjectDetails(): React.JSX.Element {
       await deleteProject(Number(projectId));
       navigate("/dashboard/projects", { replace: true });
     } catch (error) {
-      alert("Failed to delete project.");
+      showSnackbar("Failed to delete project.");
     }
   };
 

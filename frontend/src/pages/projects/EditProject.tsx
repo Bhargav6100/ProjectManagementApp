@@ -15,6 +15,8 @@ import FolderIcon from "@mui/icons-material/Folder";
 import { useProjects } from "../../context/ProjectContext";
 import { updateProject } from "../../services/projectServices";
 import type { ProjectStatus } from "../../utils/ProjectStatus";
+import { useSnackbar } from "../../context/SnackbarContext";
+
 export default function EditProject(): React.JSX.Element {
   const { workspaceId, projectId } = useParams();
   const navigate = useNavigate();
@@ -28,6 +30,8 @@ export default function EditProject(): React.JSX.Element {
   const [description, setDescription] = useState<string>("");
   const [status, setStatus] = useState<ProjectStatus>("ACTIVE");
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const {showSnackbar} = useSnackbar();
+
   useEffect(() => {
     if (projectId) {
       fetchProjectById(Number(projectId));
@@ -45,17 +49,17 @@ export default function EditProject(): React.JSX.Element {
   ): Promise<void> => {
     e.preventDefault();
     if (!workspaceId || !projectId) {
-      alert("Workspace id or project id is missing");
+      showSnackbar("Workspace id or project id is missing");
       return;
     }
     try {
       setSubmitting(true);
       await updateProject(Number(projectId), { name, description, status });
       await fetchProjectsByWorkspace(Number(workspaceId));
-      alert("Project updated successfully");
+      showSnackbar("Project updated successfully");
       navigate(`/dashboard/workspaces/${workspaceId}/projects/${projectId}`);
     } catch (error) {
-      alert("Failed to update project");
+      showSnackbar("Failed to update project");
     } finally {
       setSubmitting(false);
     }

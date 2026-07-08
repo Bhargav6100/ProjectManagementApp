@@ -17,6 +17,8 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { registerUser } from "../../services/authServices";
 import { useUsers } from "../../context/UsersContext";
 
+import { useSnackbar } from "../../context/SnackbarContext";
+
 type UserRole = "ADMIN" | "PROJECT_MANAGER" | "MEMBER";
 
 export default function Register(): React.JSX.Element {
@@ -30,6 +32,8 @@ export default function Register(): React.JSX.Element {
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   const { fetchUsers } = useUsers();
+
+  const { showSnackbar } = useSnackbar();
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
@@ -49,10 +53,10 @@ export default function Register(): React.JSX.Element {
 
       await fetchUsers();
 
-      alert("User created successfully");
+      showSnackbar("User created successfully");
       navigate("/dashboard/users");
     } catch (error) {
-      alert("Failed to create user");
+      showSnackbar("Failed to create user");
     } finally {
       setSubmitting(false);
     }

@@ -15,6 +15,8 @@ import WorkspacesIcon from "@mui/icons-material/Workspaces";
 
 import { createWorkspace } from "../../services/workspaceServices";
 import { useWorkspaces } from "../../context/WorkspaceContext";
+import { useSnackbar } from "../../context/SnackbarContext";
+
 
 export default function WorkspaceForm(): React.JSX.Element {
   const navigate = useNavigate();
@@ -23,6 +25,7 @@ export default function WorkspaceForm(): React.JSX.Element {
   const [description, setDescription] = useState<string>("");
   const [submitting, setSubmitting] = useState<boolean>(false);
 
+  const {showSnackbar} = useSnackbar();
   const { fetchWorkspaces } = useWorkspaces();
 
   const handleSubmit = async (
@@ -40,10 +43,10 @@ export default function WorkspaceForm(): React.JSX.Element {
 
       await fetchWorkspaces();
 
-      alert("Workspace created successfully");
+      showSnackbar("Workspace created successfully");
       navigate("/dashboard/workspaces");
     } catch (error) {
-      alert("Failed to create workspace");
+      showSnackbar("Failed to create workspace");
     } finally {
       setSubmitting(false);
     }

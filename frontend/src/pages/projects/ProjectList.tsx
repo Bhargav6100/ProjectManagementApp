@@ -23,6 +23,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
+import { useSnackbar } from "../../context/SnackbarContext";
 import { useProjects } from "../../context/ProjectContext";
 import SelectWorkspaceDialog from "../../components/common/SelectWorkspaceDialog";
 import type { ProjectStatus } from "../../utils/ProjectStatus";
@@ -30,6 +31,7 @@ import { useAuth } from "../../context/AuthContext";
 export default function ProjectList(): React.JSX.Element {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { showSnackbar } = useSnackbar();
   const {
     allProjects,
     fetchAllProjects,
@@ -52,9 +54,17 @@ export default function ProjectList(): React.JSX.Element {
   }, [user]);
    const handleDeleteProject = async (
   e: React.MouseEvent<HTMLButtonElement>,
-  projectId: number
+  project: (typeof allProjects)[number]
 ): Promise<void> => {
   e.stopPropagation();
+
+  const isProjectCreator =
+    project.createdBy?.toLowerCase() === user?.email?.toLowerCase();
+
+  if (!isProjectCreator) {
+    showSnackbar("Only the project creator can delete this project.", "warning");
+    return;
+  }
 
   const confirmed = window.confirm(
     "Are you sure you want to delete this project?"
@@ -62,12 +72,18 @@ export default function ProjectList(): React.JSX.Element {
 
   if (!confirmed) return;
 
-  await deleteProject(projectId);
+  try {
+    await deleteProject(project.id);
 
-  if (isAdmin) {
-    await fetchAllProjects();
-  } else {
-    await fetchMyProjects();
+    if (isAdmin) {
+      await fetchAllProjects();
+    } else {
+      await fetchMyProjects();
+    }
+
+    showSnackbar("Project deleted successfully.", "success");
+  } catch (error) {
+    showSnackbar("You are not allowed to delete this project.", "error");
   }
 };
   const query = search.toLowerCase();
@@ -512,7 +528,7 @@ export default function ProjectList(): React.JSX.Element {
                               size="small"
                               color="error"
                               onClick={(e): void =>
-                               void handleDeleteProject(e, project.id)
+                               void handleDeleteProject(e, project)
                               }
                               sx={{
                                 bgcolor: "#fff5f5",

@@ -53,7 +53,14 @@ export default function ProjectDetails(): React.JSX.Element {
 
   const handleDeleteProject = async (): Promise<void> => {
     if (!projectId) return;
+    
+    const isProjectCreator =
+    currentProject?.createdBy?.toLowerCase() === user?.email?.toLowerCase();
 
+  if (!isProjectCreator) {
+    showSnackbar("Only the project creator can delete this project.", "warning");
+    return;
+  }
     const confirmed = window.confirm(
       "Are you sure you want to delete this project?"
     );
@@ -64,7 +71,7 @@ export default function ProjectDetails(): React.JSX.Element {
       await deleteProject(Number(projectId));
       navigate("/dashboard/projects", { replace: true });
     } catch (error) {
-      showSnackbar("Failed to delete project.");
+      showSnackbar("Only project creator or admin can delete.");
     }
   };
 

@@ -18,11 +18,10 @@ export default function AdminPanel(): React.JSX.Element {
             borderBottom: "1px solid #e5e7eb",
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
+            justifyContent: "flex-end",
             px: 4,
           }}
         >
-          <h2>Dashboard</h2>
           <p>Hello, {user?.firstName}</p>
         </Box>
 

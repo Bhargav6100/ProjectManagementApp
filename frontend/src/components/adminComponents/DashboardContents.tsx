@@ -17,7 +17,7 @@ import FolderIcon from "@mui/icons-material/Folder";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
-
+import { useAuth } from "../../context/AuthContext";
 import { useUsers } from "../../context/UsersContext";
 import { useWorkspaces } from "../../context/WorkspaceContext";
 import { useProjects } from "../../context/ProjectContext";
@@ -27,6 +27,7 @@ import SelectProjectDialog from "../../components/common/SelectProjectDialog";
 
 export default function DashboardContents(): React.JSX.Element {
   const { users, inActiveUsers } = useUsers();
+  const {user} =useAuth();
   const { workspaces, fetchWorkspaces } = useWorkspaces();
   const { allProjects, fetchAllProjects } = useProjects();
   const { allTasks, fetchAllTasks } = useTasks();
@@ -150,7 +151,7 @@ export default function DashboardContents(): React.JSX.Element {
             </Typography>
 
             <Typography color="text.secondary" sx={{ mt: 0.5 }}>
-              Manage users, workspaces, projects, and tasks from one place.
+              Welcome back, {user?.firstName}, Manage users, workspaces, projects, and tasks from one place.
             </Typography>
           </Box>
 

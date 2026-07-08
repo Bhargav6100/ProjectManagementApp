@@ -27,29 +27,29 @@ import { useProjects } from "../../context/ProjectContext";
 import SelectWorkspaceDialog from "../../components/common/SelectWorkspaceDialog";
 import type { ProjectStatus } from "../../utils/ProjectStatus";
 import { useAuth } from "../../context/AuthContext";
-
 export default function ProjectList(): React.JSX.Element {
   const navigate = useNavigate();
-
-  const { allProjects, fetchAllProjects,fetchMyProjects, loading,deleteProject } = useProjects();
-  const {user} = useAuth();
+  const { user } = useAuth();
+  const {
+    allProjects,
+    fetchAllProjects,
+    fetchMyProjects,
+    loading,
+    deleteProject,
+  } = useProjects();
   const [search, setSearch] = useState<string>("");
   const [workspaceDialogOpen, setWorkspaceDialogOpen] =
     useState<boolean>(false);
-
-   useEffect(() => {
+  const isAdmin = user?.role === "ADMIN";
+  const isPM = user?.role === "PROJECT_MANAGER";
+  useEffect(() => {
     if (!user) return;
-
-    if (user.role === "ADMIN") {
+    if (isAdmin) {
       fetchAllProjects();
     } else {
       fetchMyProjects();
     }
   }, [user]);
-  
-   const isAdmin = user?.role=="ADMIN";
-   const isPM = user?.role=="PROJECT_MANAGER";
-
    const handleDeleteProject = async (
   e: React.MouseEvent<HTMLButtonElement>,
   projectId: number
@@ -70,15 +70,13 @@ export default function ProjectList(): React.JSX.Element {
     await fetchMyProjects();
   }
 };
+  const query = search.toLowerCase();
   const filteredProjects = useMemo(() => {
-    const query = search.toLowerCase();
-   
     return allProjects.filter((project) => {
       const name = project.name.toLowerCase();
       const description = project.description?.toLowerCase() ?? "";
       const status = project.status.toLowerCase();
       const createdBy = project.createdBy?.toLowerCase() ?? "";
-
       return (
         name.includes(query) ||
         description.includes(query) ||
@@ -86,85 +84,104 @@ export default function ProjectList(): React.JSX.Element {
         createdBy.includes(query)
       );
     });
-  }, [allProjects, search]);
-
+  }, [allProjects, query]);
   const activeProjects = allProjects.filter(
-    (project) => project.status === "ACTIVE"
+    (project) => project.status === "ACTIVE",
   ).length;
-
   const completeProjects = allProjects.filter(
-    (project) => project.status === "COMPLETE"
+    (project) => project.status === "COMPLETE",
   ).length;
-
   const archivedProjects = allProjects.filter(
-    (project) => project.status === "ARCHIVED"
+    (project) => project.status === "ARCHIVED",
   ).length;
-
   const formatStatus = (status: ProjectStatus): string => {
     if (status === "ACTIVE") {
       return "Active";
     }
-
     if (status === "COMPLETE") {
       return "Complete";
     }
-
     return "Archived";
   };
-
   const getStatusColor = (
-    status: ProjectStatus
-  ): "success" | "warning" | "default" => {
-    if (status === "COMPLETE") {
+    status: ProjectStatus,
+  ): "success" | "primary" | "default" => {
+    if (status === "ACTIVE") {
       return "success";
     }
-
-    if (status === "ACTIVE") {
-      return "warning";
+    if (status === "COMPLETE") {
+      return "primary";
     }
-
     return "default";
   };
-
   const getInitials = (name: string): string => {
-    return name
-      .split(" ")
-      .map((word) => word.charAt(0))
-      .join("")
-      .slice(0, 2)
-      .toUpperCase();
+    return (
+      name
+        .split(" ")
+        .map((word) => word.charAt(0))
+        .join("")
+        .slice(0, 2)
+        .toUpperCase() || "P"
+    );
   };
-
+  const summaryCardSx = {
+    p: 2.5,
+    borderRadius: 3,
+    border: "1px solid #e5e7eb",
+    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.04)",
+    transition: "all 0.2s ease",
+    "&:hover": {
+      transform: "translateY(-2px)",
+      boxShadow: "0 16px 36px rgba(15, 23, 42, 0.07)",
+      borderColor: "rgba(25, 118, 210, 0.25)",
+    },
+  };
   return (
     <Box>
+      
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: { xs: "flex-start", sm: "center" },
+          flexDirection: { xs: "column", sm: "row" },
+          gap: 2,
           mb: 3,
         }}
       >
+        
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          
+          <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.5 }}>
+            
             Projects
           </Typography>
-
-          <Typography color="text.secondary">
-            {user?.role=="ADMIN"?"View all projects across all workspaces.":"View all projects across your workspaces"}
+          <Typography color="text.secondary" sx={{ fontSize: 15 }}>
+            
+            {isAdmin
+              ? "View all projects across all workspaces."
+              : "View all projects across your assigned workspaces."}
           </Typography>
         </Box>
-
-        {(isAdmin || isPM) && (<Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setWorkspaceDialogOpen(true)}
-          sx={{ borderRadius: 2, textTransform: "none", px: 3 }}
-        >
-          Create Project
-        </Button>)}
+        {(isAdmin || isPM) && (
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setWorkspaceDialogOpen(true)}
+            sx={{
+              borderRadius: 2.5,
+              textTransform: "none",
+              px: 3,
+              py: 1,
+              fontWeight: 700,
+              boxShadow: "none",
+            }}
+          >
+            
+            Create Project
+          </Button>
+        )}
       </Box>
-
       <Box
         sx={{
           display: "grid",
@@ -177,194 +194,349 @@ export default function ProjectList(): React.JSX.Element {
           mb: 3,
         }}
       >
-        <Paper sx={{ p: 2.5, borderRadius: 3 }}>
-          <Typography color="text.secondary">Total Projects</Typography>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+        
+        <Paper sx={summaryCardSx}>
+          
+          <Typography color="text.secondary" sx={{ fontSize: 14 }}>
+            
+            Total Projects
+          </Typography>
+          <Typography variant="h4" sx={{ fontWeight: 800 }}>
+            
             {allProjects.length}
           </Typography>
         </Paper>
-
-        <Paper sx={{ p: 2.5, borderRadius: 3 }}>
-          <Typography color="text.secondary">Active</Typography>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+        <Paper sx={summaryCardSx}>
+          
+          <Typography color="text.secondary" sx={{ fontSize: 14 }}>
+            
+            Active Projects
+          </Typography>
+          <Typography variant="h4" sx={{ fontWeight: 800 }}>
+            
             {activeProjects}
           </Typography>
         </Paper>
-
-        <Paper sx={{ p: 2.5, borderRadius: 3 }}>
-          <Typography color="text.secondary">Complete</Typography>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+        <Paper sx={summaryCardSx}>
+          
+          <Typography color="text.secondary" sx={{ fontSize: 14 }}>
+            
+            Complete Projects
+          </Typography>
+          <Typography variant="h4" sx={{ fontWeight: 800 }}>
+            
             {completeProjects}
           </Typography>
         </Paper>
-
-        <Paper sx={{ p: 2.5, borderRadius: 3 }}>
-          <Typography color="text.secondary">Archived</Typography>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+        <Paper sx={summaryCardSx}>
+          
+          <Typography color="text.secondary" sx={{ fontSize: 14 }}>
+            
+            Archived Projects
+          </Typography>
+          <Typography variant="h4" sx={{ fontWeight: 800 }}>
+            
             {archivedProjects}
           </Typography>
         </Paper>
       </Box>
-
-      <Paper sx={{ borderRadius: 3, overflow: "hidden" }}>
+      <Paper
+        sx={{
+          borderRadius: 3,
+          p: 2.5,
+          mb: 3,
+          border: "1px solid #e5e7eb",
+          boxShadow: "0 10px 30px rgba(15, 23, 42, 0.04)",
+        }}
+      >
+        
+        <TextField
+          size="small"
+          fullWidth
+          placeholder="Search projects by name, description, status, or creator..."
+          value={search}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+            setSearch(e.target.value)
+          }
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  
+                  <SearchIcon fontSize="small" />
+                </InputAdornment>
+              ),
+              sx: { borderRadius: 2, bgcolor: "#f9fafb" },
+            },
+          }}
+        />
+      </Paper>
+      <Paper
+        sx={{
+          borderRadius: 3,
+          overflow: "hidden",
+          mb: 3,
+          border: "1px solid #e5e7eb",
+          boxShadow: "0 10px 30px rgba(15, 23, 42, 0.04)",
+        }}
+      >
+        
         <Box
           sx={{
             p: 2.5,
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: { xs: "flex-start", sm: "center" },
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 2,
             borderBottom: "1px solid #e5e7eb",
+            bgcolor: "#ffffff",
           }}
         >
-          <Typography variant="h6" sx={{ fontWeight: 700 }}>
-            Project Directory
-          </Typography>
-
-          <TextField
-            size="small"
-            placeholder="Search projects..."
-            value={search}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-              setSearch(e.target.value)
-            }
-            sx={{ width: 320 }}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon fontSize="small" />
-                  </InputAdornment>
-                ),
-              },
-            }}
+          
+          <Box>
+            
+            <Typography variant="h6" sx={{ fontWeight: 800, mb: 0.3 }}>
+              
+              Project Directory
+            </Typography>
+            <Typography color="text.secondary" sx={{ fontSize: 13 }}>
+              
+              {isAdmin
+                ? "All projects created inside the system."
+                : "Projects assigned to your workspaces."}
+            </Typography>
+          </Box>
+          <Chip
+            label={`${filteredProjects.length} projects`}
+            color="primary"
+            sx={{ fontWeight: 700 }}
           />
         </Box>
-
         <TableContainer>
+          
           <Table>
+            
             <TableHead>
+              
               <TableRow sx={{ bgcolor: "#f9fafb" }}>
-                <TableCell sx={{ fontWeight: 700 }}>Project</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Workspace ID</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Created By</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Created At</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 700 }}>
+                
+                <TableCell sx={{ fontWeight: 800, color: "text.secondary" }}>
+                  
+                  Project
+                </TableCell>
+                <TableCell sx={{ fontWeight: 800, color: "text.secondary" }}>
+                  
+                  Workspace ID
+                </TableCell>
+                <TableCell sx={{ fontWeight: 800, color: "text.secondary" }}>
+                  
+                  Status
+                </TableCell>
+                <TableCell sx={{ fontWeight: 800, color: "text.secondary" }}>
+                  
+                  Created By
+                </TableCell>
+                <TableCell sx={{ fontWeight: 800, color: "text.secondary" }}>
+                  
+                  Created At
+                </TableCell>
+                <TableCell
+                  align="right"
+                  sx={{ fontWeight: 800, color: "text.secondary" }}
+                >
+                  
                   Actions
                 </TableCell>
               </TableRow>
             </TableHead>
-
             <TableBody>
+              
               {loading && (
                 <TableRow>
-                  <TableCell colSpan={6}>
+                  
+                  <TableCell colSpan={6} sx={{ py: 4 }}>
+                    
                     <Typography color="text.secondary">
+                      
                       Loading projects...
                     </Typography>
                   </TableCell>
                 </TableRow>
               )}
-
               {!loading &&
                 filteredProjects.map((project) => (
                   <TableRow
                     key={project.id}
                     hover
-                    sx={{
-                      cursor: "pointer",
-                      "&:last-child td": {
-                        borderBottom: 0,
-                      },
-                    }}
                     onClick={() =>
                       navigate(
-                        `/dashboard/workspaces/${project.workspaceId}/projects/${project.id}`
+                        `/dashboard/workspaces/${project.workspaceId}/projects/${project.id}`,
                       )
                     }
+                    sx={{
+                      cursor: "pointer",
+                      transition: "all 0.2s ease",
+                      "&:hover": { bgcolor: "#f9fafb" },
+                      "&:last-child td": { borderBottom: 0 },
+                    }}
                   >
-                    <TableCell>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                        <Avatar sx={{ width: 40, height: 40 }}>
+                    
+                    <TableCell sx={{ py: 2 }}>
+                      
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1.5 }}
+                      >
+                        
+                        <Avatar
+                          sx={{
+                            width: 42,
+                            height: 42,
+                            bgcolor: "primary.main",
+                            fontWeight: 700,
+                            fontSize: 14,
+                          }}
+                        >
+                          
                           {getInitials(project.name)}
                         </Avatar>
-
-                        <Box>
-                          <Typography sx={{ fontWeight: 600 }}>
+                        <Box sx={{ minWidth: 0 }}>
+                          
+                          <Typography sx={{ fontWeight: 700 }}>
+                            
                             {project.name}
                           </Typography>
-
-                          <Typography color="text.secondary" sx={{ fontSize: 13 }}>
-                            {project.description || "No description provided"}
+                          <Typography
+                            color="text.secondary"
+                            sx={{
+                              fontSize: 13,
+                              maxWidth: 420,
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            
+                            {project.description ||
+                              "No description provided"}
                           </Typography>
                         </Box>
                       </Box>
                     </TableCell>
-
-                    <TableCell>{project.workspaceId}</TableCell>
-
                     <TableCell>
+                      
+                      <Typography sx={{ fontSize: 14 }}>
+                        
+                        {project.workspaceId}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      
                       <Chip
                         label={formatStatus(project.status)}
                         color={getStatusColor(project.status)}
                         size="small"
-                        sx={{ fontWeight: 600 }}
+                        sx={{ fontWeight: 700 }}
                       />
                     </TableCell>
-
-                    <TableCell>{project.createdBy}</TableCell>
-
                     <TableCell>
-                      {new Date(project.createdAt).toLocaleDateString()}
+                      
+                      <Typography sx={{ fontSize: 14 }}>
+                        
+                        {project.createdBy || "N/A"}
+                      </Typography>
                     </TableCell>
-
+                    <TableCell>
+                      
+                      <Typography sx={{ fontSize: 14 }}>
+                        
+                        {new Date(project.createdAt).toLocaleDateString()}
+                      </Typography>
+                    </TableCell>
                     <TableCell align="right">
-                      <Tooltip title="View project">
-                        <IconButton
-                          size="small"
-                          onClick={(e): void => {
-                            e.stopPropagation();
-                            navigate(
-                              `/dashboard/workspaces/${project.workspaceId}/projects/${project.id}`
-                            );
-                          }}
-                        >
-                          <VisibilityIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-
-                      {(isAdmin || isPM) && (<Tooltip title="Edit project">
-                        <IconButton
-                          size="small"
-                          onClick={(e): void => {
-                            e.stopPropagation();
-                            navigate(
-                              `/dashboard/workspaces/${project.workspaceId}/projects/${project.id}/edit`
-                            );
-                          }}
-                        >
-                          <EditIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>)}
-                     {(isAdmin || isPM) && (
-                     <Tooltip title="Delete project">
-                      <IconButton
-                      size="small"
-                        color="error"
-                       onClick={(e) => handleDeleteProject(e, project.id)}
-               >
-                      <DeleteIcon fontSize="small" />
-                      </IconButton>
-                      </Tooltip>
-                     )}
+                      
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          gap: 0.5,
+                        }}
+                      >
+                        
+                        <Tooltip title="View project">
+                          
+                          <IconButton
+                            size="small"
+                            onClick={(e): void => {
+                              e.stopPropagation();
+                              navigate(
+                                `/dashboard/workspaces/${project.workspaceId}/projects/${project.id}`,
+                              );
+                            }}
+                            sx={{
+                              bgcolor: "#f9fafb",
+                              "&:hover": {
+                                bgcolor: "rgba(25, 118, 210, 0.08)",
+                              },
+                            }}
+                          >
+                            
+                            <VisibilityIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                        {(isAdmin || isPM) && (
+                          <Tooltip title="Edit project">
+                            <IconButton
+                              size="small"
+                              onClick={(e): void => {
+                                e.stopPropagation();
+                                navigate(
+                                  `/dashboard/workspaces/${project.workspaceId}/projects/${project.id}/edit`,
+                                );
+                              }}
+                              sx={{
+                                bgcolor: "#f9fafb",
+                                "&:hover": {
+                                  bgcolor: "rgba(25, 118, 210, 0.08)",
+                                },
+                              }}
+                            >
+                              
+                              <EditIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                        {(isAdmin || isPM) && (
+                          <Tooltip title="Delete project">
+                            <IconButton
+                              size="small"
+                              color="error"
+                              onClick={(e): void =>
+                               void handleDeleteProject(e, project.id)
+                              }
+                              sx={{
+                                bgcolor: "#fff5f5",
+                                "&:hover": {
+                                  bgcolor: "rgba(211, 47, 47, 0.08)",
+                                },
+                              }}
+                            >
+                              
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </Box>
                     </TableCell>
                   </TableRow>
                 ))}
-
               {!loading && filteredProjects.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6}>
+                  
+                  <TableCell colSpan={6} sx={{ py: 4 }}>
+                    
                     <Typography color="text.secondary">
+                      
                       No projects found.
                     </Typography>
                   </TableCell>
@@ -374,7 +546,6 @@ export default function ProjectList(): React.JSX.Element {
           </Table>
         </TableContainer>
       </Paper>
-
       <SelectWorkspaceDialog
         open={workspaceDialogOpen}
         title="Create Project"

@@ -34,7 +34,7 @@ export default function EditTask(): React.JSX.Element {
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   const {showSnackbar} = useSnackbar();
-
+  const isAdmin = user?.role ==="ADMIN";
   const isMember = user?.role === "MEMBER";
   const isPM = user?.role === "PROJECT_MANAGER";
   const isTaskCreator = currentTask?.createdBy?.toLowerCase() === user?.firstName?.toLowerCase() + " " + user?.lastName?.toLowerCase();
@@ -64,8 +64,8 @@ export default function EditTask(): React.JSX.Element {
       showSnackbar("Task, project, or workspace id is missing");
       return;
     }
-    if(!isTaskCreator){
-      showSnackbar("Only admin or task creator can edir tasks");
+    if(!isAdmin && !isTaskCreator){
+      showSnackbar("Only admin or task creator can edit tasks");
       return;
     }
     if (!assignedToUserId) {

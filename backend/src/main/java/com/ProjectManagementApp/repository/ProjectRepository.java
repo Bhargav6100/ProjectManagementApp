@@ -10,4 +10,5 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
  boolean existsByIdAndCreatedById(Long projectId,Long userId);
 
  List<Project> findByWorkspaceIdIn(List<Long> workspaceIds);
+ void deleteByWorkspaceId(Long workspaceId);
 }

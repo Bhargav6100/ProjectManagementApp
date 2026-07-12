@@ -12,6 +12,7 @@ import { useUsers } from "../../context/UsersContext";
 import { useWorkspaces } from "../../context/WorkspaceContext";
 import { useProjects } from "../../context/ProjectContext";
 import { useTasks } from "../../context/TaskContext";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 export default function MemberDashboardContents(): React.JSX.Element {
   const navigate = useNavigate();
@@ -25,6 +26,8 @@ export default function MemberDashboardContents(): React.JSX.Element {
   const { allProjects, fetchMyProjects } = useProjects();
 
   const { allTasks, fetchMyTasks } = useTasks();
+
+  const {showSnackbar} =useSnackbar();
 
   useEffect(() => {
     fetchMyWorkspaces();
@@ -359,7 +362,7 @@ export default function MemberDashboardContents(): React.JSX.Element {
               variant="outlined"
               onClick={() => {
                 if (!workspaceId) {
-                  alert("Workspace not found for this task");
+                  showSnackbar("Workspace not found for this task");
                   return;
                 }
 

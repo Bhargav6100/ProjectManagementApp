@@ -1,12 +1,11 @@
 package com.ProjectManagementApp.service;
 
-import com.ProjectManagementApp.entity.WorkspaceMember;
+import com.ProjectManagementApp.entity.*;
 import com.ProjectManagementApp.dto.WorkspaceRequest;
 import com.ProjectManagementApp.dto.WorkspaceResponse;
-import com.ProjectManagementApp.entity.Roles;
-import com.ProjectManagementApp.entity.User;
-import com.ProjectManagementApp.entity.Workspace;
 import com.ProjectManagementApp.exception.ResourceNotFoundException;
+import com.ProjectManagementApp.repository.ProjectRepository;
+import com.ProjectManagementApp.repository.TaskRepository;
 import com.ProjectManagementApp.repository.WorkSpaceRepository;
 import com.ProjectManagementApp.repository.WorkspaceMemberRepository;
 import org.springframework.security.access.AccessDeniedException;
@@ -21,13 +20,14 @@ import java.util.List;
 public class WorkspaceService {
 
     private final WorkSpaceRepository workSpaceRepository;
-
     private final WorkspaceMemberRepository workspaceMemberRepository;
-
-
-    public WorkspaceService(WorkSpaceRepository workSpaceRepository, WorkspaceMemberRepository workspaceMemberRepository) {
+    private final ProjectRepository projectRepository;
+    private final TaskRepository taskRepository;
+    public WorkspaceService(WorkSpaceRepository workSpaceRepository, WorkspaceMemberRepository workspaceMemberRepository, ProjectRepository projectRepository, TaskRepository taskRepository) {
         this.workSpaceRepository = workSpaceRepository;
         this.workspaceMemberRepository = workspaceMemberRepository;
+        this.projectRepository = projectRepository;
+        this.taskRepository = taskRepository;
     }
 
     public List<WorkspaceResponse> getAllWorkspace(User currentUser) throws AccessDeniedException {
@@ -131,6 +131,13 @@ public class WorkspaceService {
         if (!currentUser.getRole().equals(Roles.ADMIN)) {
             throw new AccessDeniedException("Only admin can delete workspaces");
         }
+        List<Project> projects = projectRepository.findByWorkspaceId(currentWorkspaceId);
+
+        for (Project project : projects) {
+            taskRepository.deleteByProjectId(project.getId());
+        }
+
+        projectRepository.deleteByWorkspaceId(currentWorkspaceId);
         workspaceMemberRepository.deleteByWorkspaceId(currentWorkspaceId);
         workSpaceRepository.delete(workspace);
         return "Workspace deleted successfully";

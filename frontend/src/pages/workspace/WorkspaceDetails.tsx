@@ -903,7 +903,7 @@ export default function WorkspaceDetails(): React.JSX.Element {
                   },
                 }}
               >
-                {availableUsers.map((member) => (
+                {availableUsers.length > 0 ? availableUsers.map((member) => (
                   <MenuItem
                     key={member.id}
                     value={String(member.id)}
@@ -982,7 +982,7 @@ export default function WorkspaceDetails(): React.JSX.Element {
                       />
                     </Box>
                   </MenuItem>
-                ))}
+                )):<MenuItem>All the available users are already members or no members found</MenuItem>}
               </TextField>
 
               <Button

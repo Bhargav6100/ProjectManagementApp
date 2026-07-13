@@ -3,7 +3,7 @@ import "../App.css";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import Dashboard from "../pages/dashboard/Dashboard";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 
 import Settings from "../pages/settings/Settings";
@@ -32,6 +32,7 @@ import DashboardHome from "../pages/dashboard/DashboardHome";
 function App(): React.JSX.Element {
   return (
     <Routes>
+      <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
 
      <Route element={<ProtectedRoute />}>

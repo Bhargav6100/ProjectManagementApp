@@ -231,11 +231,11 @@ export default function TaskForm(): React.JSX.Element {
                 },
               }}
             >
-              {members.map((member) => (
+              {members.length>0 ?members.map((member) => (
                 <MenuItem key={member.id} value={String(member.id)}>
                   {member.firstName} {member.lastName} - {member.email}
                 </MenuItem>
-              ))}
+              )):<MenuItem>No Members found</MenuItem>}
             </TextField>
 
             <TextField

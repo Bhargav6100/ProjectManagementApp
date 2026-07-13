@@ -34,7 +34,7 @@ function App(): React.JSX.Element {
     <Routes>
       <Route path="/login" element={<Login />} />
 
-      <Route element={<ProtectedRoute />}>
+     <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<Dashboard />}>
           <Route index element={<DashboardHome />} />
           <Route path="/dashboard/settings" element={<Settings/>}/>

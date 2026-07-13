@@ -161,54 +161,83 @@ ProjectmanagementApp/
 
 ## API endpoints
 
-Authentication
+## API Endpoints
 
-POST /api/auth/login 
-POST /api/auth/register 
-PATCH /api/auth/users/{userId}/reset-password
+### Authentication
 
-Users
-GET /api/users/me
-GET /api/users/active
-GET /api/users/inactive
-GET /api/users/{id}
-PUT /api/users/{id}
-PATCH /api/users/{id}
-DELETE /api/users/{id}
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/auth/login` | Login user and return JWT token |
+| POST | `/api/auth/register` | Register a new user |
+| PATCH | `/api/auth/users/{userId}/reset-password` | Reset user password |
 
-Workspaces
-GET /api/workspaces
-GET /api/workspaces/{id}
-GET /api/workspaces/my-workspaces
-POST /api/workspaces
-PUT /api/workspaces/{workspaceId}
-DELETE /api/workspaces/{workspaceId}
+---
 
-Workspace Members
-POST /api/workspaces/{workspaceId}/members/{userId}
-GET /api/workspaces/{workspaceId}/members
-DELETE /api/workspaces/{workspaceId}/members/{userId}
+### Users
 
-Projects
-POST /api/workspaces/{workspaceId}/projects
-GET /api/workspaces/{workspaceId}/projects
-GET /api/projects
-GET /api/projects/{id}
-GET /api/projects/my-projects
-PUT /api/projects/{projectId}
-PATCH /api/projects/{projectId}/status
-DELETE /api/projects/{projectId}
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/users/me` | Get currently authenticated user |
+| GET | `/api/users/active` | Get all active users |
+| GET | `/api/users/inactive` | Get all inactive users |
+| GET | `/api/users/{id}` | Get user by ID |
+| PUT | `/api/users/{id}` | Update user details |
+| PATCH | `/api/users/{id}` | Activate/deactivate user |
+| DELETE | `/api/users/{id}` | Delete/deactivate user |
 
-Tasks
-POST /api/projects/{projectId}/tasks
-GET /api/projects/{projectId}/tasks
-GET /api/tasks
-GET /api/tasks/{id}
-GET /api/tasks/my-tasks
-GET /api/tasks/my-assigned-tasks
-PUT /api/tasks/{taskId}
-PATCH /api/tasks/{taskId}/status
-DELETE /api/tasks/{taskId}
+---
+
+### Workspaces
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/workspaces` | Get all workspaces |
+| GET | `/api/workspaces/{id}` | Get workspace by ID |
+| GET | `/api/workspaces/my-workspaces` | Get workspaces assigned to current user |
+| POST | `/api/workspaces` | Create workspace |
+| PUT | `/api/workspaces/{workspaceId}` | Update workspace |
+| DELETE | `/api/workspaces/{workspaceId}` | Delete workspace |
+
+---
+
+### Workspace Members
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/workspaces/{workspaceId}/members/{userId}` | Add member to workspace |
+| GET | `/api/workspaces/{workspaceId}/members` | Get workspace members |
+| DELETE | `/api/workspaces/{workspaceId}/members/{userId}` | Remove member from workspace |
+
+---
+
+### Projects
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/workspaces/{workspaceId}/projects` | Create project inside workspace |
+| GET | `/api/workspaces/{workspaceId}/projects` | Get projects by workspace |
+| GET | `/api/projects` | Get all projects |
+| GET | `/api/projects/{id}` | Get project by ID |
+| GET | `/api/projects/my-projects` | Get projects assigned to current user |
+| PUT | `/api/projects/{projectId}` | Update project |
+| PATCH | `/api/projects/{projectId}/status` | Update project status |
+| DELETE | `/api/projects/{projectId}` | Delete project |
+
+---
+
+### Tasks
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/projects/{projectId}/tasks` | Create task inside project |
+| GET | `/api/projects/{projectId}/tasks` | Get tasks by project |
+| GET | `/api/tasks` | Get all tasks |
+| GET | `/api/tasks/{id}` | Get task by ID |
+| GET | `/api/tasks/my-tasks` | Get tasks related to current user |
+| GET | `/api/tasks/my-assigned-tasks` | Get tasks assigned to current user |
+| PUT | `/api/tasks/{taskId}` | Update task |
+| PATCH | `/api/tasks/{taskId}/status` | Update task status |
+| DELETE | `/api/tasks/{taskId}` | Delete task |
 
 ## Screenshots
 

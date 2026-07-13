@@ -8,6 +8,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 public class AdminInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
@@ -51,6 +53,7 @@ public class AdminInitializer implements CommandLineRunner {
         admin.setPassword(passwordEncoder.encode(adminPassword));
         admin.setRole(Roles.ADMIN);
         admin.setActive(true);
+        admin.setCreatedAt(LocalDateTime.now());
 
         userRepository.save(admin);
 
